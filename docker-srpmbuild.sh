@@ -2,6 +2,6 @@
 set -ex
 IMAGETAG=$1
 [ -n $1 ] || { echo "Missing IMAGETAG param" ; exit 1 ;}
-SRCRPM=$2
-[ -n $2 ] || { echo "Missing .src.rpm param" ; exit 1 ;}
-docker run -v `pwd`:/docker-srpmbuild -w /docker-srpmbuild $IMAGETAG ./rpmbuild-in-docker.sh $SRCRPM
+SRCDIR=$2
+[ -n $2 ] || { echo "Missing SRCDIR" ; exit 1 ;}
+docker run -v `pwd`:/docker-files -v ${SRCDIR}:/src -w /docker-files $IMAGETAG ./rpmbuild-in-docker.sh
