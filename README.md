@@ -26,8 +26,6 @@ For building for Centos 6 with EPEL enabled there's a trusted build [here](https
 docker-build-binary-rpm-from-dir.sh alanfranz/drb-epel-6-x86-64 FULL_PATH_TO_SRC_DIR
 </pre>
 
-the SRC_DIR should contain:
-
 ## Gotchas and TODOS
 * if you're used to mock, the build system is a bit different, mocks seems to employ different defaults and has different macros, sometimes a build working with mock may file with docker-rpm-builder. I'm investigating the issue.
 * dns default to public ones, will add an option for private ones.
