@@ -17,7 +17,7 @@ The directory should contain:
 ### Usage
 
 <pre>
-docker-build-binary-rpm-from-dir.sh IMAGETAG SRCDIR
+docker-build-binary-rpm-from-dir.sh IMAGETAG SRCDIR [ADDITIONAL_DOCKER_OPTIONS]
 </pre>
 
 For building for Centos 6 with EPEL enabled there's a trusted build [here](https://index.docker.io/u/alanfranz/drb-epel-6-x86-64/) ([github source](https://github.com/alanfranz/docker-rpm-builder-configurations))
@@ -28,7 +28,7 @@ docker-build-binary-rpm-from-dir.sh alanfranz/drb-epel-6-x86-64 FULL_PATH_TO_SRC
 
 ## Gotchas and TODOS
 * if you're used to mock, the build system is a bit different, mocks seems to employ different defaults and has different macros, sometimes a build working with mock may file with docker-rpm-builder. I'm investigating the issue.
-* dns default to public ones, will add an option for private ones.
+* dns default to public ones, will add an option for private ones. Right now you can just add arbitrary docker options after IMAGETAG and SRCDIR
 * spec files require source files to be specified; maybe it would be a good idea to create a .tar.gz from the source directory automatically in the host build script, this is 
 
 
