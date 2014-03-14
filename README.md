@@ -2,6 +2,11 @@
 
 Why? Because plain rpmbuild may be an hassle (the system may became polluted by cross-project deps, and requires the same native system distro as the target package) and [mock](https://fedoraproject.org/wiki/Projects/Mock) may be slow and sometimes painful to debug and configure.
 
+docker-rpm-builder works on any host distributions that supports docker.
+
+It's designed to be a very small and hackable wrapper to help in rpm building, and lets you building binary RPMs on the fly, without generating a source rpm. I hope to leverage docker capibilities to make the building fast.
+
+
 ## Prerequisites
 
 Must have [docker](https://www.docker.io/) installed and properly configured. The user running the build must be able to properly use docker.
