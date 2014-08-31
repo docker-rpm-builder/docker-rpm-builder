@@ -11,18 +11,27 @@ It's designed to be a very small and hackable wrapper to help in rpm building, a
 
 Must have [docker](https://www.docker.io/) installed and properly configured. The user running the build must be able to properly use docker.
 
+Then you have to create a Docker image that will be reused for each build.
+
+<pre>
+git clone https://github.com/alanfranz/docker-rpm-builder.git
+cd docker-rpm-builder
+docker build -t docker-rpm-builder .
+</pre>
+
+
 ## Building a binary RPM from a directory
 
 The directory should contain:
 * the .spec file
-* all files which are marked as **SourceX** in the spec file;
+* all local files which are marked as **SourceX** or **PatchX** in the spec file;
 * optionally, a yum.conf file (will be used while fetching deps and building the rpm in the docker guest)
 * optionally, any number of .repo files (will be placed in /etc/yum.repos.d of the docker guest)
 
 ### Usage
 
 <pre>
-docker-build-binary-rpm-from-dir.sh IMAGETAG SRCDIR [ADDITIONAL_DOCKER_OPTIONS]
+docker-build-binary-rpm-from-dir.sh docker-rpm-builder FULL_PATH_TO_SRC_DIR [ADDITIONAL_DOCKER_OPTIONS]
 </pre>
 
 For building for Centos 6 with EPEL enabled there's a trusted build [here](https://index.docker.io/u/alanfranz/drb-epel-6-x86-64/) ([github source](https://github.com/alanfranz/docker-rpm-builder-configurations))
