@@ -11,4 +11,4 @@ echo "Now building project from $SRCDIR on image $IMAGETAG"
 
 CURRENTDIR=$(dirname $(readlink -f $0))
 
-docker run $* -v ${CURRENTDIR}/docker-scripts:/docker-scripts -v ${SRCDIR}:/src -w /docker-scripts ${IMAGETAG} ./rpmbuild-in-docker.sh
+docker run $* -v ${CURRENTDIR}/docker-scripts:/docker-scripts -v ${SRCDIR}:/src -w /docker-scripts ${IMAGETAG} ./rpmbuild-in-docker.sh $(id -u):$(id -g)

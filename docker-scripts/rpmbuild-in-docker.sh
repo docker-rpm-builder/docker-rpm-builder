@@ -8,4 +8,5 @@ cp -t /docker-rpm-build-root/SOURCES -r /src/*
 rpmbuild -bb $SPEC
 [ -x /src/drb-post ] && /src/drb-post
 cp -fr /docker-rpm-build-root/RPMS /src
+chown -R $1 /src/RPMS
 echo "Done"
