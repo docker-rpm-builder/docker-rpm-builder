@@ -31,6 +31,12 @@ For building for Centos 6 with EPEL enabled there's a trusted build on docker hu
 docker-build-binary-rpm-from-dir.sh alanfranz/drb-epel-6-x86-64:latest FULL_PATH_TO_SRC_DIR
 </pre>
 
+Using your favourite dns:
+
+<pre>
+docker-build-binary-rpm-from-dir.sh alanfranz/drb-epel-6-x86-64:latest FULL_PATH_TO_SRC_DIR --dns=192.168.1.1
+</pre>
+
 ## Gotchas and TODOS
 * if you're used to mock, the build system is a bit different, mocks seems to employ different defaults and has different macros, sometimes a build working with mock may file with docker-rpm-builder. I'm investigating the issue.
 * dns default to public ones, will add an option for private ones. Right now you can just add arbitrary docker options after IMAGETAG and SRCDIR
