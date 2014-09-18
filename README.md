@@ -44,5 +44,6 @@ docker-build-binary-rpm-from-dir.sh alanfranz/drb-epel-6-x86-64:latest FULL_PATH
 * use a main drb executable with different targets (see later)
 * add target for building a srpm directly
 * add target for building from a spectemplate instead of spec
+* document and extend hooks
 
 
