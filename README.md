@@ -15,8 +15,8 @@ Must have [docker](https://www.docker.com/) installed and properly configured. T
 
 The directory should contain:
 * the .spec file
-* all files which are marked as **SourceX** in the spec file;
-* optionally, a yum.conf file (will be used while fetching deps and building the rpm in the docker guest)
+* all files which are marked as **SourceX** and **PatchX** in the spec file (the source is something like an uncompressed source rpm);
+* optionally, a yum.conf file (will be used while fetching deps and building the rpm in the docker guest - in this situation .repo files will be ignored)
 * optionally, any number of .repo files (will be placed in /etc/yum.repos.d of the docker guest)
 
 ### Usage
@@ -41,5 +41,8 @@ docker-build-binary-rpm-from-dir.sh alanfranz/drb-epel-6-x86-64:latest FULL_PATH
 * if you're used to mock, the build system is a bit different, mocks seems to employ different defaults and has different macros, sometimes a build working with mock may file with docker-rpm-builder. I'm investigating the issue.
 * dns default to public ones, will add an option for private ones. Right now you can just add arbitrary docker options after IMAGETAG and SRCDIR
 * spec files require source files to be specified; maybe it would be a good idea to create a .tar.gz from the source directory automatically in the host build script.
+* use a main drb executable with different targets (see later)
+* add target for building a srpm directly
+* add target for building from a spectemplate instead of spec
 
 
