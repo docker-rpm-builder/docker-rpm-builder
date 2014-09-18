@@ -28,7 +28,7 @@ docker-build-binary-rpm-from-dir.sh IMAGETAG SRCDIR [ADDITIONAL_DOCKER_OPTIONS]
 For building for Centos 6 with EPEL enabled there's a trusted build on docker hub [here](https://registry.hub.docker.com/u/alanfranz/drb-epel-6-x86-64/) ([github source](https://github.com/alanfranz/docker-rpm-builder-configurations))
 
 <pre>
-docker-build-binary-rpm-from-dir.sh alanfranz/drb-epel-6-x86-64 FULL_PATH_TO_SRC_DIR
+docker-build-binary-rpm-from-dir.sh alanfranz/drb-epel-6-x86-64:latest FULL_PATH_TO_SRC_DIR
 </pre>
 
 ## Gotchas and TODOS
