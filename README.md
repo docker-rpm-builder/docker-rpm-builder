@@ -1,4 +1,4 @@
-# Build rpms through docker.
+# Build native rpm packages through docker.
 
 Why? Because plain rpmbuild may be an hassle (the system may became polluted by cross-project deps, and requires the same native system distro as the target package) and [mock](https://fedoraproject.org/wiki/Projects/Mock) may be slow and sometimes painful to debug and configure.
 
