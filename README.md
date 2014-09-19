@@ -2,7 +2,7 @@
 
 Why? Because plain rpmbuild may be an hassle (the system may became polluted by cross-project deps, and requires the same native system distro as the target package) and [mock](https://fedoraproject.org/wiki/Projects/Mock) may be slow and sometimes painful to debug and configure.
 
-docker-rpm-builder works on any host distributions that supports [docker](https://www.docker.com/).
+docker-rpm-builder works on any host distributions that supports [docker](https://www.docker.com/), and is currently tested to build 64 bit Centos 5, 6 and 7 RPM packages.
 
 It's designed to be a very **small and hackable wrapper** to help in rpm building, and lets you build binary RPMs on the fly, without generating a source rpm. I hope to leverage docker capabilities to make the building fast.
 
@@ -40,20 +40,6 @@ The source directory should contain:
 * optionally, a yum.conf file (will be used while fetching deps and building the rpm in the docker guest - in this situation .repo files will be ignored)
 * optionally, any number of .repo files (will be read along yum.conf, only if it wasn't overriden. Default contents of /etc/yum.repos.d are ignored)
 
-## Using your own image
-
-You can use whatever base image you like with docker-rpm-builder, as long as it withstands some prerequisites:
-
-- rpmbuild must exist in path
-- /docker-rpm-build-root dir must exist in the base image, and hold the traditional *SOURCES,RPMS,SRPMS,SPECS,BUILD* directories.
-- yum-builddep must exist in path and accept a .spec file as input
-- commands must be able to complete without interaction - consider using a custom yum.conf with *main->assumeyes=1* and be sure all public keys for packages are installed.
-
-Take a look at https://github.com/alanfranz/docker-rpm-builder in order to understand what I mean.
-
-Some of those are subject to change, I'm still thinking about what should I need from my base images.
-
-
 ## Usage
 
 <pre>
@@ -75,6 +61,20 @@ Or, using your favourite dns:
 <pre>
 docker-build-binary-rpm-from-dir.sh alanfranz/drb-epel-6-x86-64:latest FULL_PATH_TO_SRC_DIR --dns=192.168.1.1
 </pre>
+
+## Using your own image
+
+You can use whatever base image you like with docker-rpm-builder, as long as it withstands some prerequisites:
+
+- rpmbuild must exist in path
+- /docker-rpm-build-root dir must exist in the base image, and hold the traditional *SOURCES,RPMS,SRPMS,SPECS,BUILD* directories.
+- yum-builddep must exist in path and accept a .spec file as input
+- commands must be able to complete without interaction - consider using a custom yum.conf with *main->assumeyes=1* and be sure all public keys for packages are installed.
+
+Take a look at https://github.com/alanfranz/docker-rpm-builder in order to understand what I mean.
+
+Some of those are subject to change, I'm still thinking about what should I need from my base images.
+
 
 ## Gotchas and TODOS
 * if you're used to mock, the build system is a bit different, mocks seems to employ different defaults and has different macros, sometimes a build working with mock may file with docker-rpm-builder. I'm investigating the issue. It's quite uncommon BTW.
