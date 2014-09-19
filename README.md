@@ -54,7 +54,7 @@ Example for Centos 6:
 docker-build-binary-rpm-from-dir.sh alanfranz/drb-epel-6-x86-64:latest FULL_PATH_TO_SRC_DIR
 </pre>
 
-After build, the output will be in **FULL_PATH_TO_SRC_DIR/RPMS**
+After build, the output will be in *FULL_PATH_TO_SRC_DIR/RPMS*
 
 Or, using your favourite dns:
 
