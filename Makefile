@@ -1,6 +1,7 @@
 .PHONY: srpm clean
 
 srpm: export BUILD_NUMBER=$(shell git log --pretty=oneline | wc -l)
+srpm: export GIT_REVISION=$(shell git rev-parse HEAD)
 srpm: tmp 	
 	[ -z "$(shell git status --porcelain)" ]
 	git archive $(shell git rev-parse --abbrev-ref HEAD) -o tmp/docker-rpm-builder.tar.gz
