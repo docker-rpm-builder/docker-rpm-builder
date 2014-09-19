@@ -76,7 +76,7 @@ You can use whatever image you like with docker-rpm-builder, as long as it withs
 - yum-builddep must exist in path and accept a .spec file as input
 - commands must be able to complete without interaction - consider using a custom yum.conf with *main->assumeyes=1* and be sure all public keys for packages are installed.
 
-Take a look at https://github.com/alanfranz/docker-rpm-builder in order to understand what I mean.
+Take a look at https://github.com/alanfranz/docker-rpm-builder-configurations in order to understand what I mean.
 
 Some of those are subject to change, I'm still thinking about what should I need from my base images.
 
