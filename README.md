@@ -26,6 +26,8 @@ Just
 
 ```git clone https://github.com/alanfranz/docker-rpm-builder.git```
 
+or download the latest [release](https://github.com/alanfranz/docker-rpm-builder/releases/)
+
 There's nothing else to install.
 
 ## Building a binary RPM from a directory
