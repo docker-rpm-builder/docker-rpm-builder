@@ -46,7 +46,7 @@ The source directory should contain:
 docker-build-binary-rpm-from-dir.sh IMAGETAG SRCDIR [ADDITIONAL_DOCKER_OPTIONS]
 </pre>
 
-For building for 64 bit Centos 5-6-7 with EPEL there are some trusted build on docker hub [here](https://registry.hub.docker.com/u/alanfranz/drb-epel-5-x86-64/), 
+For building for 64 bit Centos 5-6-7 with EPEL there are some trusted builds on docker hub [here](https://registry.hub.docker.com/u/alanfranz/drb-epel-5-x86-64/), 
 [here](https://registry.hub.docker.com/u/alanfranz/drb-epel-6-x86-64/) and [here](https://registry.hub.docker.com/u/alanfranz/drb-epel-7-x86-64/) 
 
 Example for Centos 6:
@@ -54,7 +54,7 @@ Example for Centos 6:
 docker-build-binary-rpm-from-dir.sh alanfranz/drb-epel-6-x86-64:latest FULL_PATH_TO_SRC_DIR
 </pre>
 
-After build, the output will be in **FULL_PATH_TO_SRC_DIR/RPMS**
+After build, the output will be in *FULL_PATH_TO_SRC_DIR/RPMS*
 
 Or, using your favourite dns:
 
