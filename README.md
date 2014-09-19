@@ -86,5 +86,6 @@ Some of those are subject to change, I'm still thinking about what should I need
 * document and extend hooks
 * Support some way to cache build dependencies between builds for the same package (commit after run? commit after build-dep?)
 * Support some way of forcing remote image tag update before building.
+* Option for drop into interactive shell if build fails
 
 
