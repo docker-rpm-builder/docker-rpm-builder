@@ -6,6 +6,8 @@ docker-rpm-builder works on any host distributions that supports [docker](https:
 
 It's designed to be a very **small and hackable wrapper** to help in rpm building, and lets you build binary RPMs on the fly, without generating a source rpm. I hope to leverage docker capabilities to make the building fast.
 
+[Github homepage](https://github.com/alanfranz/docker-rpm-builder)
+
 ## Purpose
 
 My main purpose was to build packages from a CI system, so I wanted to have a directory as the source, not a source rpm which is a unnecessary byproduct. 
@@ -26,7 +28,7 @@ Just
 
 ```git clone https://github.com/alanfranz/docker-rpm-builder.git```
 
-or download the latest [release](https://github.com/alanfranz/docker-rpm-builder/releases/)
+or download the latest [release](https://github.com/alanfranz/docker-rpm-builder/releases/) and unpack somewhere.
 
 There's nothing else to install.
 
