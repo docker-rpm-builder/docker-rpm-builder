@@ -1,0 +1,31 @@
+%define install_dir /opt/docker-rpm-builder
+
+Summary: build native RPMs through docker
+Name: docker-rpm-builder
+Version: 0.9.1
+Release: build${BUILD_NUMBER}
+License: ASL 2.0
+Group: Development/Tools
+URL: https://github.com/alanfranz/docker-rpm-builder
+Source0: docker-rpm-builder.tar.gz
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+Requires: docker-io >= 1.2.0, bash
+AutoReqProv: No
+
+
+%description
+docker rpm builder
+
+%prep
+
+%build
+
+
+%install
+mkdir -p ${RPM_BUILD_ROOT}%{install_dir}
+cd ${RPM_BUILD_ROOT}%{install_dir}
+tar xzvf %{_sourcedir}/docker-rpm-builder.tar.gz
+
+%files
+%defattr(-, root, root, 0750)
+%{install_dir}/
