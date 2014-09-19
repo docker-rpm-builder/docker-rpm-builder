@@ -40,7 +40,21 @@ The source directory should contain:
 * optionally, a yum.conf file (will be used while fetching deps and building the rpm in the docker guest - in this situation .repo files will be ignored)
 * optionally, any number of .repo files (will be read along yum.conf, only if it wasn't overriden. Default contents of /etc/yum.repos.d are ignored)
 
-### Usage
+## Using your own image
+
+You can use whatever base image you like with docker-rpm-builder, as long as it withstands some prerequisites:
+
+- rpmbuild must exist in path
+- /docker-rpm-build-root dir must exist in the base image, and hold the traditional *SOURCES,RPMS,SRPMS,SPECS,BUILD* directories.
+- yum-builddep must exist in path and accept a .spec file as input
+- commands must be able to complete without interaction - consider using a custom yum.conf with *main->assumeyes=1* and be sure all public keys for packages are installed.
+
+Take a look at https://github.com/alanfranz/docker-rpm-builder in order to understand what I mean.
+
+Some of those are subject to change, I'm still thinking about what should I need from my base images.
+
+
+## Usage
 
 <pre>
 docker-build-binary-rpm-from-dir.sh IMAGETAG SRCDIR [ADDITIONAL_DOCKER_OPTIONS]
