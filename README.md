@@ -34,11 +34,14 @@ There's nothing else to install.
 
 ## Building a binary RPM from a directory
 
-The source directory should contain:
+You should have a source directory that contains:
 * the .spec file
 * all the files which are set as **SourceX** and **PatchX** in the spec file (the source directory is something like an uncompressed source rpm);
 * optionally, a yum.conf file (will be used while fetching deps and building the rpm in the docker guest - in this situation .repo files will be ignored)
 * optionally, any number of .repo files (will be read along yum.conf, only if it wasn't overriden. Default contents of /etc/yum.repos.d are ignored)
+
+And a build image, i.e. a Docker image tag with the distro where you would like to build such directory.
+
 
 ## Usage
 
@@ -48,6 +51,8 @@ docker-build-binary-rpm-from-dir.sh IMAGETAG SRCDIR [ADDITIONAL_DOCKER_OPTIONS]
 
 For building for 64 bit Centos 5-6-7 with EPEL there are some trusted builds on docker hub [here](https://registry.hub.docker.com/u/alanfranz/drb-epel-5-x86-64/), 
 [here](https://registry.hub.docker.com/u/alanfranz/drb-epel-6-x86-64/) and [here](https://registry.hub.docker.com/u/alanfranz/drb-epel-7-x86-64/) 
+
+They're all based on the official Centos images.
 
 Example for Centos 6:
 <pre>
@@ -62,9 +67,9 @@ Or, using your favourite dns:
 docker-build-binary-rpm-from-dir.sh alanfranz/drb-epel-6-x86-64:latest FULL_PATH_TO_SRC_DIR --dns=192.168.1.1
 </pre>
 
-## Using your own image
+## Using your own build image
 
-You can use whatever base image you like with docker-rpm-builder, as long as it withstands some prerequisites:
+You can use whatever image you like with docker-rpm-builder, as long as it withstands some prerequisites:
 
 - rpmbuild must exist in path
 - /docker-rpm-build-root dir must exist in the base image, and hold the traditional *SOURCES,RPMS,SRPMS,SPECS,BUILD* directories.
