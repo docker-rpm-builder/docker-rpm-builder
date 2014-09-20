@@ -18,7 +18,7 @@ I wanted to be able to build from whatever kind of RPM distribution I wanted, ev
 
 ## Prerequisites
 
-Must have [docker](https://www.docker.com/) installed and properly configured. The user running the build must be able to properly use docker - check your permissions.
+Must have [docker](https://www.docker.com/) installed and properly configured (see the [install docs](https://docs.docker.com/installation/#installation). The user running the build must be able to properly use docker - check your permissions.
 
 You should have a vague idea of what Docker is and how it works, otherwise you might get puzzled.
 
@@ -94,5 +94,8 @@ Some of those are subject to change, I'm still thinking about what should I need
 * Support some way to cache build dependencies between builds for the same package (commit after run? commit after build-dep?)
 * Support some way of forcing remote image tag update before building.
 * Option for drop into interactive shell if build fails
+* Smoke tests to see whether everything is properly built
+* Better RPM package
+* DEB package
 
 
