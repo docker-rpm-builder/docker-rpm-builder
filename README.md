@@ -22,6 +22,8 @@ Must have [docker](https://www.docker.com/) installed and properly configured (s
 
 You should have a vague idea of what Docker is and how it works, otherwise you might get puzzled.
 
+Bash and perl should be installed on your system as well.
+
 ## Installation
 
 Just 
