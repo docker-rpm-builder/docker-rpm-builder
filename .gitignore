@@ -1,1 +1,6 @@
+devenv
+*.pyc
+*.pyo
 tmp
+.idea
+*.egg-info
