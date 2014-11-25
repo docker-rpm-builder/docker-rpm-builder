@@ -16,6 +16,7 @@ setup(
         [console_scripts]
         drb=drb.cmdline:cmdline
     ''',
+    include_package_data=True,
     zip_safe=False
 
 )

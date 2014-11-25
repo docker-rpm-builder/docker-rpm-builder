@@ -13,5 +13,5 @@ tmp:
 	mkdir -p tmp
 
 clean:
-	rm -rf tmp
+	rm -rf tmp build dist
 
