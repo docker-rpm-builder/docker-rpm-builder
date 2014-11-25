@@ -24,7 +24,7 @@ devenv:
 	devenv/bin/pip install wheel
 
 
-release: devenv
+pypirelease: devenv
 	ifndef BUILD_NUMBER
 		@echo "Must pass BUILD_NUMBER for upload"
 		@exit 1
