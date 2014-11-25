@@ -14,6 +14,16 @@ from drb.path import getpath
 @click.argument("imagetag", type=click.STRING)
 @click.argument("source_directory", type=click.Path(exists=True, file_okay=False, resolve_path=True))
 def dir(imagetag, source_directory):
+    """Builds a binary RPM from a directory.
+
+    IMAGETAG should be a docker image id or a repository:tag,
+    e.g something like  a682b68bbaba  or alanfranz/drb-epel-6-x86-64
+
+    SOURCE_DIRECTORY should be a directory containing the .spec or the
+    .spectemplate file and all the source files and patches referenced
+    in such spec.
+    """
+
     # TODO: let spectemplate and/or spec be optional parameters
     # TODO: let the user choose $-delimited templates
     deletespec = False
