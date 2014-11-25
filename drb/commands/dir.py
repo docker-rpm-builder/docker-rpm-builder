@@ -1,27 +1,41 @@
 from __future__ import unicode_literals
 
-import click
 import os
 import codecs
 import glob
-from drb.spectemplate import DoubleDelimiterTemplate
 import logging
+
+import click
+
+from drb.spectemplate import DoubleDelimiterTemplate
 from drb.which import which
 from drb.spawn import sp
 from drb.path import getpath
 
+
 @click.command()
 @click.argument("imagetag", type=click.STRING)
 @click.argument("source_directory", type=click.Path(exists=True, file_okay=False, resolve_path=True))
-def dir(imagetag, source_directory):
+@click.argument("additional_docker_options", type=click.STRING, nargs=-1)
+def dir(imagetag, source_directory, additional_docker_options):
     """Builds a binary RPM from a directory.
 
     IMAGETAG should be a docker image id or a repository:tag,
-    e.g something like  a682b68bbaba  or alanfranz/drb-epel-6-x86-64
+    e.g something like a682b68bbaba or alanfranz/drb-epel-6-x86-64:latest
 
     SOURCE_DIRECTORY should be a directory containing the .spec or the
     .spectemplate file and all the source files and patches referenced
     in such spec.
+
+    ADDITIONAL_DOCKER_OPTIONS whatever is passed will be forwarded
+    straight to docker. PLEASE REMEMBER to insert a double dash (--)
+    before the first additional options, otherwise it will be mistaken
+    for a docker-rpm-builder option.
+
+    example:
+
+    docker-rpm-builder dir a682b68bbaba . -- --dns=10.2.0.1
+
     """
 
     # TODO: let spectemplate and/or spec be optional parameters
@@ -54,9 +68,8 @@ def dir(imagetag, source_directory):
     # TODO: let this be something more configurable and/or injected
     dockerexec = which("docker")
     try:
-    # docker run $* -v ${CURRENTDIR}/dockerscripts:/dockerscripts -v ${SRCDIR}:/src -w /dockerscripts ${IMAGETAG} ./rpmbuild-in-docker.sh $(id -u):$(id -g)
-        sp("{0} run -v {1}:/dockerscripts -v {2}:/src -w /dockerscripts {3} ./rpmbuild-in-docker.sh {4}:{5}",
-        dockerexec, getpath("drb/dockerscripts"), source_directory, imagetag, os.getuid(), os.getgid())
+        sp("{0} run -v {1}:/dockerscripts -v {2}:/src -w /dockerscripts {3} ./rpmbuild-in-docker.sh {4}:{5} {6}",
+           dockerexec, getpath("drb/dockerscripts"), source_directory, imagetag, os.getuid(), os.getgid(), " ".join(additional_docker_options))
     finally:
         if deletespec:
             os.unlink(specfile)
