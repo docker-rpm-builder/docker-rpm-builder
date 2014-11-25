@@ -1,5 +1,7 @@
 # Build native rpm packages through docker.
 
+**HEAVY WORK IN PROGRESS! COME BACK IN A COUPLE OF DAYS TO SEE DOC UPDATES**
+
 Why? Because plain rpmbuild may be an hassle (the system may became polluted by cross-project deps, and requires the same native system distro as the target package) and [mock](https://fedoraproject.org/wiki/Projects/Mock) may be slow and sometimes painful to debug and configure.
 
 docker-rpm-builder works on any host distributions that supports [docker](https://www.docker.com/), and is currently tested to build 64 bit Centos 5, 6 and 7 RPM packages.

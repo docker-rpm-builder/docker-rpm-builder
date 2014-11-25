@@ -1,4 +1,4 @@
-.PHONY: srpm clean
+.PHONY: srpm clean devenv
 
 #srpm: export BUILD_NUMBER=$(shell git log --pretty=oneline | wc -l)
 #srpm: export GIT_REVISION=$(shell git rev-parse HEAD)
@@ -13,5 +13,20 @@ tmp:
 	mkdir -p tmp
 
 clean:
-	rm -rf tmp build dist
+	rm -rf tmp build dist 
 
+distclean: clean
+	rm -rf devenv
+
+devenv:
+	virtualenv-2.7 devenv
+	devenv/bin/pip install --editable .
+	devenv/bin/pip install wheel
+
+
+release: devenv
+	ifndef BUILD_NUMBER
+		@echo "Must pass BUILD_NUMBER for upload"
+		@exit 1
+	endif
+	devenv/bin/python setup.py egg_info --tag-build ${BUILD_NUMBER} bdist_wheel sdist register upload
