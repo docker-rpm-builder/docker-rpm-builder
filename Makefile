@@ -25,8 +25,8 @@ devenv:
 
 
 pypirelease: devenv
-	ifndef BUILD_NUMBER
-		@echo "Must pass BUILD_NUMBER for upload"
-		@exit 1
-	endif
+ifndef BUILD_NUMBER
+	@echo "Must pass BUILD_NUMBER for upload"
+	@exit 1
+endif
 	devenv/bin/python setup.py egg_info --tag-build ${BUILD_NUMBER} bdist_wheel sdist register upload
