@@ -6,7 +6,7 @@ setup(
     author="Alan Franzoni",
     author_email="username@franzoni.eu",
     url="https://github.com/alanfranz/docker-rpm-builder",
-    version='2.0',
+    version='2.0.dev',
     packages=find_packages(),
     install_requires=[
         'Click==3.3',
