@@ -1,4 +1,11 @@
-.PHONY: srpm clean devenv
+.PHONY: srpm clean distclean pypirelease
+
+devenv: setup.py
+	test -r devenv || virtualenv-2.7 devenv
+	devenv/bin/pip install --editable  .
+	devenv/bin/pip install wheel
+	devenv/bin/pip install bpython
+
 
 srpm: tmp 	
 	[ -z "$(shell git status --porcelain)" ]
@@ -15,11 +22,6 @@ clean:
 
 distclean: clean
 	rm -rf devenv
-
-devenv:
-	virtualenv-2.7 devenv
-	devenv/bin/pip install --editable .
-	devenv/bin/pip install wheel
 
 
 pypirelease: devenv

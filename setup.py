@@ -1,4 +1,15 @@
+import sys
+
 from setuptools import setup, find_packages
+
+
+install_requires = [
+    'Click==3.3',
+    'setuptools'
+]
+
+if sys.version_info[1] == 6:
+    install_requires.append("importlib")
 
 setup(
     name='drb',
@@ -8,10 +19,7 @@ setup(
     url="https://github.com/alanfranz/docker-rpm-builder",
     version='2.0.dev',
     packages=find_packages(),
-    install_requires=[
-        'Click==3.3',
-        'setuptools'
-    ],
+    install_requires=install_requires,
     entry_points='''
         [console_scripts]
         docker-rpm-builder=drb.cmdline:cmdline
