@@ -14,8 +14,9 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        drb=drb.cmdline:cmdline
+        docker-rpm-builder=drb.cmdline:cmdline
     ''',
+    license="Apache-2.0",
     include_package_data=True,
     zip_safe=False
 
