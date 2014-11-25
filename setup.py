@@ -6,9 +6,12 @@ setup(
     packages=find_packages(),
     install_requires=[
         'Click==3.3',
+        'setuptools'
     ],
     entry_points='''
         [console_scripts]
         drb=drb.cmdline:cmdline
     ''',
+    zip_safe=False
+
 )

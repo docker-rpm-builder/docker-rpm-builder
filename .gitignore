@@ -4,3 +4,4 @@ devenv
 tmp
 .idea
 *.egg-info
+dist

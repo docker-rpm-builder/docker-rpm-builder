@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, STDOUT, call
 import warnings
 
 class SpawnedProcessError(Exception):
@@ -14,13 +14,11 @@ class SpawnedProcessError(Exception):
     def __str__(self):
         return "Command '%s' returned non-zero exit status %d" % (self.cmd, self.returncode)
 
-def sp(cmdformatstring, params=""):
-    fullcmd = cmdformatstring.format(params)
-    process = Popen(stdout=PIPE, stderr=PIPE, fullcmd)
+def sp(cmdformatstring, *params, **kwargs):
+    fullcmd = cmdformatstring.format(*params).format(kwargs)
+    process = Popen(fullcmd.split(" "), stderr=STDOUT)
     output, error = process.communicate()
     retcode = process.poll()
     if retcode:
         raise SpawnedProcessError(retcode, fullcmd, output=output, error=error)
-    if error.strip():
-        warnings.warn("Stderr data: {0}".format(error))
     return output
