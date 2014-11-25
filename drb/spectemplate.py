@@ -1,13 +1,8 @@
-# this is derived from Python's own string.Template, but we wanted a start+end delimiter substitution (Maven style)
-# to prevent clashes with ordinary templates.
-
-from string import _multimap, Template
-import re as _re
-
+from string import Template
 
 class DoubleDelimiterTemplate(Template):
-    """A string class for supporting @ID@ and @{ID}@-substitutions."""
-    #__metaclass__ = _DoubleDelimiterTemplateMetaclass
+    """A string class for supporting @ID@ and @{ID}@-substitutions.
+    """
 
     delimiter = '@'
     idpattern = r'[_a-z][_a-z0-9]*'
