@@ -3,7 +3,7 @@
 
 Summary: build native RPMs through docker
 Name: docker-rpm-builder
-Version: 0.9.3
+Version: ${VERSION_NUMBER}
 Release: build${BUILD_NUMBER}
 License: Apache-2.0
 Group: Development/Tools
