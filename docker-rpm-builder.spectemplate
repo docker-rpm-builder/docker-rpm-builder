@@ -1,15 +1,21 @@
 %define install_dir /opt/docker-rpm-builder
+%define mypython python%{?additional_version}
 
 Summary: build native RPMs through docker
 Name: docker-rpm-builder
-Version: 0.9.2
+Version: 0.9.3
 Release: build${BUILD_NUMBER}
-License: ASL 2.0
+License: Apache-2.0
 Group: Development/Tools
 URL: https://github.com/alanfranz/docker-rpm-builder
 Source0: docker-rpm-builder.tar.gz
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-Requires: docker-io >= 1.2.0, bash
+Source1: https://pypi.python.org/packages/source/p/pip/pip-1.5.6.tar.gz#md5=01026f87978932060cc86c1dc527903e
+Source2: https://pypi.python.org/packages/source/p/pipsi/pipsi-0.8.tar.gz#md5=ec4840ae87131469544600b637c3bba6
+Source3: https://pypi.python.org/packages/source/s/setuptools/setuptools-7.0.tar.gz#md5=6245d6752e2ef803c365f560f7f2f940
+Source4: https://pypi.python.org/packages/source/v/virtualenv/virtualenv-1.11.6.tar.gz#md5=f61cdd983d2c4e6aeabb70b1060d6f49
+BuildRoot: %{install_dir}
+BuildRequires: %{mypython}
+Requires: docker-io >= 1.2.0, bash, %{mypython}
 AutoReqProv: No
 
 
@@ -23,9 +29,36 @@ built from git ${GIT_REVISION}
 
 
 %install
-mkdir -p ${RPM_BUILD_ROOT}%{install_dir}
-cd ${RPM_BUILD_ROOT}%{install_dir}
-tar xzvf %{_sourcedir}/docker-rpm-builder.tar.gz
+pushd $(mktemp -d)
+
+tar xzvf %{_sourcedir}/setuptools-7.0.tar.gz
+pushd setuptools-7.0
+%{mypython} setup.py install
+popd
+
+tar xzvf %{_sourcedir}/pip-1.5.6.tar.gz
+pushd pip-1.5.6
+%{mypython} setup.py install
+popd
+
+tar xzvf %{_sourcedir}/virtualenv-1.11.6.tar.gz
+pushd virtualenv-1.11.6
+pip install .
+popd
+
+tar xzvf %{_sourcedir}/pipsi-0.8.tar.gz
+pushd pipsi-0.8
+pip install .
+popd
+
+{ tar xzvf %{_sourcedir}/docker-rpm-builder.tar.gz && pushd docker-rpm-builder ; } || pushd %{_sourcedir}
+
+# small hack: if we don't do that we'll have some issues with buildrooted paths in virtualenv
+mkdir -p %{install_dir}/{bin,env}
+pipsi --home %{install_dir}/env --bin-dir %{install_dir}/bin install --python /usr/bin/%{mypython} .
+mkdir -p ${RPM_BUILD_ROOT}/$(dirname %{install_dir})
+mv %{install_dir} ${RPM_BUILD_ROOT}/$(dirname %{install_dir})
+popd
 
 %files
 %defattr(-, root, root, 0750)
