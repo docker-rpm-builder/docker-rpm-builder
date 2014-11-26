@@ -29,6 +29,8 @@ built from git ${GIT_REVISION}
 
 
 %install
+cat /proc/mounts
+
 pushd $(mktemp -d)
 
 tar xzvf %{_sourcedir}/setuptools-7.0.tar.gz
