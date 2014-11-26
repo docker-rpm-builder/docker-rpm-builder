@@ -11,6 +11,7 @@ srpm: tmp
 	[ -z "$(shell git status --porcelain)" ]
 	git archive $(shell git rev-parse --abbrev-ref HEAD) --prefix=docker-rpm-builder/ -o tmp/docker-rpm-builder.tar.gz
 	perl -p -i -e 's/\$$\{([^}]+)\}/defined $$ENV{$$1} ? $$ENV{$$1} : $$&/eg' < docker-rpm-builder.spectemplate > tmp/docker-rpm-builder.spec
+	build-deps/spectool -g -C tmp tmp/docker-rpm-builder.spec
 	rpmbuild --define '_sourcedir ./tmp'  --define '_srcrpmdir ./tmp' -bs tmp/docker-rpm-builder.spec
 
 

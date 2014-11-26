@@ -1,0 +1,331 @@
+#!/usr/bin/perl -w
+
+## spectool - a tool to aid getting files when building RPMs
+
+## Copyright © 2004, 2007, 2008 Red Hat, Inc.
+## Copyright © 2004, 2005, 2007 Nils Philippsen <nils@tiptoe.de>, <nphilipp@redhat.com>
+## Copyright © 2005, 2006 Ville Skyttä <ville.skytta@iki.fi>
+
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+use strict;
+use File::Temp;
+use File::Spec;
+use FileHandle;
+use Getopt::Long;
+
+my $VERSION = '1.0.11';
+my $WGETRC = '/etc/fedora/wgetrc';
+
+Getopt::Long::Configure ('no_ignore_case');
+
+my $tmpdir;
+my $tmpspec_fh;
+my $tmpspec_filename;
+
+my @rpm_sections = qw/package description prep build install clean pre preun
+                      post postun triggerin triggerun triggerpostun files
+                      changelog/;
+my %rpm_sections;
+foreach (@rpm_sections) {
+	$rpm_sections{$_} = 1;
+}
+
+my @protocols = qw/ftp http https/;
+my $protocols_re = '(?:' . join ('|', @protocols) . ')';
+
+my @defines;
+my %sources;
+my %patches;
+my $specfile;
+my $specfile_fh;
+my $verbose = 0;
+my $dryrun = 0;
+my $debug = 0;
+
+sub debug {
+	my @list = @_;
+
+	print STDERR @list if ($debug);
+}
+
+sub rpm_conditional_quirk {
+    my ($fh, $rest) = @_;
+
+    print $fh qq[
+# RPM conditionals quirk
+%undefine defined
+%undefine undefined
+%undefine with
+%undefine without
+%undefine bcond_with
+%undefine bcond_without
+%define defined() %{expand:%%{?%{1}:1}%%{!?%{1}:0}}
+%define undefined() %{expand:%%{?%{1}:0}%%{!?%{1}:1}}
+%define with() %{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
+%define without() %{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
+%define bcond_with() %{expand:%%{?_with_%{1}:%%global with_%{1} 1}}
+%define bcond_without() %{expand:%%{!?_without_%{1}:%%global with_%{1} 1}}
+
+];
+}
+
+sub eval_sources_patches {
+	my $preamble;
+
+	my $tmpspec_fh;
+	my $tmpspec_filename;
+	my $stderr_fh;
+	my $stderr_filename;
+
+	($tmpspec_fh, $tmpspec_filename) = File::Temp::tempfile ( 'spec_XXXXXXXXXX', DIR => $tmpdir );
+
+	debug "temp spec filename: $tmpspec_filename\n";
+
+	foreach (@defines) {
+		print $tmpspec_fh "\%define $_\n";
+	}
+
+    rpm_conditional_quirk ($tmpspec_fh);
+
+	while (<$specfile_fh>) {
+		my $line = $_;
+		if ($line =~ m/^\s*%(\w+)/) {
+			my $word = lc $1;
+			if (defined ($rpm_sections{$word})) {
+				last;
+			}
+		}
+		next if ($line =~ m/^\s*(BuildArch|Exclu(d|siv)e(Arch|OS))\s*:/i);
+		$preamble .= $line;
+		if ($line !~ m/^\s*(?:source|patch)\d*\s*:/) {
+			print $tmpspec_fh $line;
+		}
+	}
+
+	print $tmpspec_fh "\%description\n\%prep\n";
+
+	print $tmpspec_fh "cat << EOF_$tmpspec_filename\n";
+
+	print $tmpspec_fh $preamble;
+
+	print $tmpspec_fh "EOF_$tmpspec_filename";
+	close $tmpspec_fh;
+
+	(undef, $stderr_filename) = File::Temp::tempfile ( 'stderr_XXXXXXXXXX', DIR => $tmpdir );
+	debug "stderr filename: $stderr_filename\n";
+
+	open PIPE, "rpmbuild --define '_sourcedir " . $tmpdir . "' --define '_builddir " . $tmpdir . "' --define '_srcrpmdir " . $tmpdir . "' --define '_rpmdir " . $tmpdir . "' --nodeps -bp $tmpspec_filename 2>$stderr_filename |" or die;
+
+	while (<PIPE>) {
+		chomp ();
+		if (m/^\s*(source|patch)(\d*)\s*:\s*(.*\S)\s*$/i) {
+			my $what = \%sources;
+			if (lc ($1) eq 'patch') {
+				$what = \%patches;
+			}
+			my $index = 0;
+			if ($2 ne '') {
+				$index = $2;
+			}
+			$what->{$index} = $3;
+		}
+	}
+
+	close PIPE;
+
+	# handle $stderr_filename
+}
+
+sub expand {
+	my $foo = $_[0];
+	my @retval;
+	foreach ($foo) {
+		m/^sources$/i && do {
+			foreach (sort (keys %sources)) {
+				push @retval, "source$_";
+			}
+		};
+
+		m/^patches$/i && do {
+			foreach (sort (keys %patches)) {
+				push @retval, "patch$_";
+			}
+		};
+		m/^all$/i && do {
+			@retval = (expand ('sources'), expand ('patches'));
+		};
+	}
+	return @retval;
+}
+
+sub list_sources_patches {
+	foreach (@_) {
+		m/^source(\d+)$/i && print "Source$1: " . $sources{$1} . "\n";
+		m/^patch(\d+)$/i && print "Patch$1: " . $patches{$1} . "\n";
+		m/^source$/i && print "Source0: " . $sources{0} . "\n";
+		m/^patch$/i && print "Patch0: " . $patches{0} . "\n";
+		m/^(sources|patches|all)$/i && list_sources_patches (expand ($1));
+	}
+}
+
+sub retrievable {
+	my $url = $_[0];
+	return eval "\$url =~ m,^$protocols_re://,;";
+}
+
+sub retrieve {
+	my ($where, $url) = @_;
+	if (retrievable ($url)) {
+		print "Getting $url to $where\n" if ($verbose);
+        my $filename = $url;
+        $filename =~ s/([^\/?]*\/)*([^\?]*)(\?.*)?/$2/;
+        my @cmd = (qw (wget -N --retr-symlinks -P), $where, qw (-O), $filename, $url);
+		unshift(@cmd, 'env', "WGETRC=$WGETRC") if (-e $WGETRC);
+		print "--> @cmd\n" if ($verbose > 1);
+		if (! $dryrun) {
+			system @cmd;
+		} else {
+			print "dry run: @cmd\n";
+		}
+	} else {
+		warn "Couldn't fetch $url: missing URL\n" if ($verbose);
+	}
+}
+
+sub retrieve_sources_patches {
+	my $where = shift;
+	foreach (@_) {
+		m/^source(\d+)$/i && retrieve ($where, $sources{$1});
+		m/^patch(\d+)$/i && retrieve ($where, $patches{$1});
+		m/^(sources|patches|all)$/i && retrieve_sources_patches ($where, expand ($1));
+	}
+}
+
+sub usage {
+	print STDERR << 'EOF';
+Usage: spectool [<options>] <specfile>
+Options:
+operating mode:
+-l, --lf, --list-files        lists the expanded sources/patches (default)
+-g, --gf, --get-files         gets the sources/patches that are listed with
+                              a URL
+-h, --help                    display this help screen
+
+files on which to operate:
+-A, --all                     all files, sources and patches (default)
+-S, --sources                 all sources
+-P, --patches                 all patches
+-s, --source x[,y[,...]]      specified sources
+-p, --patch a[,b[,...]]       specified patches
+
+misc:
+-d, --define 'macro value'    defines RPM macro 'macro' to be 'value'
+-C, --directory dir           download into specified directory (default '.')
+-R, --sourcedir               download into rpm's %{_sourcedir}
+-n, --dryrun, --dry-run       don't download anything, just show what would be
+                              done
+-D, --debug                   output debug info, don't clean up when done
+EOF
+}
+
+sub show_version {
+	print "spectool v${VERSION}\n";
+}
+
+sub open_specfile {
+	$specfile_fh = new FileHandle;
+	$specfile_fh->open ($specfile)
+		or die ("Can't open '$specfile': $!");
+
+	END {
+		$specfile_fh->close () if $specfile_fh;
+	}
+}
+
+# main
+
+my $command;
+my @sources;
+my @patches;
+my @what;
+my $where = '.';
+my $cleanup = 1;
+
+GetOptions ('h|help' => sub { $command = 'help'; },
+			'd|define=s' => \@defines,
+			'l|lf|list-files' => sub { $command = 'listfiles'; },
+			'g|gf|get-files' => sub { $command = 'getfiles'; },
+			'v|verbose' => sub { $verbose++; },
+			'n|dryrun|dry-run' => sub { $dryrun = 1; },
+			'V|version' => sub { $command = 'version'; },
+			's|source=i' => \@sources,
+			'p|patch=i' => \@patches,
+			'S|sources' => sub { push @what, 'sources'; },
+			'P|patches' => sub { push @what, 'patches'; },
+			'A|all' => sub { push @what, 'all'; },
+			'D|debug' => sub { $debug = 1; },
+			'C|directory=s' => \$where,
+			'R|sourcedir' => sub { chomp($where = `rpm --eval '\%{_sourcedir}'`) });
+
+if ($debug) {
+	$cleanup = 0;
+}
+
+$tmpdir = File::Temp::tempdir ( 'spectool_XXXXXXXXXX', DIR => File::Spec->tmpdir(), CLEANUP => $cleanup );
+debug "temp dir: $tmpdir\n";
+
+@sources = split (/,/, join (',', @sources));
+foreach (@sources) {
+	push @what, "source$_";
+}
+
+@patches = split (/,/, join (',', @patches));
+foreach (@patches) {
+	push @what, "patch$_";
+}
+
+@what = ('all') unless @what;
+$command = 'listfiles' unless $command;
+
+unless (@ARGV) {
+	foreach ($command) {
+		m/version/ && last;
+		m/help/ && last;
+		m/none/ && last;
+		usage ();
+		exit (1);
+	}
+}
+
+$specfile = shift @ARGV;
+
+if (@ARGV) {
+	warn "You can only work on one spec file at a time.\n";
+	usage ();
+	exit (1);
+}
+
+foreach ($command) {
+	m/listfiles/ && do { open_specfile (); eval_sources_patches (); list_sources_patches (@what); last; };
+	m/getfiles/ && do { open_specfile (); eval_sources_patches (); retrieve_sources_patches ($where, @what); last; };
+	m/version/ && do { show_version (); last; };
+	(m/none/ || m/help/) && do { usage (); last; };
+}
+
+# Local variables:
+# indent-tabs-mode: t
+# cperl-indent-level: 8
+# End:
