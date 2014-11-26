@@ -192,7 +192,7 @@ sub retrieve {
 		print "Getting $url to $where\n" if ($verbose);
         my $filename = $url;
         $filename =~ s/([^\/?]*\/)*([^\?]*)(\?.*)?/$2/;
-        my @cmd = (qw (wget -N --retr-symlinks -P), $where, qw (-O), $filename, $url);
+        my @cmd = (qw (wget -N --retr-symlinks ), qw (-O), $where . "/" . $filename, $url);
 		unshift(@cmd, 'env', "WGETRC=$WGETRC") if (-e $WGETRC);
 		print "--> @cmd\n" if ($verbose > 1);
 		if (! $dryrun) {
