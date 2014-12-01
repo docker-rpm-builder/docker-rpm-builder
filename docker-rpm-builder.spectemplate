@@ -3,8 +3,8 @@
 
 Summary: build native RPMs through docker
 Name: docker-rpm-builder
-Version: ${VERSION_NUMBER}
-Release: build${BUILD_NUMBER}
+Version: @VERSION_NUMBER@
+Release: build@BUILD_NUMBER@
 License: Apache-2.0
 Group: Development/Tools
 URL: https://github.com/alanfranz/docker-rpm-builder
@@ -21,7 +21,7 @@ AutoReqProv: No
 
 %description
 docker rpm builder
-built from git ${GIT_REVISION}
+built from git @GIT_REVISION@
 
 %prep
 
