@@ -7,13 +7,12 @@ devenv: setup.py
 	devenv/bin/pip install bpython
 
 
-srpm: tmp 	
-	[ -z "$(shell git status --porcelain)" ]
-	git archive $(shell git rev-parse --abbrev-ref HEAD) --prefix=docker-rpm-builder/ -o tmp/docker-rpm-builder.tar.gz
-	VERSION_NUMBER=$(shell python setup.py --version) perl -p -i -e 's/\$$\{([^}]+)\}/defined $$ENV{$$1} ? $$ENV{$$1} : $$&/eg' < docker-rpm-builder.spectemplate > tmp/docker-rpm-builder.spec
-	build-deps/spectool -g --directory ./tmp ./tmp/docker-rpm-builder.spec
-	rpmbuild --define '_sourcedir ./tmp'  --define '_srcrpmdir ./tmp' -bs tmp/docker-rpm-builder.spec
-
+rpm: tmp 	
+ifndef BUILD_IMAGE
+	@echo "Must pass BUILD_IMAGE
+	@exit 1
+endif
+	VERSION_NUMBER=$(shell python setup.py --version) docker-rpm-builder dir ${BUILD_IMAGE} .
 
 tmp:
 	mkdir -p tmp
