@@ -64,6 +64,9 @@ def dir(imagetag, source_directory, additional_docker_options):
     specfile = specfiles[0]
 
     # FIXME: delete written specfile if using a spectemplate
+
+    # downloading additional deps
+    sp("build-deps/spectool -g {0}".format(finalspec))
     logging.info("Now building project from %s on image %s", source_directory, imagetag)
     # TODO: let this be something more configurable and/or injected
     dockerexec = which("docker")
