@@ -100,6 +100,7 @@ Some of those are subject to change, I'm still thinking about what should I need
 * Option for drop into interactive shell if build fails
 * Smoke tests to see whether everything is properly built
 * Better RPM package
+* Use a child directory inside the package to mount the original 'dir' instead of using the raw %{_sources}
 * DEB package
 
 
