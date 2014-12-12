@@ -16,8 +16,9 @@ from drb.path import getpath
 @click.command()
 @click.argument("imagetag", type=click.STRING)
 @click.argument("source_directory", type=click.Path(exists=True, file_okay=False, resolve_path=True))
+@click.argument("target_directory", type=click.Path(file_okay=False, resolve_path=True))
 @click.argument("additional_docker_options", type=click.STRING, nargs=-1)
-def dir(imagetag, source_directory, additional_docker_options):
+def dir(imagetag, source_directory, target_directory, additional_docker_options):
     """Builds a binary RPM from a directory.
 
     IMAGETAG should be a docker image id or a repository:tag,
@@ -26,6 +27,9 @@ def dir(imagetag, source_directory, additional_docker_options):
     SOURCE_DIRECTORY should be a directory containing the .spec or the
     .spectemplate file and all the source files and patches referenced
     in such spec.
+
+    TARGET_DIRECTORY is where the RPMS will be written. Anything inside
+    may be overwritten during the build phase.
 
     ADDITIONAL_DOCKER_OPTIONS whatever is passed will be forwarded
     straight to docker. PLEASE REMEMBER to insert a double dash (--)
@@ -45,6 +49,9 @@ def dir(imagetag, source_directory, additional_docker_options):
     specfiles = glob.glob1(source_directory, "*.spec")
     if len(spectemplates) > 1:
         raise ValueError("More than one spectemplate found in source directory")
+
+    if not os.path.exists(target_directory):
+        os.mkdir(target_directory)
 
     if spectemplates:
         if specfiles:
