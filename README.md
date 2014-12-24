@@ -90,6 +90,7 @@ Some of those are subject to change, I'm still thinking about what should I need
 * dns default to public ones, will add an option for private ones. Right now you can just add arbitrary docker options after IMAGETAG and SRCDIR
 
 ## TODOS and ideas
+* add a basic testsuite!
 * spec files currently require source files to be specified; maybe it would be a good idea to create a .tar.gz from the source directory automatically in the host build script.
 * use a main drb executable with different targets (see later)
 * add target for building a srpm directly
@@ -102,5 +103,6 @@ Some of those are subject to change, I'm still thinking about what should I need
 * Better RPM package
 * Use a child directory inside the package to mount the original 'dir' instead of using the raw %{_sources}
 * DEB package
+
 
 

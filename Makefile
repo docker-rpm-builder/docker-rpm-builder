@@ -30,3 +30,4 @@ ifndef BUILD_NUMBER
 	@exit 1
 endif
 	devenv/bin/python setup.py egg_info --tag-build ${BUILD_NUMBER} bdist_wheel sdist register upload
+

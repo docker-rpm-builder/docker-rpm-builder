@@ -17,7 +17,7 @@ class SpawnedProcessError(Exception):
 def sp(cmdformatstring, *params, **kwargs):
     fullcmd = cmdformatstring.format(*params).format(kwargs)
     logging.debug("Now executing:\n%s\n", fullcmd)
-    process = Popen(fullcmd.split(" "), stderr=STDOUT)
+    process = Popen(fullcmd, stderr=STDOUT, shell=True)
     output, error = process.communicate()
     retcode = process.poll()
     if retcode:
