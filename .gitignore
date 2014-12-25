@@ -6,3 +6,4 @@ tmp
 *.egg-info
 dist
 build
+integration_tests/tmux-src/*.tar.gz

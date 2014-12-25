@@ -18,7 +18,8 @@ from drb.path import getpath
 @click.argument("source_directory", type=click.Path(exists=True, file_okay=False, resolve_path=True))
 @click.argument("target_directory", type=click.Path(file_okay=False, resolve_path=True))
 @click.argument("additional_docker_options", type=click.STRING, nargs=-1)
-def dir(imagetag, source_directory, target_directory, additional_docker_options):
+@click.option("--download-sources", is_flag=True)
+def dir(imagetag, source_directory, target_directory, additional_docker_options, download_sources=False):
     """Builds a binary RPM from a directory.
 
     IMAGETAG should be a docker image id or a repository:tag,
@@ -36,6 +37,12 @@ def dir(imagetag, source_directory, target_directory, additional_docker_options)
     straight to docker. PLEASE REMEMBER to insert a double dash (--)
     before the first additional options, otherwise it will be mistaken
     for a docker-rpm-builder option.
+
+    if --download-sources is enabled, SourceX and PatchX from the spec
+    that contain an URL will be downloaded from the internet. Such
+    files will be placed in SOURCE_DIRECTORY, that should be writeable,
+    hence. They won't be deleted afterwards.
+
 
     example:
 
@@ -73,7 +80,10 @@ def dir(imagetag, source_directory, target_directory, additional_docker_options)
 
     # downloading additional deps; those get into the source_directory. should we add
     # an option for that?
-    sp("{0} --get-files --directory {1} {2}".format(getpath("drb/builddeps/spectool"), source_directory, specfile))
+    if download_sources:
+        logging.info("Downloading additional sources")
+        sp("{0} --get-files --directory {1} {2}".format(getpath("drb/builddeps/spectool"), source_directory, specfile))
+
     logging.info("Now building project from %s on image %s", source_directory, imagetag)
     # TODO: let this be something more configurable and/or injected
     dockerexec = which("docker")
