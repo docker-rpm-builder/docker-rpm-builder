@@ -1,4 +1,4 @@
-.PHONY: srpm clean distclean pypirelease
+.PHONY: srpm clean distclean pypirelease test
 
 devenv: setup.py
 	test -r devenv || virtualenv-2.7 devenv
@@ -13,6 +13,10 @@ ifndef BUILD_IMAGE
 	@exit 1
 endif
 	VERSION_NUMBER=$(shell python setup.py --version) docker-rpm-builder dir ${BUILD_IMAGE} .
+
+test: devenv
+	devenv/bin/python -m unittest discover -v
+	cd integration_tests && ./test.sh
 
 tmp:
 	mkdir -p tmp
