@@ -1,6 +1,6 @@
 #!/bin/bash
 set -ex
-EPEL6_IMAGE="2899bc3621d0"
+EPEL6_IMAGE="alanfranz/drb-epel-6-x86-64:latest"
 RPM_DIR="/tmp/drb_rpms"
 rm -rf tmux-src/*.tar.gz
 rm -rf ${RPM_DIR}
