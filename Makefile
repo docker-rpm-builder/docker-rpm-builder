@@ -16,7 +16,7 @@ endif
 
 test: devenv
 	devenv/bin/python -m unittest discover -v
-	cd integration_tests && ./test.sh
+	. devenv/bin/activate && cd integration_tests && ./test.sh
 
 tmp:
 	mkdir -p tmp
