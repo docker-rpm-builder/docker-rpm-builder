@@ -19,7 +19,8 @@ from drb.path import getpath
 @click.argument("target_directory", type=click.Path(file_okay=False, resolve_path=True))
 @click.argument("additional_docker_options", type=click.STRING, nargs=-1)
 @click.option("--download-sources", is_flag=True)
-def dir(imagetag, source_directory, target_directory, additional_docker_options, download_sources=False):
+@click.option("--bash-on-failure", is_flag=True)
+def dir(imagetag, source_directory, target_directory, additional_docker_options, download_sources=False, bash_on_failure=False):
     """Builds a binary RPM from a directory.
 
     IMAGETAG should be a docker image id or a repository:tag,
@@ -42,6 +43,9 @@ def dir(imagetag, source_directory, target_directory, additional_docker_options,
     that contain an URL will be downloaded from the internet. Such
     files will be placed in SOURCE_DIRECTORY, that should be writeable,
     hence. They won't be deleted afterwards.
+
+    if --bash-on-failure is enabled, the tool will drop in an interactive
+    shell if the build fails.
 
 
     example:
@@ -85,11 +89,16 @@ def dir(imagetag, source_directory, target_directory, additional_docker_options,
         sp("{0} --get-files --directory {1} {2}".format(getpath("drb/builddeps/spectool"), source_directory, specfile))
 
     logging.info("Now building project from %s on image %s", source_directory, imagetag)
-    # TODO: let this be something more configurable and/or injected
     dockerexec = which("docker")
+    bashonfail = ""
+    bashonfail_options = ""
+    if bash_on_failure:
+        bashonfail = "bashonfail"
+        bashonfail_options = "-i -t"
+
     try:
-        sp("{0} run -v {1}:/dockerscripts -v {2}:/docker-rpm-build-root/SOURCES -v {7}:/docker-rpm-build-root/RPMS  -w /dockerscripts -i -t {3}  ./rpmbuild-dir-in-docker.sh {4} {5} {6}",
-           dockerexec, getpath("drb/dockerscripts"), source_directory, imagetag, os.getuid(), os.getgid(), " ".join(additional_docker_options), target_directory)
+        sp("{0} run -v {1}:/dockerscripts -v {2}:/docker-rpm-build-root/SOURCES -v {7}:/docker-rpm-build-root/RPMS {9} -w /dockerscripts {3} ./rpmbuild-dir-in-docker.sh {4} {5} {8} {6}",
+           dockerexec, getpath("drb/dockerscripts"), source_directory, imagetag, os.getuid(), os.getgid(), " ".join(additional_docker_options), target_directory, bashonfail, bashonfail_options)
     finally:
         if deletespec:
             os.unlink(specfile)
