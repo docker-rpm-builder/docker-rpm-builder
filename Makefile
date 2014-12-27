@@ -25,7 +25,7 @@ clean:
 	rm -rf tmp build dist 
 
 distclean: clean
-	rm -rf devenv
+	rm -rf devenv *.tar.gz docker-rpm-builder.spec
 
 
 pypirelease: devenv
