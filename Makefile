@@ -34,4 +34,6 @@ ifndef BUILD_NUMBER
 	@exit 1
 endif
 	devenv/bin/python setup.py egg_info --tag-build ${BUILD_NUMBER} bdist_wheel sdist register upload
+	# AFTER the build we must 'cleanup' the tag-build info otherwise things stop working. F**K python packaging.
+	devenv/bin/python setup.py egg_info
 
