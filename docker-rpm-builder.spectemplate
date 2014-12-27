@@ -20,7 +20,7 @@ AutoReqProv: No
 
 %description
 docker rpm builder
-built from git @GIT_REVISION@
+built from git @GIT_COMMIT@
 
 %prep
 
