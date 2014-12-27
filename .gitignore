@@ -1,4 +1,4 @@
-devenv
+*devenv
 *.pyc
 *.pyo
 tmp
@@ -7,3 +7,5 @@ tmp
 dist
 build
 integration_tests/tmux-src/*.tar.gz
+docker-rpm-builder.spec
+*.tar.gz
