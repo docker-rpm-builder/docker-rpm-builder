@@ -4,6 +4,7 @@ import os
 import codecs
 import glob
 import logging
+import base64
 
 import click
 
@@ -20,7 +21,9 @@ from drb.path import getpath
 @click.argument("additional_docker_options", type=click.STRING, nargs=-1)
 @click.option("--download-sources", is_flag=True)
 @click.option("--bash-on-failure", is_flag=True)
-def dir(imagetag, source_directory, target_directory, additional_docker_options, download_sources=False, bash_on_failure=False):
+@click.option("--sign-with", nargs=1, type=click.Path(exists=True, dir_okay=False, resolve_path=True))
+def dir(imagetag, source_directory, target_directory, additional_docker_options, download_sources=False,
+        bash_on_failure=False, sign_with=None):
     """Builds a binary RPM from a directory.
 
     IMAGETAG should be a docker image id or a repository:tag,
@@ -42,10 +45,14 @@ def dir(imagetag, source_directory, target_directory, additional_docker_options,
     if --download-sources is enabled, SourceX and PatchX from the spec
     that contain an URL will be downloaded from the internet. Such
     files will be placed in SOURCE_DIRECTORY, that should be writeable,
-    hence. They won't be deleted afterwards.
+    hence. They won't be deleted afterwards. WARNING: if an item is already
+    there and it's different/older, it will be overwritten without asking;
+    wget's timestamping options is used for such purpose.
 
     if --bash-on-failure is enabled, the tool will drop in an interactive
     shell if the build fails.
+
+    if --sign-with is passed, the chosen GPG key is used to sign the package.
 
 
     example:
@@ -90,15 +97,21 @@ def dir(imagetag, source_directory, target_directory, additional_docker_options,
 
     logging.info("Now building project from %s on image %s", source_directory, imagetag)
     dockerexec = which("docker")
-    bashonfail = ""
+
+    bashonfail = "dontspawn"
     bashonfail_options = ""
     if bash_on_failure:
         bashonfail = "bashonfail"
         bashonfail_options = "-i -t"
 
+    sign_with_encoded = ""
+    if sign_with:
+        sign_with_encoded = base64.encodestring(open(sign_with, "r").read()).replace("\n", "")
+
     try:
-        sp("{0} run -v {1}:/dockerscripts -v {2}:/docker-rpm-build-root/SOURCES -v {7}:/docker-rpm-build-root/RPMS {9} -w /dockerscripts {3} ./rpmbuild-dir-in-docker.sh {4} {5} {8} {6}",
-           dockerexec, getpath("drb/dockerscripts"), source_directory, imagetag, os.getuid(), os.getgid(), " ".join(additional_docker_options), target_directory, bashonfail, bashonfail_options)
+        sp("{0} run -v {1}:/dockerscripts -v {2}:/docker-rpm-build-root/SOURCES -v {7}:/docker-rpm-build-root/RPMS {9} -w /dockerscripts {3} ./rpmbuild-dir-in-docker.sh {4} {5} {8} {10} {6}",
+           dockerexec, getpath("drb/dockerscripts"), source_directory, imagetag, os.getuid(), os.getgid(), " ".join(additional_docker_options),
+           target_directory, bashonfail, bashonfail_options, sign_with_encoded)
     finally:
         if deletespec:
             os.unlink(specfile)
