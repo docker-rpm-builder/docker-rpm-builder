@@ -24,7 +24,8 @@ then
     [[ $(gpg --list-secret-keys) =~ uid(.*) ]]
     KEYNAME="${BASH_REMATCH[1]}"
     [ -n "${KEYNAME}" ] || { echo "could not find key for signing purpose"; exit 1; }
-    echo -e "\n" | setsid rpmbuild --define "_gpg_name ${KEYNAME}" --define '_signature gpg' -bb --sign $SPEC ||  { [ "bashonfail" == "$3" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || /bin/false ; }
+    echo -e "%_gpg_name ${KEYNAME}\n%_signature gpg" > ${HOME}/.rpmmacros
+    echo -e "\n" | setsid rpmbuild -bb --sign $SPEC ||  { [ "bashonfail" == "$3" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || /bin/false ; }
 else
     echo "Running without RPM signing"
     rpmbuild -bb $SPEC || { [ "bashonfail" == "$3" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || /bin/false ; }
