@@ -30,12 +30,14 @@ for image in ${IMAGES}; do
 
     start_test "packages are not signed unless required"
     docker-rpm-builder dir ${image} tmux-src ${RPM_DIR} --download-sources
+    [ "$(ls ${RPM_DIR}/x86_64/tmux-* | wc -l)" == "2" ]
     cp ./secret.pub ${RPM_DIR}
     docker run -v ${RPM_DIR}:${RPM_DIR} -w ${RPM_DIR}/x86_64 ${image} /bin/bash -c 'yum install -y rpmdevtools && rpm --import ../secret.pub && /usr/bin/rpmdev-checksig *.rpm' && { echo "should have failed"; exit 1; }
     end_test
 
     start_test "if I ask to sign, they get signed properly. Such signature can be verified."
     docker-rpm-builder dir ${image} tmux-src ${RPM_DIR} --download-sources --sign-with ./secret.pgp
+    [ "$(ls ${RPM_DIR}/x86_64/tmux-* | wc -l)" == "2" ]
     cp ./secret.pub ${RPM_DIR}
     docker run -v ${RPM_DIR}:${RPM_DIR} -w ${RPM_DIR}/x86_64 ${image} /bin/bash -c 'yum install -y rpmdevtools && rpm --import ../secret.pub && /usr/bin/rpmdev-checksig *.rpm'
     end_test
