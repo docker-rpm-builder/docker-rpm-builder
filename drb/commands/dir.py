@@ -13,7 +13,6 @@ from drb.which import which
 from drb.spawn import sp
 from drb.path import getpath
 
-
 _HELP = """Builds a binary RPM from a directory.
 
     IMAGE should be a docker image id or a repository:tag,
@@ -58,7 +57,7 @@ _HELP = """Builds a binary RPM from a directory.
     - in this scenario we use a repository:tag as an image, and we ask drb to download the sources from the internet for us:
 
     docker-rpm-builder dir alanfranz/drb-epel-6-x86-64:latest /home/user/sourcedir/myproject /tmp/rpms --download-sources
-    
+
     """
 
 @click.command(help=_HELP)
