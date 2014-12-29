@@ -65,7 +65,7 @@ _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hoo
 
     """
 
-_logger = logging.getLogger("drb.dir")
+_logger = logging.getLogger("drb.commands.dir")
 
 @click.command(help=_HELP)
 @click.argument("image", type=click.STRING)
