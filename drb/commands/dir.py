@@ -52,8 +52,9 @@ def dir(imagetag, source_directory, target_directory, additional_docker_options,
     if --bash-on-failure is enabled, the tool will drop in an interactive
     shell if the build fails.
 
-    if --sign-with is passed, the chosen GPG key is used to sign the package.
-
+    if --sign-with is passed, the chosen GPG key file is used to sign the package.
+    Currently, such file MUST be a readable, password-free, ascii-armored
+    GPG private key file.
 
     example:
 
@@ -89,8 +90,6 @@ def dir(imagetag, source_directory, target_directory, additional_docker_options,
 
     specfile = specfiles[0]
 
-    # downloading additional deps; those get into the source_directory. should we add
-    # an option for that?
     if download_sources:
         logging.info("Downloading additional sources")
         sp("{0} --get-files --directory {1} {2}".format(getpath("drb/builddeps/spectool"), source_directory, specfile))
