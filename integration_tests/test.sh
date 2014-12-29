@@ -16,14 +16,14 @@ function end_test {
 }
 
 RPM_DIR="/tmp/drb_rpms"
-IMAGES="alanfranz/drb-epel-6-x86-64:latest alanfranz/drb-epel5-x86-64:latest alanfranz/drb-epel7-x86-64:latest"
+IMAGES="alanfranz/drb-epel-6-x86-64:latest alanfranz/drb-epel-5-x86-64:latest alanfranz/drb-epel-7-x86-64:latest"
 for image in ${IMAGES}; do
     start_test "without sources, build fails"
     docker-rpm-builder dir ${image} tmux-src/ ${RPM_DIR} && { echo "should have failed"; exit 1; }
     end_test
 
     start_test "with sources, two rpms (binary and debuginfo) are created"
-    docker-rpm-builder dir ${image} tmux-src/ ${RPM_DIR} --download-sources
+    docker-rpm-builder dir ${image} tmux-src/ ${RPM_DIR} --download-sources --always-pull
     [ "$(ls ${RPM_DIR}/x86_64/tmux-* | wc -l)" == "2" ]
     end_test
 

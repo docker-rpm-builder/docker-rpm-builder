@@ -10,13 +10,14 @@ import click
 
 from drb.spectemplate import DoubleDelimiterTemplate
 from drb.which import which
-from drb.spawn import sp
+from drb.spawn import sp, SpawnedProcessError
 from drb.path import getpath
 
-_HELP = """Builds a binary RPM from a directory.
+_HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hood.
 
     IMAGE should be a docker image id or a repository:tag,
-    e.g something like a682b68bbaba or alanfranz/drb-epel-6-x86-64:latest
+    e.g something like a682b68bbaba or alanfranz/drb-epel-6-x86-64:latest ;
+    anything that can be passed to `docker run` as an IMAGE parameter will do.
 
     SOURCE_DIRECTORY should be a directory containing the .spec or the
     .spectemplate file and all the source files and patches referenced
@@ -48,6 +49,10 @@ _HELP = """Builds a binary RPM from a directory.
     Currently, such file MUST be a readable, password-free, ascii-armored
     GPG private key file.
 
+    --always-pull: if passed, a `docker pull` for the latest
+    image version from Docker Hub (or other configured endpoint) is performed. Please note that
+    any error that may arise from the operation is currently ignored.
+
     Examples:
 
     - in this scenario we use no option of ours but we add an option to be forwarded to docker:
@@ -60,6 +65,8 @@ _HELP = """Builds a binary RPM from a directory.
 
     """
 
+_logger = logging.getLogger("drb.dir")
+
 @click.command(help=_HELP)
 @click.argument("image", type=click.STRING)
 @click.argument("source_directory", type=click.Path(exists=True, file_okay=False, resolve_path=True))
@@ -68,8 +75,9 @@ _HELP = """Builds a binary RPM from a directory.
 @click.option("--download-sources", is_flag=True)
 @click.option("--bash-on-failure", is_flag=True)
 @click.option("--sign-with", nargs=1, type=click.Path(exists=True, dir_okay=False, resolve_path=True))
+@click.option("--always-pull", is_flag=True)
 def dir(image, source_directory, target_directory, additional_docker_options, download_sources=False,
-        bash_on_failure=False, sign_with=None):
+        bash_on_failure=False, sign_with=None, always_pull=False):
 
 
     # TODO: let spectemplate and/or spec be optional parameters
@@ -101,10 +109,10 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     specfile = specfiles[0]
 
     if download_sources:
-        logging.info("Downloading additional sources")
+        _logger.info("Downloading additional sources")
         sp("{0} --get-files --directory {1} {2}".format(getpath("drb/builddeps/spectool"), source_directory, specfile))
 
-    logging.info("Now building project from %s on image %s", source_directory, image)
+    _logger.info("Now building project from %s on image %s", source_directory, image)
     dockerexec = which("docker")
 
     bashonfail = "dontspawn"
@@ -116,6 +124,11 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     sign_with_encoded = ""
     if sign_with:
         sign_with_encoded = base64.encodestring(open(sign_with, "r").read()).replace("\n", "")
+
+    try:
+        sp("{dockerexec} pull {image}", **locals())
+    except SpawnedProcessError, e:
+        _logger.exception("Error while pulling docker image:")
 
     try:
         sp("{0} run -v {1}:/dockerscripts -v {2}:/docker-rpm-build-root/SOURCES -v {7}:/docker-rpm-build-root/RPMS {9} -w /dockerscripts {3} ./rpmbuild-dir-in-docker.sh {4} {5} {8} {10} {6}",
