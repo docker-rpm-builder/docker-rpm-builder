@@ -3,6 +3,8 @@ trap "{ echo ERROR detected; exit 1; }" ERR
 
 LATEST_STARTED_TEST=""
 function start_test {
+    rm -rf tmux-src/*.tar.gz
+    rm -rf ${RPM_DIR}
     echo "[$(date --rfc-3339=seconds)] TEST START: $1"
     LATEST_STARTED_TEST="$1"
 }
@@ -16,15 +18,12 @@ function end_test {
 RPM_DIR="/tmp/drb_rpms"
 IMAGES="alanfranz/drb-epel-6-x86-64:latest alanfranz/drb-epel5-x86-64:latest alanfranz/drb-epel7-x86-64:latest"
 for image in ${IMAGES}; do
-    rm -rf tmux-src/*.tar.gz
-    rm -rf ${RPM_DIR}
-
     start_test "without sources, build fails"
     docker-rpm-builder dir ${image} tmux-src/ ${RPM_DIR} && { echo "should have failed"; exit 1; }
     end_test
 
     start_test "with sources, two rpms (binary and debuginfo) are created"
-    docker-rpm-builder dir --download-sources ${image} tmux-src/ ${RPM_DIR}
+    docker-rpm-builder dir ${image} tmux-src/ ${RPM_DIR} --download-sources
     [ "$(ls ${RPM_DIR}/x86_64/tmux-* | wc -l)" == "2" ]
     end_test
 
