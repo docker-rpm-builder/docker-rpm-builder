@@ -14,53 +14,64 @@ from drb.spawn import sp
 from drb.path import getpath
 
 
-@click.command()
-@click.argument("imagetag", type=click.STRING)
+_HELP = """Builds a binary RPM from a directory.
+
+    IMAGE should be a docker image id or a repository:tag,
+    e.g something like a682b68bbaba or alanfranz/drb-epel-6-x86-64:latest
+
+    SOURCE_DIRECTORY should be a directory containing the .spec or the
+    .spectemplate file and all the source files and patches referenced
+    in such spec. If using a .spectemplate the directory should be writeable,
+    since a .spec file will be written there (and then removed).
+
+    TARGET_DIRECTORY is where the RPMS will be written. Anything inside
+    may be overwritten during the build phase.
+
+    ADDITIONAL_DOCKER_OPTIONS whatever is passed will be forwarded
+    straight to the 'docker run' command. PLEASE REMEMBER to insert a double dash (--)
+    before the first additional options, otherwise it will be mistaken
+    for a docker-rpm-builder option.
+
+    Options:
+
+    --download-sources: if enabled, SourceX and PatchX from the spec
+    that contain an URL will be downloaded from the internet. Such
+    files will be placed in SOURCE_DIRECTORY, so it should be writeable.
+    Such files won't be deleted afterwards and will be cached for future
+    builds.
+    WARNING: if this option is used and a file already exists, it may be
+    overwritten according to wget --timestamping caching policy.
+
+    --bash-on-failure: if enabled, the tool will drop in an interactive
+    shell inside the container if the build fails.
+
+    --sign-with <PATH>: if passed, the chosen GPG key file is used to sign the package.
+    Currently, such file MUST be a readable, password-free, ascii-armored
+    GPG private key file.
+
+    Examples:
+
+    - in this scenario we use no option of ours but we add an option to be forwarded to docker:
+
+    docker-rpm-builder dir a682b68bbaba . /tmp/rpms -- --dns=10.2.0.1
+
+    - in this scenario we use a repository:tag as an image, and we ask drb to download the sources from the internet for us:
+
+    docker-rpm-builder dir alanfranz/drb-epel-6-x86-64:latest /home/user/sourcedir/myproject /tmp/rpms --download-sources
+    
+    """
+
+@click.command(help=_HELP)
+@click.argument("image", type=click.STRING)
 @click.argument("source_directory", type=click.Path(exists=True, file_okay=False, resolve_path=True))
 @click.argument("target_directory", type=click.Path(file_okay=False, resolve_path=True))
 @click.argument("additional_docker_options", type=click.STRING, nargs=-1)
 @click.option("--download-sources", is_flag=True)
 @click.option("--bash-on-failure", is_flag=True)
 @click.option("--sign-with", nargs=1, type=click.Path(exists=True, dir_okay=False, resolve_path=True))
-def dir(imagetag, source_directory, target_directory, additional_docker_options, download_sources=False,
+def dir(image, source_directory, target_directory, additional_docker_options, download_sources=False,
         bash_on_failure=False, sign_with=None):
-    """Builds a binary RPM from a directory.
 
-    IMAGETAG should be a docker image id or a repository:tag,
-    e.g something like a682b68bbaba or alanfranz/drb-epel-6-x86-64:latest
-
-    SOURCE_DIRECTORY should be a directory containing the .spec or the
-    .spectemplate file and all the source files and patches referenced
-    in such spec. If using a .spectemplate the directory should be writeable,
-    as a .spec file will be written there (and then removed).
-
-    TARGET_DIRECTORY is where the RPMS will be written. Anything inside
-    may be overwritten during the build phase.
-
-    ADDITIONAL_DOCKER_OPTIONS whatever is passed will be forwarded
-    straight to docker. PLEASE REMEMBER to insert a double dash (--)
-    before the first additional options, otherwise it will be mistaken
-    for a docker-rpm-builder option.
-
-    if --download-sources is enabled, SourceX and PatchX from the spec
-    that contain an URL will be downloaded from the internet. Such
-    files will be placed in SOURCE_DIRECTORY, that should be writeable,
-    hence. They won't be deleted afterwards. WARNING: if an item is already
-    there and it's different/older, it will be overwritten without asking;
-    wget's timestamping options is used for such purpose.
-
-    if --bash-on-failure is enabled, the tool will drop in an interactive
-    shell if the build fails.
-
-    if --sign-with is passed, the chosen GPG key file is used to sign the package.
-    Currently, such file MUST be a readable, password-free, ascii-armored
-    GPG private key file.
-
-    example:
-
-    docker-rpm-builder dir a682b68bbaba . /tmp/rpms -- --dns=10.2.0.1
-
-    """
 
     # TODO: let spectemplate and/or spec be optional parameters
     # TODO: let the user choose $-delimited templates
@@ -94,7 +105,7 @@ def dir(imagetag, source_directory, target_directory, additional_docker_options,
         logging.info("Downloading additional sources")
         sp("{0} --get-files --directory {1} {2}".format(getpath("drb/builddeps/spectool"), source_directory, specfile))
 
-    logging.info("Now building project from %s on image %s", source_directory, imagetag)
+    logging.info("Now building project from %s on image %s", source_directory, image)
     dockerexec = which("docker")
 
     bashonfail = "dontspawn"
@@ -109,7 +120,7 @@ def dir(imagetag, source_directory, target_directory, additional_docker_options,
 
     try:
         sp("{0} run -v {1}:/dockerscripts -v {2}:/docker-rpm-build-root/SOURCES -v {7}:/docker-rpm-build-root/RPMS {9} -w /dockerscripts {3} ./rpmbuild-dir-in-docker.sh {4} {5} {8} {10} {6}",
-           dockerexec, getpath("drb/dockerscripts"), source_directory, imagetag, os.getuid(), os.getgid(), " ".join(additional_docker_options),
+           dockerexec, getpath("drb/dockerscripts"), source_directory, image, os.getuid(), os.getgid(), " ".join(additional_docker_options),
            target_directory, bashonfail, bashonfail_options, sign_with_encoded)
     finally:
         if deletespec:
