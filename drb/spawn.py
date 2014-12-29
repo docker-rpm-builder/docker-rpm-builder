@@ -15,7 +15,7 @@ class SpawnedProcessError(Exception):
         return "Command '%s' returned non-zero exit status %d" % (self.cmd, self.returncode)
 
 def sp(cmdformatstring, *params, **kwargs):
-    fullcmd = cmdformatstring.format(*params).format(kwargs)
+    fullcmd = cmdformatstring.format(*params, **kwargs)
     logging.debug("Now executing:\n%s\n", fullcmd)
     process = Popen(fullcmd, stderr=STDOUT, shell=True)
     output, error = process.communicate()
