@@ -27,8 +27,10 @@ _logger = logging.getLogger("drb.commands.srcrpm")
 @click.argument("srcrpm", type=click.Path(exists=True, dir_okay=False, resolve_path=True))
 @click.argument("target_directory", type=click.Path(file_okay=False, resolve_path=True))
 @click.option("--root-image-overrides", nargs=1, type=click.Path(exists=True, file_okay=False, resolve_path=True))
-def srcrpm(image, srcrpm, target_directory, root_image_overrides=None):
-    _logger.info("Now building {srcrpm} on image {image}", locals())
+@click.option("--verify-signature", is_flag=True)
+@click.option("--bash-on-failure", is_flag=True)
+def srcrpm(image, srcrpm, target_directory, root_image_overrides=None, verify_signature=False, bash_on_failure=False):
+    _logger.info("Now building %(srcrpm)s on image %(image)s", locals())
     if not os.path.exists(target_directory):
         os.mkdir(target_directory)
 
@@ -39,11 +41,12 @@ def srcrpm(image, srcrpm, target_directory, root_image_overrides=None):
     srcrpm_basename = os.path.basename(srcrpm)
     uid = os.getuid()
     gid = os.getgid()
+    rpmbuild_options = "" if verify_signature else "--nosignature"
 
     print locals()
     try:
-        sp("{dockerexec} run -v {dockerscripts}:/dockerscripts -v {srpms_temp}:/docker-rpm-build-root/SRPMS -v {target_directory}:/docker-rpm-build-root/RPMS"
-           " -w /dockerscripts {image} ./rpmbuild-srcrpm-in-docker.sh {srcrpm_basename} {uid} {gid}", **locals())
+        sp("{dockerexec} run -i -t -v {dockerscripts}:/dockerscripts -v {srpms_temp}:/docker-rpm-build-root/SRPMS -v {target_directory}:/docker-rpm-build-root/RPMS"
+           " -w /dockerscripts {image} ./rpmbuild-srcrpm-in-docker.sh {srcrpm_basename} {uid} {gid} '{rpmbuild_options}'", **locals())
     finally:
         shutil.rmtree(srpms_temp)
 

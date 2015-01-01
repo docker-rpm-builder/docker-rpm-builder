@@ -3,6 +3,7 @@ set -ex
 SRCRPM=$1
 CALLING_UID=$2
 CALLING_GID=$3
+RPMBUILD_OPTIONS=$4
 
 RPMS_DIR=$(rpm --eval %{_rpmdir})
 SRPMS_DIR=$(rpm --eval %{_srcrpmdir})
@@ -17,12 +18,8 @@ echo "starting $0"
 groupadd -g ${CALLING_GID} mygroup || /bin/true
 useradd -g ${CALLING_GID} -u ${CALLING_UID} myuser || /bin/true
 
-# extract the source rpm just to fetch the
-# pushd $(mktemp -d)
-# rpm2cpio "${SRPMS_DIR}/${SRCRPM}" | cpio -iv --make-directories
-yum-builddep "${SRPMS_DIR}/${SRCRPM}"
-# popd
+yum-builddep --nogpgcheck "${SRPMS_DIR}/${SRCRPM}"
 
-rpmbuild --rebuild "${SRPMS_DIR}/${SRCRPM}"
+rpmbuild --rebuild ${RPMBUILD_OPTIONS} "${SRPMS_DIR}/${SRCRPM}"
 
 
