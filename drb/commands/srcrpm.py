@@ -38,14 +38,23 @@ def srcrpm(image, srcrpm, target_directory, root_image_overrides=None, verify_si
     dockerscripts = getpath("drb/dockerscripts")
     srpms_temp = tempfile.mkdtemp("SRPMS")
     shutil.copy(srcrpm, srpms_temp)
+    additional_docker_options = set()
     srcrpm_basename = os.path.basename(srcrpm)
     uid = os.getuid()
     gid = os.getgid()
     rpmbuild_options = "" if verify_signature else "--nosignature"
 
+    bashonfail = ""
+    if bash_on_failure:
+        additional_docker_options.add("-i")
+        additional_docker_options.add("-t")
+        bashonfail = "bashonfail"
+
+    additional_docker_options = " ".join(additional_docker_options)
+
     try:
-        sp("{dockerexec} run -i -t -v {dockerscripts}:/dockerscripts -v {srpms_temp}:/docker-rpm-build-root/SRPMS -v {target_directory}:/docker-rpm-build-root/RPMS"
-           " -w /dockerscripts {image} ./rpmbuild-srcrpm-in-docker.sh {srcrpm_basename} {uid} {gid} '{rpmbuild_options}'", **locals())
+        sp("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts -v {srpms_temp}:/docker-rpm-build-root/SRPMS -v {target_directory}:/docker-rpm-build-root/RPMS"
+           " -w /dockerscripts {image} ./rpmbuild-srcrpm-in-docker.sh {srcrpm_basename} {uid} {gid} '{rpmbuild_options}' '{bashonfail}' ", **locals())
     finally:
         shutil.rmtree(srpms_temp)
 
