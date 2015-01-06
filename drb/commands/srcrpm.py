@@ -43,7 +43,6 @@ def srcrpm(image, srcrpm, target_directory, root_image_overrides=None, verify_si
     gid = os.getgid()
     rpmbuild_options = "" if verify_signature else "--nosignature"
 
-    print locals()
     try:
         sp("{dockerexec} run -i -t -v {dockerscripts}:/dockerscripts -v {srpms_temp}:/docker-rpm-build-root/SRPMS -v {target_directory}:/docker-rpm-build-root/RPMS"
            " -w /dockerscripts {image} ./rpmbuild-srcrpm-in-docker.sh {srcrpm_basename} {uid} {gid} '{rpmbuild_options}'", **locals())
