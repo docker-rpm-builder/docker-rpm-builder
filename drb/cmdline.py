@@ -11,7 +11,8 @@ from . import commands
 
 @click.group()
 def cmdline():
-    logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format="%(asctime)s:" + logging.BASIC_FORMAT)
+    logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format="%(asctime)s:" + logging.BASIC_FORMAT,
+                        datefmt="%Y-%m-%dT%H:%M:%S%z")
 
 
 def autoload_commands(group, source_package):
