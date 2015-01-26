@@ -116,7 +116,7 @@ In order to use an image for building an RPM:
 - rpmbuild must exist in path
 - yum-builddep must exist in path and accept a .spec file or a .src.rpm as input
 - commands must be able to complete without interaction - consider using a custom yum.conf with *main->assumeyes=1* and be sure all public keys for your repositories are installed.
-- if you want to sign packages, make sure you install **gnupg** and set a proper **%__gpg_sign_cmd** macro in */etc/rpm*
+- if you want to sign packages, make sure you install **gnupg** 1.4 and set a proper **%__gpg_sign_cmd** macro in */etc/rpm*
 
 ### Prebuilt images
 
