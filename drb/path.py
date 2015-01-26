@@ -3,5 +3,5 @@
 from . import uriresolver
 
 def getpath(path):
-    return uriresolver.resource_filename_resolver("req://drb/{0}".format(path))
+    return uriresolver.resource_filename_resolver("req://docker-rpm-builder/{0}".format(path))
 
