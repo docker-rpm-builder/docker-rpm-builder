@@ -58,7 +58,7 @@ _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hoo
 
     - in this scenario we use no option of ours but we add an option to be forwarded to docker:
 
-    docker-rpm-builder dir a682b68bbaba . /tmp/rpms -- --dns=10.2.0.1
+    docker-rpm-builder dir a682b68bbaba . /tmp/rpms -- --dns=192.168.1.1
 
     - in this scenario we use a repository:tag as an image, and we ask drb to download the sources from the internet for us:
 
