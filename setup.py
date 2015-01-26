@@ -24,6 +24,7 @@ setup(
         [console_scripts]
         docker-rpm-builder=drb.cmdline:cmdline
     ''',
+    setup_requires = [ "setuptools_git == 1.1" ],
     license="Apache-2.0",
     include_package_data=True,
     zip_safe=False
