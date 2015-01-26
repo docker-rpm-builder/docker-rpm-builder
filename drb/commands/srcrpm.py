@@ -51,8 +51,12 @@ def srcrpm(image, srcrpm, target_directory, verify_signature=False, bash_on_fail
 
     additional_docker_options = " ".join(additional_docker_options)
 
+
+
     try:
-        sp("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts -v {srpms_temp}:/docker-rpm-build-root/SRPMS -v {target_directory}:/docker-rpm-build-root/RPMS"
+        srpms_inner_dir = sp("{dockerexec} run {image} rpm --eval %{{_srcrpmdir}}", **locals()).strip()
+        rpms_inner_dir = sp("{dockerexec} run {image} rpm --eval %{{_rpmdir}}", **locals()).strip()
+        sp("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts -v {srpms_temp}:{srpms_inner_dir} -v {target_directory}:{rpms_inner_dir}"
            " -w /dockerscripts {image} ./rpmbuild-srcrpm-in-docker.sh {srcrpm_basename} {uid} {gid} '{rpmbuild_options}' '{bashonfail}' ", **locals())
     finally:
         shutil.rmtree(srpms_temp)

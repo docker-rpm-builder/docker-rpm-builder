@@ -4,14 +4,17 @@
 set -ex
 CALLING_UID=$1
 CALLING_GID=$2
+RPMS_DIR=$(rpm --eval %{_rpmdir})
+SRPMS_DIR=$(rpm --eval %{_srcrpmdir})
+SOURCE_DIR=$(rpm --eval %{_sourcedir})
 
 function finish {
-  chown -R ${CALLING_UID}:${CALLING_GID} /docker-rpm-build-root/RPMS || /bin/true
+  chown -R ${CALLING_UID}:${CALLING_GID} ${RPMS_DIR} || /bin/true
 }
 trap finish EXIT
 
 echo "starting $0"
-SPEC=$(ls /docker-rpm-build-root/SOURCES/*.spec | head -n 1)
+SPEC=$(ls ${SOURCE_DIR}/*.spec | head -n 1)
 /dockerscripts/rpm-setup-deps.sh
 #rpmbuild complains if it can't find a proper user for uid/gid
 groupadd -g $2 mygroup || /bin/true

@@ -5,6 +5,7 @@ import codecs
 import glob
 import logging
 import base64
+from __builtin__ import locals
 
 import click
 
@@ -131,9 +132,13 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         _logger.exception("Error while pulling docker image:")
 
     try:
-        sp("{0} run -v {1}:/dockerscripts -v {2}:/docker-rpm-build-root/SOURCES -v {7}:/docker-rpm-build-root/RPMS {9} -w /dockerscripts {3} ./rpmbuild-dir-in-docker.sh {4} {5} {8} {10} {6}",
-           dockerexec, getpath("drb/dockerscripts"), source_directory, image, os.getuid(), os.getgid(), " ".join(additional_docker_options),
-           target_directory, bashonfail, bashonfail_options, sign_with_encoded)
+        additional_docker_options = " ".join(additional_docker_options)
+        dockerscripts = getpath("drb/dockerscripts")
+        rpms_inner_dir = sp("{dockerexec} run {image} rpm --eval %{{_rpmdir}}", **locals()).strip()
+        sources_inner_dir = sp("{dockerexec} run {image} rpm --eval %{{_sourcedir}}", **locals()).strip()
+        uid = os.getuid()
+        gid = os.getgid()
+        sp("{dockerexec} run -v {dockerscripts}:/dockerscripts -v {source_directory}:{sources_inner_dir} -v {target_directory}:{rpms_inner_dir} {bashonfail_options} -w /dockerscripts {image}  ./rpmbuild-dir-in-docker.sh {uid} {gid} {bashonfail} {sign_with_encoded} {additional_docker_options}", **locals())
     finally:
         if deletespec:
             os.unlink(specfile)
