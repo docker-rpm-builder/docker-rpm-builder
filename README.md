@@ -1,5 +1,7 @@
 # Build native rpm packages through docker.
 
+**Heavy work in progress, some information may be outdated or not up-to-date yet**
+
 Why? Because plain rpmbuild may be an hassle (the system may became polluted by cross-project deps, and requires the same native system distro as the target package) and [mock](https://fedoraproject.org/wiki/Projects/Mock) may be slow and sometimes painful to debug and configure.
 
 docker-rpm-builder works on any host distributions that supports [docker](https://www.docker.com/), and is currently tested to build 64 bit Centos 5, 6 and 7 RPM packages, as well as Fedora 20, 21 and rawhide.
@@ -29,13 +31,28 @@ Python 2.7, Bash and perl should be installed on your system as well.
 
 ## Installation
 
-Just
+docker-rpm-builder is a pure-python, self-contained python package.
 
-```git clone https://github.com/alanfranz/docker-rpm-builder.git```
+You could install it in your system straight with [pip](https://pypi.python.org/pypi/pip), but I actually recommend [pipsi](https://pypi.python.org/pypi/pipsi), which will automatically creates an isolated environment for your python packages and requires no additional privileges; everything is done with non-root privileges.
 
-or download the latest [release](https://github.com/alanfranz/docker-rpm-builder/releases/) and unpack somewhere.
+So, install pipsi if you don't have it, making sure the **python** interpreter you're using is 2.7:
 
-There's nothing else to install.
+```
+curl https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python
+```
+
+then
+
+```
+pipsi install docker-rpm-builder
+```
+
+to upgrade docker-rpm-builder to the latest version, use:
+
+```
+pipsi upgrade docker-rpm-builder
+```
+
 
 ## Building a binary RPM straight from a directory
 

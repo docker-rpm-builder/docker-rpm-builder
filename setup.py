@@ -4,16 +4,16 @@ from setuptools import setup, find_packages
 
 
 install_requires = [
-    'Click==3.3',
-    'setuptools'
+    'Click==3.3'
 ]
 
 if sys.version_info[1] == 6:
     install_requires.append("importlib")
 
 setup(
-    name='drb',
-    description="docker-rpm-builder",
+    name='docker-rpm-builder',
+    description="Build native RPMs through docker",
+    long_description=open("README.md").read(),
     author="Alan Franzoni",
     author_email="username@franzoni.eu",
     url="https://github.com/alanfranz/docker-rpm-builder",
