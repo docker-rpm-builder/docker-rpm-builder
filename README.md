@@ -57,13 +57,13 @@ pipsi upgrade docker-rpm-builder
 ## Building a binary RPM straight from a directory
 
 You should have a source directory that contains:
-* either a .spec file or a [.spectemplate](#Spectemplates) file
+* either a .spec file or a [.spectemplate](#spectemplates) file
 * any file that is set as **SourceX** and **PatchX** in the spec file (
 if any of your SourceX or PatchX files are URLs, you can use the --download-sources option if the files are not already there.)
 
 Then, you should pass a source directory, which will be bound to %{_sourcedir} inside the build container (e.g. /root/rpmbuild/SOURCES on RHEL7 or ). You can access such directory straight from your specfile. If you pass --download-sources the URL sources will be downloaded in such directory, so be sure to set the proper ignores for it in your revision control system.
 
-Of course, you should tell the tool which build image you'd like to use. I've baked some [prebuilt images](#Prebuilt images), but you should feel free to create your own, since that's the purpose of this tool.
+Of course, you should tell the tool which build image you'd like to use. I've baked some [prebuilt images](#prebuild-images), but you should feel free to create your own, since that's the purpose of this tool.
 
 And you should tell the tool which target directory you'd like to use for rpm output; this directory whill be bound straight to %{_rpmdir} inside the build container, so mind that if your build process does something strange with it, files can be deleted. If the target directory doesn't exist it will be created.
 
@@ -109,7 +109,7 @@ docker-rpm-builder srcrpm --help
 
 ## Build images
 
-Build images are nothing esoteric. They're just plain OS images with a set of packages, settings and maybe some macros which are needed to perform a build and/or to sign packages. See the [next section](#Prebuild images) for some examples.
+Build images are nothing esoteric. They're just plain OS images with a set of packages, settings and maybe some macros which are needed to perform a build and/or to sign packages. See the [next section](#prebuilt-images) for some examples.
 
 In order to use an image for building an RPM:
 
