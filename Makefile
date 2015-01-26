@@ -1,4 +1,4 @@
-.PHONY: srpm clean distclean pypirelease test
+.PHONY: srpm clean distclean pypirelease test fulltest
 
 devenv: setup.py
 	test -r devenv || virtualenv-2.7 devenv
@@ -16,6 +16,8 @@ endif
 
 test: devenv
 	devenv/bin/python -m unittest discover -v
+
+fulltest: test
 	. devenv/bin/activate && cd integration_tests && ./test.sh
 
 tmp:

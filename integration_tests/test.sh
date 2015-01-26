@@ -1,5 +1,6 @@
 #!/bin/bash
 trap "{ echo ERROR detected; exit 1; }" ERR
+IMAGES=${1:-alanfranz/drb-epel-6-x86-64:latest alanfranz/drb-epel-5-x86-64:latest alanfranz/drb-epel-7-x86-64:latest}
 
 LATEST_STARTED_TEST=""
 function start_test {
@@ -16,9 +17,7 @@ function end_test {
 }
 
 RPM_DIR="/tmp/drb_rpms"
-IMAGES="alanfranz/drb-epel-6-x86-64:latest alanfranz/drb-epel-5-x86-64:latest alanfranz/drb-epel-7-x86-64:latest"
 for image in ${IMAGES}; do
-    :
     start_test "without sources, build fails"
     docker-rpm-builder dir ${image} tmux-src/ ${RPM_DIR} && { echo "should have failed"; exit 1; }
     end_test
