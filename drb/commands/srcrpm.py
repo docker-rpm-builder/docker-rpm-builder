@@ -26,10 +26,9 @@ _logger = logging.getLogger("drb.commands.srcrpm")
 @click.argument("image", type=click.STRING)
 @click.argument("srcrpm", type=click.Path(exists=True, dir_okay=False, resolve_path=True))
 @click.argument("target_directory", type=click.Path(file_okay=False, resolve_path=True))
-@click.option("--root-image-overrides", nargs=1, type=click.Path(exists=True, file_okay=False, resolve_path=True))
 @click.option("--verify-signature", is_flag=True)
 @click.option("--bash-on-failure", is_flag=True)
-def srcrpm(image, srcrpm, target_directory, root_image_overrides=None, verify_signature=False, bash_on_failure=False):
+def srcrpm(image, srcrpm, target_directory, verify_signature=False, bash_on_failure=False):
     _logger.info("Now building %(srcrpm)s on image %(image)s", locals())
     if not os.path.exists(target_directory):
         os.mkdir(target_directory)
