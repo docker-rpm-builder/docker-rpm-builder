@@ -129,6 +129,43 @@ There're some prebuilt configurations for Centos 5-6-7+EPEL and Fedora 20-21-raw
 - alanfranz/drb-fedora-21-x86-64:latest
 - alanfranz/drb-fedora-rawhide-x86-64:latest
 
+## Speedup your build: image reuse
+
+The impact of this change can be great if you're building a small package with a certain frequency.
+
+In such situation, the dependency download time can just waste any speed that you could gain by using this tool.
+
+So what?
+
+Well, just use an image which pre-caches your build dependencies!
+
+create a directory like *build-image* in your project directory, and enter something like this:
+
+```
+FROM alanfranz/drb-epel-6-x86-64:latest
+MAINTAINER myself myself@example.com
+RUN yum install openssl openssl-devel
+```
+
+in your makefile/buildscript/whatever, do something like:
+
+```
+pushd build-image
+docker build -t myprojectbuildimage .
+popd
+
+docker-rpm-builder dir myprojectbuildimage . rpm_output
+```
+
+docker is smart enough to *not* rebuild an image which is unchanged since last build,
+hence executing the docker build multiple times will take no time at all unless
+you change your Dockerfile.
+
+And since you've already added all build prerequisites, no download will happen.
+
+In the future I may think about adding an option to docker-rpm-builder to help creating
+such images without actually needing a Dockerfile on a source repo.
+
 ## Gotchas
 * if you're used to mock, the build system is a bit different, mocks seems to employ different defaults and has different macros, sometimes a build working with mock may file with docker-rpm-builder. I'm investigating the issue. It's quite uncommon BTW.
 * dns default to public ones, will add an option for private ones. Right now you can just add arbitrary docker options after IMAGETAG and SRCDIR
