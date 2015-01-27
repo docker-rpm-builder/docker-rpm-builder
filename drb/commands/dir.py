@@ -11,8 +11,9 @@ import click
 
 from drb.spectemplate import DoubleDelimiterTemplate
 from drb.which import which
-from drb.spawn import sp, SpawnedProcessError
+from drb.spawn import sp
 from drb.path import getpath
+from drb.pull import pull
 
 _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hood.
 
@@ -126,10 +127,8 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     if sign_with:
         sign_with_encoded = base64.encodestring(open(sign_with, "r").read()).replace("\n", "")
 
-    try:
-        sp("{dockerexec} pull {image}", **locals())
-    except SpawnedProcessError, e:
-        _logger.exception("Error while pulling docker image:")
+    if always_pull:
+        pull(dockerexec, image)
 
     try:
         additional_docker_options = " ".join(additional_docker_options)
