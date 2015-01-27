@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from drb.spawn import SpawnedProcessError
+from drb.spawn import SpawnedProcessError, sp
 
 _logger = logging.getLogger("drb.pull")
 

@@ -14,6 +14,7 @@ from drb.which import which
 from drb.spawn import sp
 from drb.path import getpath
 from drb.pull import pull
+from drb.signwith import provide_encoded_signature
 
 _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hood.
 
@@ -123,9 +124,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         bashonfail = "bashonfail"
         bashonfail_options = "-i -t"
 
-    sign_with_encoded = ""
-    if sign_with:
-        sign_with_encoded = base64.encodestring(open(sign_with, "r").read()).replace("\n", "")
+    sign_with_encoded = provide_encoded_signature(sign_with)
 
     if always_pull:
         pull(dockerexec, image)
