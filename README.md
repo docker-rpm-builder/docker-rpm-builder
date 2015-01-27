@@ -120,7 +120,7 @@ In order to use an image for building an RPM:
 
 ### Prebuilt images
 
-There're some prebuilt configurations for Centos 5-6-7+EPEL and Fedora 20-21-rawhide at [https://github.com/alanfranz/docker-rpm-builder-configurations](); those are available on [my docker hub page](https://hub.docker.com/u/alanfranz/) as well, so they can be used immediately out of the box. The following are all valid build images:
+There're some prebuilt configurations for Centos 5-6-7+EPEL and Fedora 20-21-rawhide at [https://github.com/alanfranz/docker-rpm-builder-configurations](https://github.com/alanfranz/docker-rpm-builder-configurations); those are available on [my docker hub page](https://hub.docker.com/u/alanfranz/) as well, so they can be used immediately out of the box. The following are all valid build images:
 
 - alanfranz/drb-epel-5-x86-64:latest
 - alanfranz/drb-epel-6-x86-64:latest
@@ -139,7 +139,11 @@ So what?
 
 Well, just use an image which pre-caches your build dependencies!
 
-create a directory like *build-image* in your project directory, and enter something like this:
+create a directory like *build-image* in your project directory;
+let's suppose your project needs openssl and openssl-devel to build
+on Centos 6.
+
+Enter something like this:
 
 ```
 FROM alanfranz/drb-epel-6-x86-64:latest
