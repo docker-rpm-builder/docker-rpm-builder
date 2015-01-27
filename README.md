@@ -63,7 +63,7 @@ if any of your SourceX or PatchX files are URLs, you can use the --download-sour
 
 Then, you should pass a source directory, which will be bound to %{_sourcedir} inside the build container (e.g. /root/rpmbuild/SOURCES on RHEL7 or ). You can access such directory straight from your specfile. If you pass --download-sources the URL sources will be downloaded in such directory, so be sure to set the proper ignores for it in your revision control system.
 
-Of course, you should tell the tool which build image you'd like to use. I've baked some [prebuilt images](#prebuild-images), but you should feel free to create your own, since that's the purpose of this tool.
+Of course, you should tell the tool which build image you'd like to use. I've baked some [prebuilt images](#prebuilt-images), but you should feel free to create your own, since that's the purpose of this tool.
 
 And you should tell the tool which target directory you'd like to use for rpm output; this directory whill be bound straight to %{_rpmdir} inside the build container, so mind that if your build process does something strange with it, files can be deleted. If the target directory doesn't exist it will be created.
 
