@@ -11,8 +11,7 @@ from drb.which import which
 from drb.spawn import sp
 from drb.path import getpath
 from drb.pull import pull
-from drb.signwith import provide_encoded_signature
-from drb.bash import serialize
+from drb.bash import serialize, provide_encoded_signature
 
 _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hood.
 

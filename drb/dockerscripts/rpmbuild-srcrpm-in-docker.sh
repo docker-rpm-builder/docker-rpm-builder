@@ -9,6 +9,7 @@ eval $(echo $1 | base64 -d)
 [ -z "${CALLING_GID}" ] && { echo "Missing CALLING_GID"; /bin/false; }
 [ -z "${RPMBUILD_OPTIONS}" ] && { echo "No rpmbuild options were set"; }
 [ -z "${BASH_ON_FAIL}" ] && { echo "BASH_ON_FAIL is not set"; }
+[ -z "${GPG_PRIVATE_KEY}" ] && { echo "Private key not passed; rpm won't be signed"; }
 
 
 RPMS_DIR=$(rpm --eval %{_rpmdir})
@@ -28,6 +29,19 @@ useradd -g ${CALLING_GID} -u ${CALLING_UID} myuser || /bin/true
 # if the signature check fails it will fail later.
 yum-builddep --nogpgcheck "${SRPMS_DIR}/${SRCRPM}"
 
-rpmbuild --rebuild ${RPMBUILD_OPTIONS} "${SRPMS_DIR}/${SRCRPM}" || { [ "bashonfail" == "$BASH_ON_FAIL" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || /bin/false ; }
+if [ -n "${GPG_PRIVATE_KEY}" ]
+then
+    echo "Running with RPM signing"
+    echo -e "${GPG_PRIVATE_KEY}" | gpg --import
+    [[ $(gpg --list-secret-keys) =~ uid(.*) ]]
+    KEYNAME="${BASH_REMATCH[1]}"
+    [ -n "${KEYNAME}" ] || { echo "could not find key for signing purpose"; exit 1; }
+    echo -e "%_gpg_name ${KEYNAME}\n%_signature gpg" > ${HOME}/.rpmmacros
+    echo -e "\n" | setsid rpmbuild --sign --rebuild ${RPMBUILD_OPTIONS} "${SRPMS_DIR}/${SRCRPM}" ||  { [ "bashonfail" == "${BASH_ON_FAIL}" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || /bin/false ; }
+else
+    rpmbuild --rebuild ${RPMBUILD_OPTIONS} "${SRPMS_DIR}/${SRCRPM}" || { [ "bashonfail" == "$BASH_ON_FAIL" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || /bin/false ; }
+fi
+
+echo "Done"
 
 

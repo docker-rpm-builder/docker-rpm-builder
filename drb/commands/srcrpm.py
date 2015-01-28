@@ -11,7 +11,7 @@ from drb.which import which
 from drb.spawn import sp
 from drb.path import getpath
 from drb.pull import pull
-from drb.bash import serialize
+from drb.bash import serialize, provide_encoded_signature
 
 _HELP = """Builds a binary RPM from .src.rpm file.
     Uses `docker run` under the hood.
@@ -50,11 +50,13 @@ def srcrpm(image, srcrpm, target_directory, verify_signature=False, bash_on_fail
         bashonfail = "bashonfail"
 
     additional_docker_options = " ".join(additional_docker_options)
+    encoded_signature = provide_encoded_signature(sign_with)
 
     if always_pull:
         pull(dockerexec, image)
 
-    serialized_options = serialize({"CALLING_UID": uid, "CALLING_GID": gid, "BASH_ON_FAIL":bashonfail, "RPMBUILD_OPTIONS": rpmbuild_options, "SRCRPM": srcrpm_basename})
+    serialized_options = serialize({"CALLING_UID": uid, "CALLING_GID": gid, "BASH_ON_FAIL":bashonfail, "RPMBUILD_OPTIONS": rpmbuild_options, "SRCRPM": srcrpm_basename,
+                                    "GPG_PRIVATE_KEY": encoded_signature})
 
     try:
         srpms_inner_dir = sp("{dockerexec} run {image} rpm --eval %{{_srcrpmdir}}", **locals()).strip()

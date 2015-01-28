@@ -41,6 +41,13 @@ for image in ${IMAGES}; do
     docker run -v ${RPM_DIR}:${RPM_DIR} -w ${RPM_DIR}/x86_64 ${image} /bin/bash -c 'yum install -y rpmdevtools && rpm --import ../secret.pub && /usr/bin/rpmdev-checksig *.rpm'
     end_test
 
+    start_test "signed srcrpm building"
+    docker-rpm-builder srcrpm ${image} tmux-srcrpm/tmux-1.4-3.el5.1.src.rpm ${RPM_DIR} --sign-with ./secret.pgp
+    [ "$(ls ${RPM_DIR}/x86_64/tmux-* | wc -l)" == "2" ]
+    cp ./secret.pub ${RPM_DIR}
+    docker run -v ${RPM_DIR}:${RPM_DIR} -w ${RPM_DIR}/x86_64 ${image} /bin/bash -c 'yum install -y rpmdevtools && rpm --import ../secret.pub && /usr/bin/rpmdev-checksig *.rpm'
+    end_test
+
     start_test "srcrpm building in ${image}"
     docker-rpm-builder srcrpm ${image} tmux-srcrpm/tmux-1.4-3.el5.1.src.rpm ${RPM_DIR}
     [ "$(ls ${RPM_DIR}/x86_64/tmux-* | wc -l)" == "2" ]
