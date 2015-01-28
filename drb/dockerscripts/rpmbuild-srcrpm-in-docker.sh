@@ -1,10 +1,15 @@
 #!/bin/bash
 set -ex
-SRCRPM=$1
-CALLING_UID=$2
-CALLING_GID=$3
-RPMBUILD_OPTIONS=$4
-BASH_ON_FAILURE=$5
+# verify: security implications.
+[ -z "$1" ] && { echo "Missing parameters"; /bin/false; }
+eval $(echo $1 | base64 -d)
+
+[ -z "${SRCRPM}" ] && { echo "Missing SRCRPM"; /bin/false; }
+[ -z "${CALLING_UID}" ] && { echo "Missing CALLING_UID"; /bin/false; }
+[ -z "${CALLING_GID}" ] && { echo "Missing CALLING_GID"; /bin/false; }
+[ -z "${RPMBUILD_OPTIONS}" ] && { echo "No rpmbuild options were set"; }
+[ -z "${BASH_ON_FAIL}" ] && { echo "BASH_ON_FAIL is not set"; }
+
 
 RPMS_DIR=$(rpm --eval %{_rpmdir})
 SRPMS_DIR=$(rpm --eval %{_srcrpmdir})
@@ -23,6 +28,6 @@ useradd -g ${CALLING_GID} -u ${CALLING_UID} myuser || /bin/true
 # if the signature check fails it will fail later.
 yum-builddep --nogpgcheck "${SRPMS_DIR}/${SRCRPM}"
 
-rpmbuild --rebuild ${RPMBUILD_OPTIONS} "${SRPMS_DIR}/${SRCRPM}" || { [ "bashonfail" == "$BASH_ON_FAILURE" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || /bin/false ; }
+rpmbuild --rebuild ${RPMBUILD_OPTIONS} "${SRPMS_DIR}/${SRCRPM}" || { [ "bashonfail" == "$BASH_ON_FAIL" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || /bin/false ; }
 
 

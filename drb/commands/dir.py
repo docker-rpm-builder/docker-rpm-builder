@@ -4,9 +4,6 @@ import os
 import codecs
 import glob
 import logging
-import base64
-from __builtin__ import locals
-
 import click
 
 from drb.spectemplate import DoubleDelimiterTemplate
@@ -15,6 +12,7 @@ from drb.spawn import sp
 from drb.path import getpath
 from drb.pull import pull
 from drb.signwith import provide_encoded_signature
+from drb.bash import serialize
 
 _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hood.
 
@@ -128,15 +126,17 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
 
     if always_pull:
         pull(dockerexec, image)
+    uid = os.getuid()
+    gid = os.getgid()
+
+    serialized_options = serialize({"CALLING_UID": uid, "CALLING_GID": gid, "BASH_ON_FAIL":bashonfail, "GPG_PRIVATE_KEY": sign_with_encoded})
 
     try:
         additional_docker_options = " ".join(additional_docker_options)
         dockerscripts = getpath("drb/dockerscripts")
         rpms_inner_dir = sp("{dockerexec} run {image} rpm --eval %{{_rpmdir}}", **locals()).strip()
         sources_inner_dir = sp("{dockerexec} run {image} rpm --eval %{{_sourcedir}}", **locals()).strip()
-        uid = os.getuid()
-        gid = os.getgid()
-        sp("{dockerexec} run -v {dockerscripts}:/dockerscripts -v {source_directory}:{sources_inner_dir} -v {target_directory}:{rpms_inner_dir} {bashonfail_options} -w /dockerscripts {image}  ./rpmbuild-dir-in-docker.sh {uid} {gid} {bashonfail} {sign_with_encoded} {additional_docker_options}", **locals())
+        sp("{dockerexec} run -v {dockerscripts}:/dockerscripts -v {source_directory}:{sources_inner_dir} -v {target_directory}:{rpms_inner_dir} {bashonfail_options} -w /dockerscripts {image}  ./rpmbuild-dir-in-docker.sh {serialized_options} {additional_docker_options}", **locals())
     finally:
         if deletespec:
             os.unlink(specfile)
