@@ -15,6 +15,47 @@ from drb.bash import serialize, provide_encoded_signature
 
 _HELP = """Builds a binary RPM from .src.rpm file.
     Uses `docker run` under the hood.
+
+    IMAGE should be a docker image id or a repository:tag,
+    e.g something like a682b68bbaba or alanfranz/drb-epel-6-x86-64:latest ;
+    anything that can be passed to `docker run` as an IMAGE parameter will do.
+
+    SRCRPM should be a .src.rpm file that contains the .spec and all the
+    references source files.
+
+    TARGET_DIRECTORY is where the RPMS will be written. Anything inside
+    may be overwritten during the build phase.
+
+    ADDITIONAL_DOCKER_OPTIONS whatever is passed will be forwarded
+    straight to the 'docker run' command. PLEASE REMEMBER to insert a double dash (--)
+    before the first additional option, otherwise it will be mistaken
+    for a docker-rpm-builder option.
+
+    Options:
+
+    --verify-signature: if enabled, the .src.rpm signature will be verified;
+    if the verification fails, the build will be aborted.
+
+    --bash-on-failure: if enabled, the tool will drop in an interactive
+    shell inside the container if the build fails.
+
+    --sign-with <PATH>: if passed, the chosen GPG key file is used to sign the package.
+    Currently, such file MUST be a readable, password-free, ascii-armored
+    GPG private key file.
+
+    --always-pull: if passed, a `docker pull` for the latest
+    image version from Docker Hub (or other configured endpoint) is performed. Please note that
+    any error that may arise from the operation is currently ignored.
+
+    Examples:
+
+    - in this scenario we use no option of ours but we add an option to be forwarded to docker:
+
+    docker-rpm-builder srcrpm a682b68bbaba mypackage.src.rpm /tmp/rpms -- --dns=192.168.1.1
+
+    - in this scenario we use a repository:tag as an image, and we ask drb to download the sources from the internet for us:
+
+    docker-rpm-builder srcrpm alanfranz/drb-epel-6-x86-64:latest mypackage.src.rpm /tmp/rpms --sign-with mykey.pgp
     """
 
 _logger = logging.getLogger("drb.commands.srcrpm")
