@@ -18,7 +18,7 @@ test: devenv
 	devenv/bin/python -m unittest discover -v
 
 fulltest: test
-	. devenv/bin/activate && cd integration_tests && ./test.sh ${TEST_IMAGES}
+	. devenv/bin/activate && cd drb/integration_tests && ./test.sh ${TEST_IMAGES}
 
 tmp:
 	mkdir -p tmp
