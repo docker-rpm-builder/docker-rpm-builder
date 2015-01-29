@@ -101,7 +101,7 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
                                     "GPG_PRIVATE_KEY": encoded_signature})
 
     try:
-        additional_docker_options += " " + internal_docker_options
+        additional_docker_options = internal_docker_options + " ".join(additional_docker_options)
         srpms_inner_dir = sp("{dockerexec} run {image} rpm --eval %{{_srcrpmdir}}", **locals()).strip()
         rpms_inner_dir = sp("{dockerexec} run {image} rpm --eval %{{_rpmdir}}", **locals()).strip()
         sp("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts -v {srpms_temp}:{srpms_inner_dir} -v {target_directory}:{rpms_inner_dir}"
