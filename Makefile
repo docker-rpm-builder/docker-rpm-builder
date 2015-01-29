@@ -2,7 +2,7 @@
 
 devenv: setup.py
 	test -r devenv || virtualenv-2.7 devenv
-	devenv/bin/pip install --editable  .
+	devenv/bin/pip install --editable . --upgrade
 	devenv/bin/pip install wheel
 	devenv/bin/pip install bpython
 
@@ -15,7 +15,7 @@ endif
 	VERSION_NUMBER=$(shell python setup.py --version) docker-rpm-builder dir ${BUILD_IMAGE} .
 
 test: devenv
-	devenv/bin/python -m unittest discover -v
+	devenv/bin/python -m unittest2 discover -v
 
 fulltest: test
 	. devenv/bin/activate && cd drb/integration_tests && ./test.sh ${TEST_IMAGES}

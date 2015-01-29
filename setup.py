@@ -4,7 +4,8 @@ from setuptools import setup, find_packages
 
 
 install_requires = [
-    'Click==3.3'
+    'Click==3.3',
+    'unittest2 == 0.8.0'
 ]
 
 if sys.version_info[1] == 6:

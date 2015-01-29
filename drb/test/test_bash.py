@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from unittest import TestCase
+from unittest2 import TestCase
 from drb.bash import serialize
 from collections import OrderedDict
 import base64

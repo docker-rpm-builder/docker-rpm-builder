@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from unittest import TestCase
+from unittest2 import TestCase
 from drb.spectemplate import DoubleDelimiterTemplate
 
 class TestTemplateTransformation(TestCase):
