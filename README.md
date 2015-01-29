@@ -175,7 +175,9 @@ such images without actually needing a Dockerfile on a source repo.
 * dns default to public ones, will add an option for private ones. Right now you can just add arbitrary docker options after IMAGETAG and SRCDIR
 
 ## TODOS and ideas
+* General refactor: remove code duplication, improve setup, etc.
 * Support some way to cache build dependencies between builds for the same package (commit after run? commit after build-dep?)
-* Smoke tests to see whether everything is properly built
 * Better RPM package
 * DEB package
+* Refactor bash-based test into python-based ones, even when spawning processes
+* Full target-based test - run selftest --full inside target images for officially supported package distributions - requires docker-in-docker approach.
