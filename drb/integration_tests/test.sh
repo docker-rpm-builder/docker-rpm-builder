@@ -1,6 +1,6 @@
 #!/bin/bash
 trap "{ echo ERROR detected; exit 1; }" ERR
-IMAGES=${1:-alanfranz/drb-epel-6-x86-64:latest alanfranz/drb-epel-5-x86-64:latest alanfranz/drb-epel-7-x86-64:latest alanfranz/drb-fedora-20-x86-64:latest alanfranz/drb-fedora-21-x86-64:latest alanfranz/fedora-rawhide-x86-64:latest}
+IMAGES=${1:-alanfranz/drb-epel-6-x86-64:latest alanfranz/drb-epel-5-x86-64:latest alanfranz/drb-epel-7-x86-64:latest alanfranz/drb-fedora-20-x86-64:latest alanfranz/drb-fedora-21-x86-64:latest alanfranz/drb-fedora-rawhide-x86-64:latest}
 
 LATEST_STARTED_TEST=""
 function start_test {
