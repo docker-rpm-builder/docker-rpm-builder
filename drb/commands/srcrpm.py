@@ -53,7 +53,7 @@ _HELP = """Builds a binary RPM from .src.rpm file.
 
     docker-rpm-builder srcrpm a682b68bbaba mypackage.src.rpm /tmp/rpms -- --dns=192.168.1.1
 
-    - in this scenario we use a repository:tag as an image, and we ask drb to download the sources from the internet for us:
+    - in this scenario we use a repository:tag as an image, and we ask drb to sign the package
 
     docker-rpm-builder srcrpm alanfranz/drb-epel-6-x86-64:latest mypackage.src.rpm /tmp/rpms --sign-with mykey.pgp
     """
