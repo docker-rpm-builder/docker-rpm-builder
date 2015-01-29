@@ -135,7 +135,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         dockerscripts = getpath("drb/dockerscripts")
         rpms_inner_dir = sp("{dockerexec} run {image} rpm --eval %{{_rpmdir}}", **locals()).strip()
         sources_inner_dir = sp("{dockerexec} run {image} rpm --eval %{{_sourcedir}}", **locals()).strip()
-        sp("{dockerexec} run -v {dockerscripts}:/dockerscripts -v {source_directory}:{sources_inner_dir} -v {target_directory}:{rpms_inner_dir} {bashonfail_options} -w /dockerscripts {image}  ./rpmbuild-dir-in-docker.sh {serialized_options} {additional_docker_options}", **locals())
+        sp("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts -v {source_directory}:{sources_inner_dir} -v {target_directory}:{rpms_inner_dir} {bashonfail_options} -w /dockerscripts {image}  ./rpmbuild-dir-in-docker.sh {serialized_options}", **locals())
     finally:
         if deletespec:
             os.unlink(specfile)
