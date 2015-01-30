@@ -1,4 +1,4 @@
-.PHONY: srpm clean distclean pypirelease test fulltest
+.PHONY: srpm clean distclean pypirelease test fulltest pypirelease
 
 devenv: setup.py
 	test -r devenv || virtualenv-2.7 devenv
@@ -27,15 +27,20 @@ clean:
 	rm -rf tmp build dist 
 
 distclean: clean
-	rm -rf devenv *.tar.gz docker-rpm-builder.spec
+	rm -rf prodenv devenv *.tar.gz docker-rpm-builder.spec
 
-
-pypirelease: devenv
+pypirelease:
 ifndef BUILD_NUMBER
 	@echo "Must pass BUILD_NUMBER for upload"
 	@exit 1
 endif
-	devenv/bin/python setup.py egg_info --tag-build ${BUILD_NUMBER} bdist_wheel sdist register upload
-	# AFTER the build we must 'cleanup' the tag-build info otherwise things stop working. F**K python packaging.
-	devenv/bin/python setup.py egg_info
-
+	# always recreate
+	rm -rf prodenv
+	virtualenv-2.7 prodenv
+	echo "${BUILD_NUMBER}" >> version.txt
+	prodenv/bin/pip install .
+	prodenv/bin/pip freeze > requirements.txt
+	prodenv/bin/pip install wheel
+	prodenv/bin/python setup.py bdist_wheel sdist 
+	git checkout -- version.txt
+	rm -rf *.egg-info

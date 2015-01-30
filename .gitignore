@@ -10,3 +10,4 @@ integration_tests/tmux-src/*.tar.gz
 docker-rpm-builder.spec
 *.tar.gz
 setuptools_git*
+prodenv
