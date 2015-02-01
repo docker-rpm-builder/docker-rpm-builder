@@ -29,6 +29,23 @@ clean:
 distclean: clean
 	rm -rf prodenv devenv *.tar.gz docker-rpm-builder.spec
 
+stablerelease:
+ifndef RELEASE_NUMBER
+	@echo "Must pass RELEASE_NUMBER"
+	@exit 1
+endif
+	# always recreate
+	rm -rf prodenv
+	virtualenv-2.7 prodenv
+	sed -i -e "s/\dev0//g" version.txt
+	[ "${RELEASE_NUMBER}" == $(cat version.txt) ] || { echo "Release number version mismatch"; exit 1; }
+	prodenv/bin/pip install .
+	prodenv/bin/pip freeze > requirements.txt
+	prodenv/bin/pip install wheel
+	prodenv/bin/python setup.py bdist_wheel sdist
+	git checkout -- version.txt
+	rm -rf *.egg-info
+
 pypirelease:
 ifndef BUILD_NUMBER
 	@echo "Must pass BUILD_NUMBER for upload"

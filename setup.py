@@ -4,7 +4,8 @@ from setuptools import setup, find_packages
 from os.path import dirname, join
 
 # this smells, but I don't know how to do better than this right now.
-VERSION=open(join(dirname(__file__), "version.txt")).read().strip()
+# let's remove all kind of whitespace/newline everywhere
+VERSION=open(join(dirname(__file__), "version.txt")).read().replace(" ", "").replace("\n", "")
 
 install_requires = [
     'Click==3.3',
