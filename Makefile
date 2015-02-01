@@ -47,7 +47,7 @@ endif
 	git add version.txt requirements.txt
 	git commit version.txt requirements.txt -m "Prepare for release ${RELEASE_NUMBER}"
 	git tag ${RELEASE_NUMBER} -m "Release tag"
-#	prodenv/bin/python setup.py bdist_wheel sdist
+	prodenv/bin/python setup.py bdist_wheel sdist register upload
 	MAJOR="$$(cat version.txt | cut -d '.' -f 1)" ; MINOR="$$(cat version.txt | cut -d '.' -f 2)" ; echo $${MAJOR}.$$(($${MINOR} +1))dev0 > version.txt
 	rm -rf *.egg-info
 	git add version.txt
