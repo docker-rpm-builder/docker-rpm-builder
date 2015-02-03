@@ -16,7 +16,7 @@ function end_test {
     rm -rf ${RPM_DIR}
 }
 
-RPM_DIR="/tmp/drb_rpms"
+RPM_DIR=$(mktemp -d)
 for image in ${IMAGES}; do
     start_test "without sources, build fails"
     docker-rpm-builder dir ${image} tmux-src/ ${RPM_DIR} && { echo "should have failed"; exit 1; }
