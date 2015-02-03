@@ -2,10 +2,15 @@
 trap "{ echo ERROR detected; exit 1; }" ERR
 IMAGES=${1:-alanfranz/drb-epel-6-x86-64:latest alanfranz/drb-epel-5-x86-64:latest alanfranz/drb-epel-7-x86-64:latest alanfranz/drb-fedora-20-x86-64:latest alanfranz/drb-fedora-21-x86-64:latest alanfranz/drb-fedora-rawhide-x86-64:latest}
 
+RPM_DIR=$(mktemp -d)
+SRC_DIR=$(mktemp -d)
+
 LATEST_STARTED_TEST=""
 function start_test {
     rm -rf tmux-src/*.tar.gz
     rm -rf ${RPM_DIR}
+    rm -rf ${SRC_DIR}
+    mkdir -p ${SRC_DIR}
     echo "[$(date --rfc-3339=seconds)] TEST START: $1"
     LATEST_STARTED_TEST="$1"
 }
@@ -16,26 +21,29 @@ function end_test {
     rm -rf ${RPM_DIR}
 }
 
-RPM_DIR=$(mktemp -d)
 for image in ${IMAGES}; do
     start_test "without sources, build fails"
-    docker-rpm-builder dir ${image} tmux-src/ ${RPM_DIR} && { echo "should have failed"; exit 1; }
+    cp -r tmux-src/* ${SRC_DIR}
+    docker-rpm-builder dir ${image} ${SRC_DIR} ${RPM_DIR} && { echo "should have failed"; exit 1; }
     end_test
 
     start_test "with sources, two rpms (binary and debuginfo) are created"
-    docker-rpm-builder dir ${image} tmux-src/ ${RPM_DIR} --download-sources --always-pull
+    cp -r tmux-src/* ${SRC_DIR}
+    docker-rpm-builder dir ${image} ${SRC_DIR} ${RPM_DIR} --download-sources --always-pull
     [ "$(ls ${RPM_DIR}/x86_64/tmux-* | wc -l)" == "2" ]
     end_test
 
     start_test "packages are not signed unless required"
-    docker-rpm-builder dir ${image} tmux-src ${RPM_DIR} --download-sources
+    cp -r tmux-src/* ${SRC_DIR}
+    docker-rpm-builder dir ${image} ${SRC_DIR} ${RPM_DIR} --download-sources
     [ "$(ls ${RPM_DIR}/x86_64/tmux-* | wc -l)" == "2" ]
     cp ./secret.pub ${RPM_DIR}
     docker run -v ${RPM_DIR}:${RPM_DIR} -w ${RPM_DIR}/x86_64 ${image} /bin/bash -c 'yum install -y rpmdevtools && rpm --import ../secret.pub && /usr/bin/rpmdev-checksig *.rpm' && { echo "should have failed"; exit 1; }
     end_test
 
     start_test "if I ask to sign, they get signed properly. Such signature can be verified."
-    docker-rpm-builder dir ${image} tmux-src ${RPM_DIR} --download-sources --sign-with ./secret.pgp
+    cp -r tmux-src/* ${SRC_DIR}
+    docker-rpm-builder dir ${image} ${SRC_DIR} ${RPM_DIR} --download-sources --sign-with ./secret.pgp
     [ "$(ls ${RPM_DIR}/x86_64/tmux-* | wc -l)" == "2" ]
     cp ./secret.pub ${RPM_DIR}
     docker run -v ${RPM_DIR}:${RPM_DIR} -w ${RPM_DIR}/x86_64 ${image} /bin/bash -c 'yum install -y rpmdevtools && rpm --import ../secret.pub && /usr/bin/rpmdev-checksig *.rpm'
