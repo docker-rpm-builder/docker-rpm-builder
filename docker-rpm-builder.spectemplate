@@ -14,7 +14,7 @@ Source2: https://pypi.python.org/packages/source/p/pipsi/pipsi-0.8.tar.gz
 Source3: https://pypi.python.org/packages/source/s/setuptools/setuptools-7.0.tar.gz
 BuildRequires: %{mypython}
 BuildRoot: /tmp/buildroot-%{name}-%{version}-%{release}.%{_arch}
-Requires: docker-io >= 1.4.0, bash, %{mypython}
+Requires: docker-io >= 1.4.0, bash, %{mypython}, perl
 AutoReqProv: No
 
 
@@ -28,8 +28,6 @@ built from git @GIT_COMMIT@
 
 
 %install
-cat /proc/mounts
-
 pushd $(mktemp -d)
 
 tar xzvf %{_sourcedir}/setuptools-7.0.tar.gz
