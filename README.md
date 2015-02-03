@@ -27,7 +27,7 @@ Must have [docker](https://www.docker.com/) installed and properly configured (s
 
 You should have a vague idea of what Docker is and how it works, otherwise you might get puzzled.
 
-Python 2.7, Bash and perl should be installed on your system as well.
+Python 2.7, bash, perl and wget should be installed on your system as well.
 
 ## Installation
 
@@ -53,6 +53,12 @@ to upgrade docker-rpm-builder to the latest version, use:
 pipsi upgrade docker-rpm-builder
 ```
 
+## Usage
+
+It is **not recommended** to run docker-rpm-builder as root; I've encountered issues with file permissions when running through docker.
+Instead, use a normal user, just add it to the *docker* group to enable docker usage.
+
+Also, make sure **selinux is disabled**. I've encountered strange problems with docker bindmount when selinux is active.
 
 ## Building a binary RPM straight from a directory
 
