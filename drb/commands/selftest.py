@@ -42,10 +42,11 @@ def short_test():
     testpath = getpath("drb/test")
     result = sp("{dockerexec} run -v {testpath}:/testpath phusion/baseimage /bin/bash -c 'cat /testpath/everythinglooksgood.txt'", **locals())
     if result.strip() != "everything looks good":
-        click.echo("Basic self test failed: docker run failed. Checklist:\nVerify the docker service is running\n"
-                   "Verify the 'docker' group exists and your user belongs to it\n",
-                   "Verify you've logged out/in after adding your user to the group\n",
-                   "Verify selinux is disabled\n",
+        click.echo("Basic self test failed: docker run failed. Checklist:\n\nVerify the docker service is running\n"
+                   "Verify the 'docker' group exists and your user belongs to it\n"
+                   "If you had to add the group, verify you've restarted the 'docker' service after such addition\n"
+                   "Verify you've logged out+in after adding your user to the group\n"
+                   "Verify selinux is disabled\n"
                    "Verify your disk has enough free space\n"
                    "Error:\n%s\n" % result)
         sys.exit(1)
