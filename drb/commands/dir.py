@@ -12,6 +12,7 @@ from drb.spawn import sp
 from drb.path import getpath
 from drb.pull import pull
 from drb.bash import serialize, provide_encoded_signature, spawn_interactive
+from drb.downloadsources import downloadsources
 
 _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hood.
 
@@ -109,8 +110,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     specfile = specfiles[0]
 
     if download_sources:
-        _logger.info("Downloading additional sources")
-        sp("{0} --get-files --directory {1} {2}".format(getpath("drb/builddeps/spectool"), source_directory, specfile))
+        downloadsources(source_directory, specfile)
 
     _logger.info("Now building project from %s on image %s", source_directory, image)
     dockerexec = which("docker")

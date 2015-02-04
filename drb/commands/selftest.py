@@ -3,10 +3,13 @@
 import click
 import sys
 import os
+import shutil
 from subprocess import Popen
+from tempfile import mkdtemp
 from drb.spawn import sp
 from drb.which import which
 from drb.path import getpath
+from drb.downloadsources import downloadsources
 
 
 _HELP = """
@@ -41,10 +44,14 @@ def short_test():
         click.echo("Basic self test failed: docker run failed:\n'%s'" % result)
         sys.exit(1)
 
-    spectoolout = sp("{0} -h 2>&1".format(getpath("drb/builddeps/spectool")))
-    if not "Usage: spectool [<options>] <specfile>" in spectoolout:
-        click.echo("Basic self test failed, could not run spectool (missing perl?)\n%s" % spectoolout)
-        sys.exit(1)
+    tmpdir = mkdtemp()
+    try:
+        downloadsources(tmpdir, getpath("drb/test/spectooltest.spec"))
+        if not os.path.exists(os.path.join(tmpdir, "README.md")):
+            click.echo("Basic self test failed, could not download sources; probably a spectool issue (missing perl or wrong version?)")
+            sys.exit(1)
+    finally:
+        shutil.rmtree(tmpdir)
 
     click.echo("Short self test succeeded.")
 

@@ -194,3 +194,4 @@ such images without actually needing a Dockerfile on a source repo.
 * Refactor bash-based test into python-based ones, even when spawning processes
 * Quick test for working spectool
 * Quick test for working bindmount
+* Find a better solution than 'spectool' for downloading sources.
