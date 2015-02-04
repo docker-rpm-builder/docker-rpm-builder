@@ -31,6 +31,8 @@ Python 2.7, bash, perl and curl should be installed on your system as well.
 
 ## Installation
 
+Fedora: must have a "docker" group not a "dockerroot" group
+
 Caveats:
 in Fedora Rawhide, a "docker" group is not created by default when installing docker; you should definitely create such group, add your user, and then
 restart docker; otherwise it will fail.
@@ -185,9 +187,10 @@ such images without actually needing a Dockerfile on a source repo.
 * dns default to public ones, will add an option for private ones. Right now you can just add arbitrary docker options after IMAGETAG and SRCDIR
 
 ## TODOS and ideas
-* General refactor: remove code duplication, improve setup, etc.
+* General refactor: remove code duplication, improve setup, etc. - things are currently quite messed up.
 * Support some way to cache build dependencies between builds for the same package (commit after run? commit after build-dep?)
 * Better RPM package
 * DEB package
 * Refactor bash-based test into python-based ones, even when spawning processes
-* Full target-based test - run selftest --full inside target images for officially supported package distributions - requires docker-in-docker approach.
+* Quick test for working spectool
+* Quick test for working bindmount
