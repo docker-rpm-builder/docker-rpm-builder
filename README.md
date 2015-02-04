@@ -27,9 +27,13 @@ Must have [docker](https://www.docker.com/) installed and properly configured (s
 
 You should have a vague idea of what Docker is and how it works, otherwise you might get puzzled.
 
-Python 2.7, bash, perl and wget should be installed on your system as well.
+Python 2.7, bash, perl and curl should be installed on your system as well.
 
 ## Installation
+
+Caveats:
+in Fedora Rawhide, a "docker" group is not created by default when installing docker; you should definitely create such group, add your user, and then
+restart docker; otherwise it will fail.
 
 docker-rpm-builder is a pure-python, self-contained python package.
 

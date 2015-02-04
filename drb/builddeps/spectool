@@ -4,7 +4,7 @@
 
 ## Copyright © 2004, 2007, 2008 Red Hat, Inc.
 ## Copyright © 2004, 2005, 2007 Nils Philippsen <nils@tiptoe.de>, <nphilipp@redhat.com>
-## Copyright © 2005, 2006 Ville Skyttä <ville.skytta@iki.fi>
+## Copyright © 2005, 2006, 2010 Ville Skyttä <ville.skytta@iki.fi>
 
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@ use File::Spec;
 use FileHandle;
 use Getopt::Long;
 
-my $VERSION = '1.0.11';
-my $WGETRC = '/etc/fedora/wgetrc';
+my $VERSION = '1.0.10rpmdev1';
+my $CURLRC = '/curlrc';
 
 Getopt::Long::Configure ('no_ignore_case');
 
@@ -37,7 +37,7 @@ my $tmpspec_filename;
 
 my @rpm_sections = qw/package description prep build install clean pre preun
                       post postun triggerin triggerun triggerpostun files
-                      changelog/;
+                      changelog pretrans posttrans verifyscript triggerprein/;
 my %rpm_sections;
 foreach (@rpm_sections) {
 	$rpm_sections{$_} = 1;
@@ -54,6 +54,7 @@ my $specfile_fh;
 my $verbose = 0;
 my $dryrun = 0;
 my $debug = 0;
+my $force = 0;
 
 sub debug {
 	my @list = @_;
@@ -100,6 +101,7 @@ sub eval_sources_patches {
 
     rpm_conditional_quirk ($tmpspec_fh);
 
+	my $saw_group = 0;
 	while (<$specfile_fh>) {
 		my $line = $_;
 		if ($line =~ m/^\s*%(\w+)/) {
@@ -108,16 +110,26 @@ sub eval_sources_patches {
 				last;
 			}
 		}
-		next if ($line =~ m/^\s*(BuildArch|Exclu(d|siv)e(Arch|OS))\s*:/i);
+		next if ($line =~ m/^\s*(BuildArch(itectures)?|Exclu(d|siv)e(Arch|OS)|Icon)\s*:/i);
+		$line =~ s/^\s*Copyright\s*:/License:/i;
+		$line =~ s/^\s*Serial\s*:/Epoch:/i;
 		$preamble .= $line;
 		if ($line !~ m/^\s*(?:source|patch)\d*\s*:/) {
 			print $tmpspec_fh $line;
 		}
+		if ($line =~ /^\s*Group\s*:/i) {
+			$saw_group++;
+		}
+	}
+
+	if (!$saw_group) {
+		print $tmpspec_fh "Group: spectool\n";
+		$preamble = "Group: spectool\n$preamble";
 	}
 
 	print $tmpspec_fh "\%description\n\%prep\n";
 
-	print $tmpspec_fh "cat << EOF_$tmpspec_filename\n";
+	print $tmpspec_fh "cat << \\EOF_$tmpspec_filename\n";
 
 	print $tmpspec_fh $preamble;
 
@@ -127,7 +139,7 @@ sub eval_sources_patches {
 	(undef, $stderr_filename) = File::Temp::tempfile ( 'stderr_XXXXXXXXXX', DIR => $tmpdir );
 	debug "stderr filename: $stderr_filename\n";
 
-	open PIPE, "rpmbuild --define '_sourcedir " . $tmpdir . "' --define '_builddir " . $tmpdir . "' --define '_srcrpmdir " . $tmpdir . "' --define '_rpmdir " . $tmpdir . "' --nodeps -bp $tmpspec_filename 2>$stderr_filename |" or die;
+	open PIPE, "rpmbuild --define '_topdir " . $tmpdir . "' --define '_sourcedir " . $tmpdir . "' --define '_builddir " . $tmpdir . "' --define '_srcrpmdir " . $tmpdir . "' --define '_rpmdir " . $tmpdir . "' --nodeps -bp $tmpspec_filename 2>$stderr_filename |" or die;
 
 	while (<PIPE>) {
 		chomp ();
@@ -183,62 +195,114 @@ sub list_sources_patches {
 
 sub retrievable {
 	my $url = $_[0];
-	return eval "\$url =~ m,^$protocols_re://,;";
+	return eval "\$url =~ m,^$protocols_re://,i;";
 }
 
 sub retrieve {
 	my ($where, $url) = @_;
 	if (retrievable ($url)) {
-		print "Getting $url to $where\n" if ($verbose);
-        my $filename = $url;
-        $filename =~ s/([^\/?]*\/)*([^\?]*)(\?.*)?/$2/;
-        my @cmd = (qw (wget -N --retr-symlinks ), qw (-P), $where, $url);
-		unshift(@cmd, 'env', "WGETRC=$WGETRC") if (-e $WGETRC);
+		my $path = File::Spec->catfile($where, $url =~ m|([^/]+)$|);
+		print "Getting $url to $path\n";
+		if (-e $path) {
+			if ($force) {
+				if (! unlink $path) {
+					warn("Could not unlink $path, skipping download: $!\n");
+					return 1;
+				}
+			} else {
+				warn("$path already exists, skipping download\n");
+				return 0;
+			}
+		}
+		# Note: -k/--insecure is intentionally not here; add it to
+		#       $CURLRC if you want it.
+		my @cmd = (qw (curl --fail --remote-time --location
+			       --output), $path,
+			   '--user-agent', "spectool/$VERSION");
+		push(@cmd, '--config', $CURLRC) if (-e $CURLRC);
+		push(@cmd, $url);
 		print "--> @cmd\n" if ($verbose > 1);
 		if (! $dryrun) {
 			system @cmd;
+			return $? == -1 ? 127 : $? >> 8;
 		} else {
 			print "dry run: @cmd\n";
 		}
 	} else {
-		warn "Couldn't fetch $url: missing URL\n" if ($verbose);
+		warn "Couldn't fetch $url: missing/unsupported URL\n" if ($verbose);
 	}
+	return 0;
 }
 
 sub retrieve_sources_patches {
 	my $where = shift;
+	my $ret = my $rc = 0;
 	foreach (@_) {
-		m/^source(\d+)$/i && retrieve ($where, $sources{$1});
-		m/^patch(\d+)$/i && retrieve ($where, $patches{$1});
-		m/^(sources|patches|all)$/i && retrieve_sources_patches ($where, expand ($1));
+		if (/^source(\d+)$/i) {
+			$rc = retrieve ($where, $sources{$1});
+			$ret ||= $rc;
+		}
+		if (/^patch(\d+)$/i) {
+			$rc = retrieve ($where, $patches{$1});
+			$ret ||= $rc;
+		}
+		if (/^(sources|patches|all)$/i) {
+			$rc = retrieve_sources_patches ($where, expand ($1));
+			$ret ||= $rc;
+		}
 	}
+	return $ret;
+}
+
+sub help {
+	print << 'EOF';
+Spectool is a tool to expand and download sources and patches from specfiles.
+
+If you experience problems with specific specfiles, try to run
+
+  rpmbuild --nobuild --nodeps <specfile>
+
+on the file which might give a clue why spectool fails on a file (ignore
+anything about missing sources or patches). The plan is to catch errors like
+this in spectool itself and warn the user about it in the future.
+
+EOF
 }
 
 sub usage {
-	print STDERR << 'EOF';
+	my $status = shift || 0;
+	select STDERR if $status;
+	print << 'EOF';
 Usage: spectool [<options>] <specfile>
+
 Options:
-operating mode:
--l, --lf, --list-files        lists the expanded sources/patches (default)
--g, --gf, --get-files         gets the sources/patches that are listed with
-                              a URL
--h, --help                    display this help screen
+Operating mode:
+ -l, --lf, --list-files      lists the expanded sources/patches (default)
+ -g, --gf, --get-files       gets the sources/patches that are listed with
+                             a URL
+ -h, --help                  display this help screen
 
-files on which to operate:
--A, --all                     all files, sources and patches (default)
--S, --sources                 all sources
--P, --patches                 all patches
--s, --source x[,y[,...]]      specified sources
--p, --patch a[,b[,...]]       specified patches
+Files on which to operate:
+ -A, --all                   all files, sources and patches (default)
+ -S, --sources               all sources
+ -P, --patches               all patches
+ -s, --source x[,y[,...]]    specified sources
+ -p, --patch a[,b[,...]]     specified patches
 
-misc:
--d, --define 'macro value'    defines RPM macro 'macro' to be 'value'
--C, --directory dir           download into specified directory (default '.')
--R, --sourcedir               download into rpm's %{_sourcedir}
--n, --dryrun, --dry-run       don't download anything, just show what would be
-                              done
--D, --debug                   output debug info, don't clean up when done
+Miscellaneous:
+ -d, --define 'macro value'  defines RPM macro 'macro' to be 'value'
+ -C, --directory dir         download into specified directory (default '.')
+ -R, --sourcedir             download into rpm's %{_sourcedir}
+ -n, --dryrun, --dry-run     don't download anything, just show what would be
+                             done
+ -f, --force                 try to unlink and download if target files exist
+ -D, --debug                 output debug info, don't clean up when done
+
+Files:
+/usr/local/etc/rpmdevtools/curlrc
+ optional curl(1) configuration
 EOF
+	exit $status;
 }
 
 sub show_version {
@@ -269,14 +333,15 @@ GetOptions ('h|help' => sub { $command = 'help'; },
 			'l|lf|list-files' => sub { $command = 'listfiles'; },
 			'g|gf|get-files' => sub { $command = 'getfiles'; },
 			'v|verbose' => sub { $verbose++; },
-			'n|dryrun|dry-run' => sub { $dryrun = 1; },
+			'n|dryrun|dry-run' => \$dryrun,
 			'V|version' => sub { $command = 'version'; },
-			's|source=i' => \@sources,
-			'p|patch=i' => \@patches,
+			's|source=s' => \@sources,
+			'p|patch=s' => \@patches,
 			'S|sources' => sub { push @what, 'sources'; },
 			'P|patches' => sub { push @what, 'patches'; },
 			'A|all' => sub { push @what, 'all'; },
-			'D|debug' => sub { $debug = 1; },
+			'f|force' => \$force,
+			'D|debug' => \$debug,
 			'C|directory=s' => \$where,
 			'R|sourcedir' => sub { chomp($where = `rpm --eval '\%{_sourcedir}'`) });
 
@@ -305,8 +370,7 @@ unless (@ARGV) {
 		m/version/ && last;
 		m/help/ && last;
 		m/none/ && last;
-		usage ();
-		exit (1);
+		usage (1);
 	}
 }
 
@@ -314,15 +378,15 @@ $specfile = shift @ARGV;
 
 if (@ARGV) {
 	warn "You can only work on one spec file at a time.\n";
-	usage ();
-	exit (1);
+	usage (1);
 }
 
 foreach ($command) {
 	m/listfiles/ && do { open_specfile (); eval_sources_patches (); list_sources_patches (@what); last; };
-	m/getfiles/ && do { open_specfile (); eval_sources_patches (); retrieve_sources_patches ($where, @what); last; };
+	m/getfiles/ && do { open_specfile (); eval_sources_patches (); exit retrieve_sources_patches ($where, @what); };
 	m/version/ && do { show_version (); last; };
-	(m/none/ || m/help/) && do { usage (); last; };
+	m/help/ && help () && usage (0);
+	m/none/ && usage (1);
 }
 
 # Local variables:
