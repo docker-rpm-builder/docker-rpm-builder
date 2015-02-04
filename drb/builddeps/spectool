@@ -27,7 +27,7 @@ use FileHandle;
 use Getopt::Long;
 
 my $VERSION = '1.0.10rpmdev1';
-my $CURLRC = '/curlrc';
+my $CURLRC = '/etc/curlrc';
 
 Getopt::Long::Configure ('no_ignore_case');
 
