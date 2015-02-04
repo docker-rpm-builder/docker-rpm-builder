@@ -11,7 +11,7 @@ from drb.which import which
 from drb.spawn import sp
 from drb.path import getpath
 from drb.pull import pull
-from drb.bash import serialize, provide_encoded_signature
+from drb.bash import serialize, provide_encoded_signature, spawn_interactive
 
 _HELP = """Builds a binary RPM from .src.rpm file.
     Uses `docker run` under the hood.
@@ -86,10 +86,12 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
     rpmbuild_options = "" if verify_signature else "--nosignature"
 
     bashonfail = ""
+    spawn_func = sp
     if bash_on_failure:
         internal_docker_options.add("-i")
         internal_docker_options.add("-t")
         bashonfail = "bashonfail"
+        spawn_func = spawn_interactive
 
     internal_docker_options = " ".join(internal_docker_options)
     encoded_signature = provide_encoded_signature(sign_with)
@@ -104,7 +106,7 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
         additional_docker_options = internal_docker_options + " ".join(additional_docker_options)
         srpms_inner_dir = sp("{dockerexec} run {image} rpm --eval %{{_srcrpmdir}}", **locals()).strip()
         rpms_inner_dir = sp("{dockerexec} run {image} rpm --eval %{{_rpmdir}}", **locals()).strip()
-        sp("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts -v {srpms_temp}:{srpms_inner_dir} -v {target_directory}:{rpms_inner_dir}"
+        spawn_func("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts -v {srpms_temp}:{srpms_inner_dir} -v {target_directory}:{rpms_inner_dir}"
            " -w /dockerscripts {image} ./rpmbuild-srcrpm-in-docker.sh {serialized_options}", **locals())
     finally:
         shutil.rmtree(srpms_temp)

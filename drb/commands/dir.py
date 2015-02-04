@@ -11,7 +11,7 @@ from drb.which import which
 from drb.spawn import sp
 from drb.path import getpath
 from drb.pull import pull
-from drb.bash import serialize, provide_encoded_signature
+from drb.bash import serialize, provide_encoded_signature, spawn_interactive
 
 _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hood.
 
@@ -117,9 +117,11 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
 
     bashonfail = "dontspawn"
     bashonfail_options = ""
+    spawn_func = sp
     if bash_on_failure:
         bashonfail = "bashonfail"
         bashonfail_options = "-i -t"
+        spawn_func = spawn_interactive
 
     sign_with_encoded = provide_encoded_signature(sign_with)
 
@@ -135,7 +137,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         dockerscripts = getpath("drb/dockerscripts")
         rpms_inner_dir = sp("{dockerexec} run {image} rpm --eval %{{_rpmdir}}", **locals()).strip()
         sources_inner_dir = sp("{dockerexec} run {image} rpm --eval %{{_sourcedir}}", **locals()).strip()
-        sp("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts -v {source_directory}:{sources_inner_dir} -v {target_directory}:{rpms_inner_dir} {bashonfail_options} -w /dockerscripts {image}  ./rpmbuild-dir-in-docker.sh {serialized_options}", **locals())
+        spawn_func("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts -v {source_directory}:{sources_inner_dir} -v {target_directory}:{rpms_inner_dir} {bashonfail_options} -w /dockerscripts {image}  ./rpmbuild-dir-in-docker.sh {serialized_options}", **locals())
     finally:
         if deletespec:
             os.unlink(specfile)

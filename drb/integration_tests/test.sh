@@ -19,6 +19,7 @@ function end_test {
     echo "[$(date --rfc-3339=seconds)] TEST DONE: ${LATEST_STARTED_TEST}"
     LATEST_STARTED_TEST=""
     rm -rf ${RPM_DIR}
+    rm -rf ${SRC_DIR}
 }
 
 for image in ${IMAGES}; do
