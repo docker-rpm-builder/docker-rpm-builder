@@ -18,6 +18,7 @@ endif
 
 test: devenv
 	devenv/bin/python -m unittest2 discover -v
+	devenv/bin/docker-rpm-builder selftest
 
 fulltest: test
 	. devenv/bin/activate && cd drb/integration_tests && ./test.sh ${TEST_IMAGES}
@@ -48,10 +49,16 @@ endif
 	git commit version.txt requirements.txt -m "Prepare for release ${RELEASE_NUMBER}"
 	git tag ${RELEASE_NUMBER} -m "Release tag"
 	prodenv/bin/python setup.py bdist_wheel sdist register upload
+
+nextrelease:
 	MAJOR="$$(cat version.txt | cut -d '.' -f 1)" ; MINOR="$$(cat version.txt | cut -d '.' -f 2)" ; echo $${MAJOR}.$$(($${MINOR} +1))dev0 > version.txt
 	rm -rf *.egg-info
 	git add version.txt
-	git commit version.txt -m "Bump development version"
+	prodenv/bin/pip install .
+	prodenv/bin/pip uninstall wheel
+	prodenv/bin/pip freeze > requirements.txt
+	git add version.txt requirements.txt
+	git commit version.txt requirements.txt -m "Bump development version"
 
 pypirelease:
 ifndef BUILD_NUMBER
