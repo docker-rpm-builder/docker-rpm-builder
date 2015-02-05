@@ -1,5 +1,4 @@
 %define install_dir /opt/docker-rpm-builder
-%define mypython python@PYTHON_ADDITIONAL_VERSION@
 
 Summary: build native RPMs through docker
 Name: docker-rpm-builder
@@ -12,11 +11,14 @@ Source0: https://pypi.python.org/packages/source/v/virtualenv/virtualenv-1.11.6.
 Source1: https://pypi.python.org/packages/source/p/pip/pip-1.5.6.tar.gz
 Source2: https://pypi.python.org/packages/source/p/pipsi/pipsi-0.8.tar.gz
 Source3: https://pypi.python.org/packages/source/s/setuptools/setuptools-7.0.tar.gz
-BuildRequires: %{mypython}
+BuildRequires: python
 BuildRoot: /tmp/buildroot-%{name}-%{version}-%{release}.%{_arch}
+<<<<<<< HEAD
 Requires: docker-io >= 1.4.0, bash, %{mypython}, perl
+=======
+Requires: @DOCKERPACKAGE@ >= 1.3.0, bash, python, rpmdevtools
+>>>>>>> 71d102fcb65c34e63848c1b03d13d5dbc853886a
 AutoReqProv: No
-
 
 %description
 docker rpm builder
@@ -32,12 +34,12 @@ pushd $(mktemp -d)
 
 tar xzvf %{_sourcedir}/setuptools-7.0.tar.gz
 pushd setuptools-7.0
-%{mypython} setup.py install
+python setup.py install
 popd
 
 tar xzvf %{_sourcedir}/pip-1.5.6.tar.gz
 pushd pip-1.5.6
-%{mypython} setup.py install
+python setup.py install
 popd
 
 tar xzvf %{_sourcedir}/virtualenv-1.11.6.tar.gz
@@ -54,7 +56,7 @@ pushd %{_sourcedir}
 
 # small hack: if we don't do that we'll have some issues with buildrooted paths in virtualenv
 mkdir -p %{install_dir}/{bin,env}
-pipsi --home %{install_dir}/env --bin-dir %{install_dir}/bin install --python /usr/bin/%{mypython} .
+pipsi --home %{install_dir}/env --bin-dir %{install_dir}/bin install --python /usr/bin/python .
 mkdir -p ${RPM_BUILD_ROOT}/$(dirname %{install_dir})
 mv %{install_dir} ${RPM_BUILD_ROOT}/$(dirname %{install_dir})
 
@@ -63,6 +65,6 @@ cd ${RPM_BUILD_ROOT}/usr/bin
 ln -s %{install_dir}/bin/docker-rpm-builder docker-rpm-builder
 
 %files
-%defattr(-, root, root, 0750)
+%defattr(-, root, root, 0755)
 %{install_dir}/
 /usr/bin/docker-rpm-builder

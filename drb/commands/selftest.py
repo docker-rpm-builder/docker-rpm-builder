@@ -3,10 +3,13 @@
 import click
 import sys
 import os
+import shutil
 from subprocess import Popen
+from tempfile import mkdtemp
 from drb.spawn import sp
 from drb.which import which
 from drb.path import getpath
+from drb.downloadsources import downloadsources
 
 
 _HELP = """
@@ -33,23 +36,34 @@ def selftest(additional_test_options, full=False):
 
 def short_test():
     # TODO: run unitests as well here
-    click.echo("Starting short self test")
+    click.echo("Starting short self test. Requires networking and may take a bit of time especially at the first run, because data will be downloaded")
 
     dockerexec = which("docker")
-    result = sp("{dockerexec} run phusion/baseimage /bin/bash -c 'echo everything looks good'", **locals())
+    testpath = getpath("drb/test")
+    result = sp("{dockerexec} run -v {testpath}:/testpath phusion/baseimage /bin/bash -c 'cat /testpath/everythinglooksgood.txt'", **locals())
     if result.strip() != "everything looks good":
-        click.echo("Basic self test failed: docker run failed:\n'%s'" % result)
+        click.echo("Basic self test failed: docker run failed. Checklist:\n\nVerify the docker service is running\n"
+                   "Verify the 'docker' group exists and your user belongs to it\n"
+                   "If you had to add the group, verify you've restarted the 'docker' service after such addition\n"
+                   "Verify you've logged out+in after adding your user to the group\n"
+                   "Verify selinux is disabled\n"
+                   "Verify your disk has enough free space\n"
+                   "Error:\n%s\n" % result)
         sys.exit(1)
 
-    spectoolout = sp("{0} -h 2>&1".format(getpath("drb/builddeps/spectool")))
-    if not "Usage: spectool [<options>] <specfile>" in spectoolout:
-        click.echo("Basic self test failed, could not run spectool (missing perl?)\n%s" % spectoolout)
-        sys.exit(1)
+    tmpdir = mkdtemp()
+    try:
+        downloadsources(tmpdir, getpath("drb/test/spectooltest.spec"))
+        if not os.path.exists(os.path.join(tmpdir, "README.md")):
+            click.echo("Basic self test failed, could not download sources; probably a spectool issue (missing perl or wrong version?)")
+            sys.exit(1)
+    finally:
+        shutil.rmtree(tmpdir)
 
     click.echo("Short self test succeeded.")
 
 def long_test(additional_test_options):
-    click.echo("Starting full test suite. May take a long time, especially the first time, since docker will be downloading lot of data.")
+    click.echo("Starting full test suite. Requires networking and may take a long time, especially the first time, since docker will be downloading lot of data.")
     test_script = getpath("drb/integration_tests/test.sh")
     additional_test_options = " ".join(additional_test_options)
     os.chdir(getpath("drb/integration_tests"))
