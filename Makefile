@@ -51,14 +51,21 @@ endif
 	prodenv/bin/python setup.py bdist_wheel sdist register upload
 
 nextrelease:
+ifndef GIT_BRANCH
+	@echo "Must pass GIT_BRANCH"
+	@exit 1
+endif
 	MAJOR="$$(cat version.txt | cut -d '.' -f 1)" ; MINOR="$$(cat version.txt | cut -d '.' -f 2)" ; echo $${MAJOR}.$$(($${MINOR} +1))dev0 > version.txt
 	rm -rf *.egg-info
 	git add version.txt
+	prodenv/bin/pip uninstall -y wheel docker-rpm-builder
 	prodenv/bin/pip install .
-	prodenv/bin/pip uninstall wheel
 	prodenv/bin/pip freeze > requirements.txt
 	git add version.txt requirements.txt
 	git commit version.txt requirements.txt -m "Bump development version"
+	CURRENTREV="$$(git rev-parse HEAD)" && git checkout ${GIT_BRANCH} && git merge $${CURRENTREV}
+
+
 
 pypirelease:
 ifndef BUILD_NUMBER
