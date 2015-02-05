@@ -11,3 +11,4 @@ docker-rpm-builder.spec
 *.tar.gz
 setuptools_git*
 prodenv
+.eggs
