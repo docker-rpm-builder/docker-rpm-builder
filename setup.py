@@ -18,8 +18,8 @@ if sys.version_info[1] == 6:
 
 setup(
     name='docker-rpm-builder',
-    description="Build native RPMs through docker",
-    long_description=open("README.md").read(),
+    description="Fast native RPM building from any distro, for any distro, via docker",
+    long_description=open("README.rst").read(),
     author="Alan Franzoni",
     author_email="username@franzoni.eu",
     url="https://github.com/alanfranz/docker-rpm-builder",
