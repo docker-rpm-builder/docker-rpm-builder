@@ -33,6 +33,10 @@ The root filesystem is *fully writeable* - this is very handy if you've got an a
 and you get errors because paths like "/tmp/buildroot-something" found in files. Just install it in the place it's meant to be installed and
 move it to ```${RPM_BUILD_ROOT}``` afterwards.
 
+Builds done in such fashion are **highly reproducible** - if your build image already contains all the build dependencies, and you disable docker network,
+the same build input will always yield the same output. This does not mean that files would be 100% identical, there may be build-time changes
+depending e.g. on current time - but no external influence is possible.
+
 ## Limitations
 
 * Currently limited to x86_64 for both host and target. That's a docker limitation which is unlikely to go away soon.
