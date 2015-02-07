@@ -306,3 +306,5 @@ DNS in the docker config file.
 * DEB package
 * Refactor bash-based test into python-based ones, even when spawning processes
 * Find a better solution than 'spectool' for downloading sources.
+* Option for creating a Dockerfile with build dependencies for a package, that can be used for 
+  repeatable builds and/or caching.
