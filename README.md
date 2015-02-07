@@ -35,7 +35,7 @@ move it to ```${RPM_BUILD_ROOT}``` afterwards.
 
 Builds done in such fashion are **highly reproducible** - if your build image already contains all the build dependencies, and you disable docker network,
 the same build input will always yield the same output. This does not mean that files would be 100% identical, there may be build-time changes
-depending e.g. on current time - but no external influence is possible.
+depending e.g. on current time - but no external influence is possible (assuming that you're always using the same host kernel).
 
 ## Limitations
 
