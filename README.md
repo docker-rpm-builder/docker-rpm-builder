@@ -12,7 +12,7 @@ Tools have been created to ensure build isolation and repeatability; [mock](http
 
 And, last but not least, mock doesn't reliably work on non-RPM based distribution, making it difficult to create the initial RPM on the developer's machine if an RPM-based distro is not employed.
 
-RPM by itself is not very suited to a continuos integration environment, requiring a .src.rpm to be created before the binary RPM can be generated; this is often unnecessary in today's environments where the source tracking occurs on VCS systems, and, again, slows the whole process down.
+RPM by itself is not very suited to a continuous integration environment, requiring a .src.rpm to be created before the binary RPM can be generated; this is often unnecessary in today's environments where the source tracking occurs on VCS systems, and again, slows the whole process down.
 
 ## Key features
 
@@ -26,10 +26,10 @@ It **improves** the standard RPM creation system by **not requiring a .src.rpm t
 
 It's highly **debuggable** - with the proper option set, whenever a build failure occurs, an interactive shell is spawned in the very context of the build.
 
-It's **fast** (benchmarks are going to happen soon, I'm trying to perform some reproducibile tests right now and I plan to add them to the repo) - by leveraging Docker capabilities there's very little copy happening between builds; such minimal IO speeds things up. But the real performance improvement
-comes from the ease of use from any host system, from the interacive shell spawning and from the great hackability to suit your build needs.
+It's **fast** (benchmarks are going to happen soon, I'm trying to perform some reproducible tests right now and I plan to add them to the repo) - by leveraging Docker capabilities there's very little copy happening between builds; such minimal IO speeds things up. But the real performance improvement
+comes from the ease of use from any host system, from the interactive shell spawning and from the great hackability to suit your build needs.
 
-The root filesystem is *fully writeable* - this is very handy if you've got an application that in some way hardcodes paths when installed,
+The root filesystem is *fully writable* - this is very handy if you've got an application that in some way hardcodes paths when installed,
 and you get errors because paths like "/tmp/buildroot-something" found in files. Just install it in the place it's meant to be installed and
 move it to ```${RPM_BUILD_ROOT}``` afterwards.
 
@@ -186,7 +186,7 @@ Then, you should pass a source directory, which will be bind-mounted straight to
 
 Of course, you should tell the tool which build image you'd like to use; that's the image where. I've baked some [prebuilt images](#prebuilt-images), but you should feel free to create your own, since that's the purpose of this tool.
 
-And you should tell the tool which target directory you'd like to use for rpm output; this directory whill be bound straight to %{_rpmdir} inside the build container, so mind that if your build process does something strange with it, files can be deleted. If the target directory doesn't exist it will be created.
+And you should tell the tool which target directory you'd like to use for rpm output; this directory will be bound straight to %{_rpmdir} inside the build container, so mind that if your build process does something strange with it, files can be deleted. If the target directory doesn't exist it will be created.
 
 ### Example
 
@@ -245,7 +245,7 @@ thing to do is probably add an entry to *BuildRequires* in the spec file.
 
 ### Prebuilt images
 
-There're some prebuilt configurations for Centos 5-6-7+EPEL and Fedora 20-21-rawhide at [https://github.com/alanfranz/docker-rpm-builder-configurations](https://github.com/alanfranz/docker-rpm-builder-configurations); those are available on [my docker hub page](https://hub.docker.com/u/alanfranz/) as well, so they can be used immediately out of the box. The following are all valid build images:
+There are some prebuilt configurations for Centos 5-6-7+EPEL and Fedora 20-21-rawhide at [https://github.com/alanfranz/docker-rpm-builder-configurations](https://github.com/alanfranz/docker-rpm-builder-configurations); those are available on [my docker hub page](https://hub.docker.com/u/alanfranz/) as well, so they can be used immediately out of the box. The following are all valid build images:
 
 - alanfranz/drb-epel-5-x86-64:latest
 - alanfranz/drb-epel-6-x86-64:latest
