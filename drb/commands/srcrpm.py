@@ -104,8 +104,8 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
 
     try:
         additional_docker_options = internal_docker_options + " ".join(additional_docker_options)
-        srpms_inner_dir = sp("{dockerexec} run {image} rpm --eval %{{_srcrpmdir}}", **locals()).strip()
-        rpms_inner_dir = sp("{dockerexec} run {image} rpm --eval %{{_rpmdir}}", **locals()).strip()
+        srpms_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_srcrpmdir}}", **locals()).strip()
+        rpms_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_rpmdir}}", **locals()).strip()
         spawn_func("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts -v {srpms_temp}:{srpms_inner_dir} -v {target_directory}:{rpms_inner_dir}"
            " -w /dockerscripts {image} ./rpmbuild-srcrpm-in-docker.sh {serialized_options}", **locals())
     finally:

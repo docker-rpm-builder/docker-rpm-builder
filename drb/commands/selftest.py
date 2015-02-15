@@ -40,7 +40,7 @@ def short_test():
 
     dockerexec = which("docker")
     testpath = getpath("drb/test")
-    result = sp("{dockerexec} run -v {testpath}:/testpath phusion/baseimage /bin/bash -c 'cat /testpath/everythinglooksgood.txt'", **locals())
+    result = sp("{dockerexec} run --rm -v {testpath}:/testpath phusion/baseimage /bin/bash -c 'cat /testpath/everythinglooksgood.txt'", **locals())
     if result.strip() != "everything looks good":
         click.echo("Basic self test failed: docker run failed. Checklist:\n\nVerify the docker service is running\n"
                    "Verify the 'docker' group exists and your user belongs to it\n"
