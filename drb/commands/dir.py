@@ -53,7 +53,13 @@ _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hoo
     --always-pull: if passed, a `docker pull` for the latest
     image version from Docker Hub (or other configured endpoint) is performed. Please note that
     any error that may arise from the operation is currently ignored.
-
+    
+    --uid: if passed uses the given value as the uid when creating a local user
+    to satisfy rpmbuild's need for a valid uid; defaults to calling user's uid.
+    
+    --gid: if passed uses the given value as the gid when creating a local group
+    to satisfy rpmbuild's need for a valid gid; defaults to calling user's gid.
+    
     Examples:
 
     - in this scenario we use no option of ours but we add an option to be forwarded to docker:
@@ -77,8 +83,10 @@ _logger = logging.getLogger("drb.commands.dir")
 @click.option("--bash-on-failure", is_flag=True)
 @click.option("--sign-with", nargs=1, type=click.Path(exists=True, dir_okay=False, resolve_path=True))
 @click.option("--always-pull", is_flag=True)
+@click.option("--uid", type=int, help="uid of calling user", default=os.getuid())
+@click.option("--gid", type=int, help="gid of calling user", default=os.getgid())
 def dir(image, source_directory, target_directory, additional_docker_options, download_sources=False,
-        bash_on_failure=False, sign_with=None, always_pull=False):
+        bash_on_failure=False, sign_with=None, always_pull=False, uid=-1, gid=-1):
 
 
     # TODO: let spectemplate and/or spec be optional parameters
@@ -127,8 +135,6 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
 
     if always_pull:
         pull(dockerexec, image)
-    uid = os.getuid()
-    gid = os.getgid()
 
     serialized_options = serialize({"CALLING_UID": uid, "CALLING_GID": gid, "BASH_ON_FAIL":bashonfail, "GPG_PRIVATE_KEY": sign_with_encoded})
 
