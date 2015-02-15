@@ -47,6 +47,12 @@ _HELP = """Builds a binary RPM from .src.rpm file.
     image version from Docker Hub (or other configured endpoint) is performed. Please note that
     any error that may arise from the operation is currently ignored.
 
+    --uid: if passed uses the given value as the uid when creating a local user
+    to satisfy rpmbuild's need for a valid uid; defaults to calling user's uid.
+    
+    --gid: if passed uses the given value as the gid when creating a local group
+    to satisfy rpmbuild's need for a valid gid; defaults to calling user's gid.
+    
     Examples:
 
     - in this scenario we use no option of ours but we add an option to be forwarded to docker:
@@ -69,8 +75,10 @@ _logger = logging.getLogger("drb.commands.srcrpm")
 @click.option("--bash-on-failure", is_flag=True)
 @click.option("--sign-with", nargs=1, type=click.Path(exists=True, dir_okay=False, resolve_path=True))
 @click.option("--always-pull", is_flag=True)
+@click.option("--uid", type=int, help="uid of calling user", default=os.getuid())
+@click.option("--gid", type=int, help="gid of calling user", default=os.getgid())
 def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_signature=False, bash_on_failure=False,
-           sign_with=None, always_pull=False):
+           sign_with=None, always_pull=False, uid=-1, gid=-1):
     _logger.info("Now building %(srcrpm)s on image %(image)s", locals())
     if not os.path.exists(target_directory):
         os.mkdir(target_directory)
@@ -81,8 +89,6 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
     shutil.copy(srcrpm, srpms_temp)
     internal_docker_options = set()
     srcrpm_basename = os.path.basename(srcrpm)
-    uid = os.getuid()
-    gid = os.getgid()
     rpmbuild_options = "" if verify_signature else "--nosignature"
 
     bashonfail = ""
