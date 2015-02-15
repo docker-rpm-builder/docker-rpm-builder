@@ -60,6 +60,11 @@ def short_test():
     finally:
         shutil.rmtree(tmpdir)
 
+    for fn in os.listdir(getpath("drb/dockerscripts")):
+        if not os.access(os.path.join(getpath("drb/dockerscripts"), fn), os.X_OK):
+            click.echo("File {0} is not executable, probably an install error has happened. Make sure you're using a recent python+virtualenv".format(fn))
+            sys.exit(1)
+
     click.echo("Short self test succeeded.")
 
 def long_test(additional_test_options):
