@@ -105,7 +105,7 @@ Python 2.7.6
 
 *There may be multiple Python versions installed on your system; check for pythonX.X
 executables, and use such executables everywhere in the following steps. If multiple Python versions are installed
-you could probably find multiple pip executables like pip-X.X as well*
+you could probably find multiple virtualenv executables like virtualenv-X.X as well*
 
 Then, check whether an executable called ```pip``` is available in your system;
 it's probably installed by default on most Linux distributions that offer Python as well.
@@ -113,34 +113,48 @@ If it isn't installed, and it's not available in your package manager, you need 
 [install it](https://pip.pypa.io/en/latest/installing.html), which probably means
 something like:
 
+**PLEASE NOTE:** If you've got a distribution shipping an outdated version of pip,
+you may want to update it, maybe on a per-user basis.
+
+##### Installing an up-to-date pip system-wide
+
 ```
-curl https://bootstrap.pypa.io/get-pip.py | sudo python get-pip.py
+curl https://bootstrap.pypa.io/get-pip.py | sudo python
 ```
+
+##### Installing a local up-to-date pip for the current user.
+
+```
+curl https://bootstrap.pypa.io/get-pip.py > get-pip.py && python get-pip.py --user
+```
+
+This will add the pip executable to .local/bin; make sure it's in your PATH.
+
+##### Going on 
 
 Once you've got pip in place, I recommend using [pipsi](https://github.com/mitsuhiko/pipsi)
 to install docker-rpm-builder; it's a tool that will create an isolated environment for
-a package along with dependencies, without polluting the global environment.
-
-So, execute something like:
+a package along with dependencies, without polluting the global environment. Make
+sure ~/.local/bin is in your PATH, then execute something like (remove the --user flag if you want to install it globally):
 
 ```
-curl https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python
+pip install --user virtualenv pipsi
 ```
 
 and then
 
-```
+`````
 pipsi install docker-rpm-builder
 ```
 
-And you'll find a ready-to-use *docker-rpm-builder* executable in ~/.local/bin . Consider
-adding it to your path or symlink it somewhere, if you prefer.
-
-Then, whenever you want an updated version:
+And you'll find a ready-to-use *docker-rpm-builder* executable in ~/.local/bin . 
 
 ```
 pipsi upgrade docker-rpm-builder
 ```
+
+pipsi work for any python package that should run in an isolated environment; it's a good
+idea to use it a lot.
 
 ## Docker configuration
 
