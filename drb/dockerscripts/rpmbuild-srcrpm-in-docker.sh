@@ -27,7 +27,7 @@ useradd -g ${CALLING_GID} -u ${CALLING_UID} myuser || /bin/true
 
 # we don't check the gpg signature at this time, we don't really care;
 # if the signature check fails it will fail later.
-yum-builddep --nogpgcheck "${SRPMS_DIR}/${SRCRPM}"
+yum-builddep -y --nogpgcheck "${SRPMS_DIR}/${SRCRPM}"
 
 if [ -n "${GPG_PRIVATE_KEY}" ]
 then
