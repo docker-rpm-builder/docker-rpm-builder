@@ -107,7 +107,7 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
         srpms_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_srcrpmdir}}", **locals()).strip()
         rpms_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_rpmdir}}", **locals()).strip()
         spawn_func("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts -v {srpms_temp}:{srpms_inner_dir} -v {target_directory}:{rpms_inner_dir}"
-           " -w /dockerscripts {image} ./rpmbuild-srcrpm-in-docker.sh {serialized_options}", **locals())
+           " -w /dockerscripts {image} /bin/bash rpmbuild-srcrpm-in-docker.sh {serialized_options}", **locals())
     finally:
         shutil.rmtree(srpms_temp)
 
