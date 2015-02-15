@@ -149,6 +149,8 @@ pipsi install docker-rpm-builder
 
 And you'll find a ready-to-use *docker-rpm-builder* executable in ~/.local/bin . 
 
+To get a more recent version, just use:
+
 ```
 pipsi upgrade docker-rpm-builder
 ```
