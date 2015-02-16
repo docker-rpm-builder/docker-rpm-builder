@@ -20,7 +20,7 @@ trap finish EXIT
 
 echo "starting $0"
 SPEC=$(ls ${SOURCE_DIR}/*.spec | head -n 1)
-/dockerscripts/rpm-setup-deps.sh
+/bin/bash /dockerscripts/rpm-setup-deps.sh
 #rpmbuild complains if it can't find a proper user for uid/gid
 groupadd -g ${CALLING_GID} mygroup || /bin/true
 useradd -g ${CALLING_GID} -u ${CALLING_UID} myuser || /bin/true
