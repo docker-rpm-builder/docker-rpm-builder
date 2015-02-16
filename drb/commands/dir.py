@@ -54,6 +54,10 @@ _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hoo
     image version from Docker Hub (or other configured endpoint) is performed. Please note that
     any error that may arise from the operation is currently ignored.
 
+    --yum-cache: if passed, the given location is mounted at /var/cache/yum in
+    the container; subsequent invocations will use this cache instead of
+    downloading packages again.
+    
     Examples:
 
     - in this scenario we use no option of ours but we add an option to be forwarded to docker:
@@ -77,8 +81,9 @@ _logger = logging.getLogger("drb.commands.dir")
 @click.option("--bash-on-failure", is_flag=True)
 @click.option("--sign-with", nargs=1, type=click.Path(exists=True, dir_okay=False, resolve_path=True))
 @click.option("--always-pull", is_flag=True)
+@click.option("--yum-cache", nargs=1, type=click.Path(exists=True, dir_okay=True, resolve_path=True), help="path to local yum cache")
 def dir(image, source_directory, target_directory, additional_docker_options, download_sources=False,
-        bash_on_failure=False, sign_with=None, always_pull=False):
+        bash_on_failure=False, sign_with=None, always_pull=False, yum_cache=None):
 
 
     # TODO: let spectemplate and/or spec be optional parameters
@@ -137,7 +142,20 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         dockerscripts = getpath("drb/dockerscripts")
         rpms_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_rpmdir}}", **locals()).strip()
         sources_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_sourcedir}}", **locals()).strip()
-        spawn_func("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts -v {source_directory}:{sources_inner_dir} -v {target_directory}:{rpms_inner_dir} {bashonfail_options} -w /dockerscripts {image}  ./rpmbuild-dir-in-docker.sh {serialized_options}", **locals())
+        
+        spawn_func(" ".join([
+            "{dockerexec} run",
+            "{additional_docker_options}",
+            "-v {dockerscripts}:/dockerscripts", 
+            "-v {source_directory}:{sources_inner_dir}",
+            "-v {target_directory}:{rpms_inner_dir}",
+            "-v {yum_cache}:/var/cache/yum" if yum_cache is not None else "",
+            "{bashonfail_options}",
+            "-w /dockerscripts",
+            "{image}",
+            "/bin/bash rpmbuild-dir-in-docker.sh {serialized_options}",
+        ]), **locals())
+
     finally:
         if deletespec:
             os.unlink(specfile)

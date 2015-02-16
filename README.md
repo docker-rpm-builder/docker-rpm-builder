@@ -318,7 +318,6 @@ DNS in the docker config file.
 
 ## TODOS and ideas
 * General refactor: remove code duplication, improve setup, etc. - things are currently quite messed up.
-* Support some way to cache build dependencies between builds for the same package (commit after run? commit after build-dep?)
 * DEB package
 * Refactor bash-based test into python-based ones, even when spawning processes
 * Find a better solution than 'spectool' for downloading sources.
