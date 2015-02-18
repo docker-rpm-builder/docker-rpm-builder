@@ -38,7 +38,7 @@ for image in ${IMAGES}; do
     start_test "created binaries have the ownership that is passed"
     cp -r tmux-src/* ${SRC_DIR}
     MY_ID=$(id -u)
-    docker-rpm-builder dir ${image} ${SRC_DIR} ${RPM_DIR} --download-sources --always-pull --target-ownership ${MY_ID}:1234 --bash-on-failure
+    docker-rpm-builder dir ${image} ${SRC_DIR} ${RPM_DIR} --download-sources --always-pull --target-ownership ${MY_ID}:1234
     [ "$(stat -c '%u:%g' ${RPM_DIR}/x86_64/tmux-*)" == "${MY_ID}:1234"$'\n'"${MY_ID}:1234" ]
     end_test
 
