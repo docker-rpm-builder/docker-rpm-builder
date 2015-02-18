@@ -21,9 +21,17 @@ trap finish EXIT
 echo "starting $0"
 SPEC=$(ls ${SOURCE_DIR}/*.spec | head -n 1)
 /dockerscripts/rpm-setup-deps.sh
-#rpmbuild complains if it can't find a proper user for uid/gid
-groupadd -g ${CALLING_GID} mygroup || /bin/true
-useradd -g ${CALLING_GID} -u ${CALLING_UID} myuser || /bin/true
+
+#rpmbuild complains if it can't find a proper user for uid/gid of the source files;
+#we should add all uid/gids for source files.
+for gid in $(stat -c '%g' ${SOURCE_DIR}/*); do
+    groupadd -g $gid "group$gid" || /bin/true
+done
+
+for uid in $(stat -c '%u' ${SOURCE_DIR}/*); do
+    useradd -u $uid "user$uid" || /bin/true
+done
+
 
 if [ -n "${GPG_PRIVATE_KEY}" ]
 then

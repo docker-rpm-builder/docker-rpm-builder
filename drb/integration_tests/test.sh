@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 trap "{ echo ERROR detected; exit 1; }" ERR
 IMAGES=${1:-alanfranz/drb-epel-6-x86-64:latest alanfranz/drb-epel-5-x86-64:latest alanfranz/drb-epel-7-x86-64:latest alanfranz/drb-fedora-20-x86-64:latest alanfranz/drb-fedora-21-x86-64:latest alanfranz/drb-fedora-rawhide-x86-64:latest}
 
@@ -34,6 +35,13 @@ for image in ${IMAGES}; do
     [ "$(ls ${RPM_DIR}/x86_64/tmux-* | wc -l)" == "2" ]
     end_test
 
+    start_test "created binaries have the ownership that is passed"
+    cp -r tmux-src/* ${SRC_DIR}
+    MY_ID=$(id -u)
+    docker-rpm-builder dir ${image} ${SRC_DIR} ${RPM_DIR} --download-sources --always-pull --target-ownership ${MY_ID}:1234 --bash-on-failure
+    [ "$(stat -c '%u:%g' ${RPM_DIR}/x86_64/tmux-*)" == "${MY_ID}:1234"$'\n'"${MY_ID}:1234" ]
+    end_test
+
     start_test "packages are not signed unless required"
     cp -r tmux-src/* ${SRC_DIR}
     docker-rpm-builder dir ${image} ${SRC_DIR} ${RPM_DIR} --download-sources
@@ -60,7 +68,14 @@ for image in ${IMAGES}; do
     start_test "srcrpm building in ${image}"
     docker-rpm-builder srcrpm ${image} tmux-srcrpm/tmux-1.4-3.el5.1.src.rpm ${RPM_DIR}
     [ "$(ls ${RPM_DIR}/x86_64/tmux-* | wc -l)" == "2" ]
-    end_test "srcrpm"
+    end_test
+
+    start_test "srcrpm building in ${image} with ownership change"
+    MY_ID=$(id -u)
+    docker-rpm-builder srcrpm ${image} tmux-srcrpm/tmux-1.4-3.el5.1.src.rpm ${RPM_DIR} --target-ownership ${MY_ID}:1234
+    [ "$(stat -c '%u:%g' ${RPM_DIR}/x86_64/tmux-*)" == "${MY_ID}:1234"$'\n'"${MY_ID}:1234" ]
+    end_test
+
 done
 
 echo
