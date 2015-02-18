@@ -69,13 +69,13 @@ _logger = logging.getLogger("drb.commands.srcrpm")
 @click.argument("srcrpm", type=click.Path(exists=True, dir_okay=False, resolve_path=True))
 @click.argument("target_directory", type=click.Path(file_okay=False, resolve_path=True))
 @click.argument("additional_docker_options", type=click.STRING, nargs=-1)
-@click.option("--verify-signature", is_flag=True)
-@click.option("--bash-on-failure", is_flag=True)
-@click.option("--sign-with", nargs=1, type=click.Path(exists=True, dir_okay=False, resolve_path=True))
-@click.option("--always-pull", is_flag=True)
-@click.option("--target-ownership", type=click.STRING)
-def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_signature=False, bash_on_failure=False,
-           sign_with=None, always_pull=False, target_ownership="{0}:{1}".format(os.getuid(), os.getgid())):
+@click.option("--verify-signature", is_flag=True, default=False)
+@click.option("--bash-on-failure", is_flag=True, default=False)
+@click.option("--sign-with", nargs=1, type=click.Path(exists=True, dir_okay=False, resolve_path=True), default=None)
+@click.option("--always-pull", is_flag=True, default=False)
+@click.option("--target-ownership", type=click.STRING, default="{0}:{1}".format(os.getuid(), os.getgid()))
+def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_signature, bash_on_failure,
+           sign_with, always_pull, target_ownership):
     uid, gid = parse_ownership(target_ownership)
 
     _logger.info("Now building %(srcrpm)s on image %(image)s", locals())

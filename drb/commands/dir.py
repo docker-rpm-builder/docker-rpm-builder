@@ -77,13 +77,13 @@ _logger = logging.getLogger("drb.commands.dir")
 @click.argument("source_directory", type=click.Path(exists=True, file_okay=False, resolve_path=True))
 @click.argument("target_directory", type=click.Path(file_okay=False, resolve_path=True))
 @click.argument("additional_docker_options", type=click.STRING, nargs=-1)
-@click.option("--download-sources", is_flag=True)
-@click.option("--bash-on-failure", is_flag=True)
-@click.option("--sign-with", nargs=1, type=click.Path(exists=True, dir_okay=False, resolve_path=True))
-@click.option("--always-pull", is_flag=True)
-@click.option("--target-ownership", type=click.STRING)
-def dir(image, source_directory, target_directory, additional_docker_options, download_sources=False,
-        bash_on_failure=False, sign_with=None, always_pull=False, target_ownership="{0}:{1}".format(os.getuid(), os.getgid())):
+@click.option("--download-sources", is_flag=True, default=False)
+@click.option("--bash-on-failure", is_flag=True, default=False)
+@click.option("--sign-with", nargs=1, type=click.Path(exists=True, dir_okay=False, resolve_path=True), default=None)
+@click.option("--always-pull", is_flag=True, default=False)
+@click.option("--target-ownership", type=click.STRING, default="{0}:{1}".format(os.getuid(), os.getgid()))
+def dir(image, source_directory, target_directory, additional_docker_options, download_sources,
+        bash_on_failure, sign_with, always_pull, target_ownership):
     # TODO: let spectemplate and/or spec be optional parameters
     # TODO: let the user choose $-delimited templates
     uid, gid = parse_ownership(target_ownership)
