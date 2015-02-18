@@ -12,6 +12,7 @@ from drb.spawn import sp
 from drb.path import getpath
 from drb.pull import pull
 from drb.bash import serialize, provide_encoded_signature, spawn_interactive
+from drb.parse_ownership import parse_ownership
 
 _HELP = """Builds a binary RPM from .src.rpm file.
     Uses `docker run` under the hood.
@@ -47,6 +48,9 @@ _HELP = """Builds a binary RPM from .src.rpm file.
     image version from Docker Hub (or other configured endpoint) is performed. Please note that
     any error that may arise from the operation is currently ignored.
 
+    --target-ownership: a string in NN:MM format, which let you choose the ownership of the files
+    in the output directory. Defaults to current user's uid:gid if not passed. Must be numeric.
+
     Examples:
 
     - in this scenario we use no option of ours but we add an option to be forwarded to docker:
@@ -69,8 +73,11 @@ _logger = logging.getLogger("drb.commands.srcrpm")
 @click.option("--bash-on-failure", is_flag=True)
 @click.option("--sign-with", nargs=1, type=click.Path(exists=True, dir_okay=False, resolve_path=True))
 @click.option("--always-pull", is_flag=True)
+@click.option("--target-ownership", type=click.STRING)
 def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_signature=False, bash_on_failure=False,
-           sign_with=None, always_pull=False):
+           sign_with=None, always_pull=False, target_ownership="{0}:{1}".format(os.getuid(), os.getgid())):
+    uid, gid = parse_ownership(target_ownership)
+
     _logger.info("Now building %(srcrpm)s on image %(image)s", locals())
     if not os.path.exists(target_directory):
         os.mkdir(target_directory)
@@ -81,8 +88,7 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
     shutil.copy(srcrpm, srpms_temp)
     internal_docker_options = set()
     srcrpm_basename = os.path.basename(srcrpm)
-    uid = os.getuid()
-    gid = os.getgid()
+
     rpmbuild_options = "" if verify_signature else "--nosignature"
 
     bashonfail = ""

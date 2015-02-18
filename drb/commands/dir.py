@@ -13,6 +13,7 @@ from drb.path import getpath
 from drb.pull import pull
 from drb.bash import serialize, provide_encoded_signature, spawn_interactive
 from drb.downloadsources import downloadsources
+from drb.parse_ownership import parse_ownership
 
 _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hood.
 
@@ -54,6 +55,9 @@ _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hoo
     image version from Docker Hub (or other configured endpoint) is performed. Please note that
     any error that may arise from the operation is currently ignored.
 
+    --target-ownership: a string in NN:MM format, which let you choose the ownership of the files
+    in the output directory. Defaults to current user's uid:gid if not passed. Must be numeric.
+
     Examples:
 
     - in this scenario we use no option of ours but we add an option to be forwarded to docker:
@@ -77,12 +81,13 @@ _logger = logging.getLogger("drb.commands.dir")
 @click.option("--bash-on-failure", is_flag=True)
 @click.option("--sign-with", nargs=1, type=click.Path(exists=True, dir_okay=False, resolve_path=True))
 @click.option("--always-pull", is_flag=True)
+@click.option("--target-ownership", type=click.STRING)
 def dir(image, source_directory, target_directory, additional_docker_options, download_sources=False,
-        bash_on_failure=False, sign_with=None, always_pull=False):
-
-
+        bash_on_failure=False, sign_with=None, always_pull=False, target_ownership="{0}:{1}".format(os.getuid(), os.getgid())):
     # TODO: let spectemplate and/or spec be optional parameters
     # TODO: let the user choose $-delimited templates
+    uid, gid = parse_ownership(target_ownership)
+
     deletespec = False
     spectemplates = [os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spectemplate")]
     specfiles = [os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spec")]
@@ -127,8 +132,6 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
 
     if always_pull:
         pull(dockerexec, image)
-    uid = os.getuid()
-    gid = os.getgid()
 
     serialized_options = serialize({"CALLING_UID": uid, "CALLING_GID": gid, "BASH_ON_FAIL":bashonfail, "GPG_PRIVATE_KEY": sign_with_encoded})
 
