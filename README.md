@@ -316,6 +316,14 @@ such images without actually needing a Dockerfile on a source repo.
 * dns default to public ones, will add an option for private ones. Right now you can just pass arbitrary docker options, so pass --dns and/or set your internal
 DNS in the docker config file.
 
+## Thanks
+
+To all the people who gave me feedback or contributed to this project, in no special order:
+
+* Brian Lalor
+* Tobias Widén
+* Romain P
+
 ## TODOS and ideas
 * General refactor: remove code duplication, improve setup, etc. - things are currently quite messed up.
 * Support some way to cache build dependencies between builds for the same package (commit after run? commit after build-dep?)
@@ -324,3 +332,7 @@ DNS in the docker config file.
 * Find a better solution than 'spectool' for downloading sources.
 * Option for creating a Dockerfile with build dependencies for a package, that can be used for 
   repeatable builds and/or caching.
+
+## Disclaimer
+
+This project is not affiliated with Fedora nor RedHat.
