@@ -18,11 +18,11 @@ RPM by itself is not very suited to a continuous integration environment, requir
 
 **docker-rpm-builder** works on any host distributions that supports [docker](https://www.docker.com/), and is currently tested to build 64 bit Centos 5, 6 and 7 RPM packages, as well as Fedora 20, 21 and rawhide.
 
-It's designed to be a very **small and hackable wrapper** to help in rpm building, and lets you build binary RPMs on the fly, **without generating an intermediate source rpm**, which is a bit of an unnecessary byproduct nowadays, since most source tracking is done in a revision control system. Docker capabilities are leveraged to make the build **fast**; copy is limited, and bind-mount between host and container is privileged whenever it's possible.
+It's designed to be a very **small and hackable wrapper** to help in rpm building, and lets you build binary RPMs on the fly, **without generating an intermediate source rpm** - which is required by tools like *mock* and it's a bit of an unnecessary byproduct nowadays, since most source tracking is done in a revision control system. Docker capabilities are leveraged to make the build **fast**; copy is limited, and bind-mount between host and container is privileged whenever it's possible.
 
 It leverages the standard RPM creation system - it's **not** a different build system like [fpm](https://github.com/jordansissel/fpm), which has its own options and wraps different distributions' build tools.
 
-It **improves** the standard RPM creation system by **not requiring a .src.rpm to be created** - builds can happen straight from a source directory - and by **adding a templating layer** over the .spec files which lets variables to be easily injected - this is especially useful in a continuous integration environment, where a build number and/or a reference VCS commit can be integrated.
+It **improves** the standard RPM creation system by letting builds happen straight from a source directory - and by **adding a templating layer** over the .spec files which lets variables to be easily injected - this is especially useful in a continuous integration environment, where a build number and/or a reference VCS commit can be integrated.
 
 It's highly **debuggable** - with the proper option set, whenever a build failure occurs, an interactive shell is spawned in the very context of the build.
 
