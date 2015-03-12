@@ -284,7 +284,7 @@ create a directory like *build-image* in your project directory;
 let's suppose your project needs openssl and openssl-devel to build
 on Centos 6.
 
-Enter something like this:
+Enter something like this in your newly created *Dockerfile*:
 
 ```
 FROM alanfranz/drb-epel-6-x86-64:latest
