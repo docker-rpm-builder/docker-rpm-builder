@@ -3,4 +3,4 @@ set -ex
 echo "starting $0"
 SOURCE_DIR=$(rpm --eval %{_sourcedir})
 SPEC=$(ls ${SOURCE_DIR}/*.spec | head -n 1)
-yum-builddep -y --nogpgcheck ${SPEC} || /bin/bash
+yum-builddep -y --nogpgcheck ${SPEC}
