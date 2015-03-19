@@ -2,7 +2,7 @@
 set -ex
 # verify: security implications.
 [ -z "$1" ] && { echo "Missing parameters"; /bin/false; }
-eval $(echo $1 | base64 -d)
+eval $(echo -n $1 | base64 -d)
 
 [ -z "${CALLING_UID}" ] && { echo "Missing CALLING_UID"; /bin/false; }
 [ -z "${CALLING_GID}" ] && { echo "Missing CALLING_GID"; /bin/false; }
