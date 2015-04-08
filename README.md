@@ -1,5 +1,9 @@
 # Fast native RPM building from any distro, for any distro, via docker.
 
+## News
+
+See the [News Page](https://github.com/alanfranz/docker-rpm-builder/wiki/News) for the latest news.
+
 ## Preamble
 
 While other deployment systems are at rage today, software delivery via RPM is still pretty widespread; its integration with the distributions' own tools makes it a good choice in many environments.
@@ -47,11 +51,24 @@ You should have a vague idea of what [docker](https://www.docker.com) is and you
 
 ## Installation
 
-### CentOS/RHEL 6.6 and 7.x
+### CentOS/RHEL 6.6 and 7.x (x86_64 only)
 
-There's an [RPM repository](http://rpmrepos.franzoni.eu/) for those distributions - such packages are built via docker-rpm-builder itself.
+There's an RPM repository for those distributions - such packages are built via docker-rpm-builder itself. It's kindly hosted by [packagecloud](https://packagecloud.io). Just use this yum repository:
 
-Please refer to docker installation instructions for [CentOS](https://docs.docker.com/installation/centos/) and [RHEL](https://docs.docker.com/installation/rhel/) for details. You'll probably need to enable [EPEL](https://fedoraproject.org/wiki/EPEL) or distro-specific extras repositories for the install to succeed.
+**/etc/yum.repos.d/docker-rpm-builder-v1.repo**
+```
+[docker-rpm-builder-v1]
+name=docker-rpm-builder-v1
+baseurl=https://packagecloud.io/alanfranz/docker-rpm-builder-v1/el/$releasever/$basearch
+repo_gpgcheck=1
+gpgcheck=1
+enabled=1
+gpgkey=https://packagecloud.io/gpg.key
+gpgkey=https://www.franzoni.eu/keys/D1270819.txt
+sslverify=1
+```
+
+Please refer to docker's own installation instructions for [CentOS](https://docs.docker.com/installation/centos/) and [RHEL](https://docs.docker.com/installation/rhel/) for details. You'll probably need to enable [EPEL](https://fedoraproject.org/wiki/EPEL) or distro-specific extras repositories for the install to succeed.
 
 docker-rpm-builder already depends on the proper docker package for each distribution; once your repos are in place, just
 
@@ -61,9 +78,24 @@ yum install docker-rpm-builder
 
 And you're done; skip to the [docker configuration](#docker-configuration) section.
 
-### Fedora 20/21/rawhide
+### Fedora 20/21/rawhide (x86_64 only)
 
-There's an [RPM repository](http://rpmrepos.franzoni.eu/) for those distributions as well, and those packages are built via docker-rpm-builder, again.
+**NOTE:** packagecloud doesn't currently support Fedora 22 (Rawhide), I hope it gets added soon, I'm in touch with their team. For the meantime, if you like to use the rawhide version, substitute *$releasever* with *14* in the baseurl below.
+
+Use this yum repository:
+
+**/etc/yum.repos.d/docker-rpm-builder-v1.repo**
+```
+[docker-rpm-builder-v1]
+name=docker-rpm-builder-v1
+baseurl=https://packagecloud.io/alanfranz/docker-rpm-builder-v1/fedora/$releasever/$basearch
+repo_gpgcheck=1
+gpgcheck=1
+enabled=1
+gpgkey=https://packagecloud.io/gpg.key
+gpgkey=https://www.franzoni.eu/keys/D1270819.txt
+sslverify=1
+```
 
 Please refer to docker installation instructions for [Fedora](https://docs.docker.com/installation/fedora/) for details.
 
@@ -130,7 +162,7 @@ curl https://bootstrap.pypa.io/get-pip.py > get-pip.py && python get-pip.py --us
 
 This will add the pip executable to .local/bin; make sure it's in your PATH.
 
-##### Going on 
+##### Going on
 
 Once you've got pip in place, I recommend using [pipsi](https://github.com/mitsuhiko/pipsi)
 to install docker-rpm-builder; it's a tool that will create an isolated environment for
@@ -147,7 +179,7 @@ and then
 pipsi install docker-rpm-builder
 ```
 
-And you'll find a ready-to-use *docker-rpm-builder* executable in ~/.local/bin . 
+And you'll find a ready-to-use *docker-rpm-builder* executable in ~/.local/bin .
 
 To get a more recent version, just use:
 
@@ -330,7 +362,7 @@ To all the people who gave me feedback or contributed to this project, in no spe
 * DEB package
 * Refactor bash-based test into python-based ones, even when spawning processes
 * Find a better solution than 'spectool' for downloading sources.
-* Option for creating a Dockerfile with build dependencies for a package, that can be used for 
+* Option for creating a Dockerfile with build dependencies for a package, that can be used for
   repeatable builds and/or caching.
 
 ## Disclaimer
