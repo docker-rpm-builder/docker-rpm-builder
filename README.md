@@ -80,8 +80,6 @@ And you're done; skip to the [docker configuration](#docker-configuration) secti
 
 ### Fedora 20/21/rawhide (x86_64 only)
 
-**NOTE:** packagecloud doesn't currently support Fedora 22 (Rawhide), I hope it gets added soon, I'm in touch with their team. For the meantime, if you like to use the rawhide version, substitute *$releasever* with *14* in the baseurl below.
-
 Use this yum repository:
 
 **/etc/yum.repos.d/docker-rpm-builder-v1.repo**
