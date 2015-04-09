@@ -105,11 +105,11 @@ yum install docker-rpm-builder
 
 And you're done; skip to the [docker configuration](#docker-configuration) section.
 
-### Debian Wheezy, Ubuntu Trusty, Ubuntu Utopic
+### Debian and Ubuntu
 
 There're repositories for those three distributions on packagecloud; you'll need to enable the official docker package from docker.io [see install docs](https://docs.docker.com/installation/) or docker-rpm-builder will fail to install.
 
-**Only Ubuntu Trusty is actively tested;** Debian Wheezy and Ubuntu Utopic may fail, please report such failure and I'll investigate.
+**Only Ubuntu Trusty is actively tested!**. Please report issues with other distributions' packages.
 
 First, you should make sure that your apt has https configured and that you've got packagecloud gpg key installed:
 
@@ -136,6 +136,13 @@ deb https://packagecloud.io/alanfranz/docker-rpm-builder-v1/ubuntu/ utopic main
 ```
 deb https://packagecloud.io/alanfranz/docker-rpm-builder-v1/debian/ wheezy main
 ```
+
+#### Debian Jessie
+
+```
+deb https://packagecloud.io/alanfranz/docker-rpm-builder-v1/debian/ jessie main
+```
+
 
 
 ### Other distributions
