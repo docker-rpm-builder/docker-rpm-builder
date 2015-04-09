@@ -6,7 +6,7 @@ set -e
 DRB_VERSION="$1"
 apt-get -y update
 apt-get -y dist-upgrade
-apt-get -y install python python-setuptools python-virtualenv ruby ruby-dev rubygems-integration perl
+apt-get -y install python python-setuptools python-virtualenv ruby ruby-dev rubygems-integration perl build-essential
 gem install fpm -v 1.3.3
 easy_install pipsi
 mkdir -p ${install_dir}/{bin,env}
