@@ -118,7 +118,16 @@ curl https://packagecloud.io/gpg.key | apt-key add -
 apt-get install -y apt-transport-https
 ```
 
-Then, pick the proper repo for your distribution and save it as **/etc/apt/sources.list.d/docker-rpm-builder.list**
+Then, pick the proper repo for your distribution - see next sections - and save it as **/etc/apt/sources.list.d/docker-rpm-builder.list**
+
+Now you're ready to 
+
+```
+apt-get update
+apt-get -y install docker-rpm-builder
+```
+
+Enjoy!
 
 #### Ubuntu Trusty
 
