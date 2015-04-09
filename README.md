@@ -64,7 +64,7 @@ repo_gpgcheck=1
 gpgcheck=1
 enabled=1
 gpgkey=https://packagecloud.io/gpg.key
-gpgkey=https://www.franzoni.eu/keys/D1270819.txt
+       https://www.franzoni.eu/keys/D1270819.txt
 sslverify=1
 ```
 
@@ -91,7 +91,7 @@ repo_gpgcheck=1
 gpgcheck=1
 enabled=1
 gpgkey=https://packagecloud.io/gpg.key
-gpgkey=https://www.franzoni.eu/keys/D1270819.txt
+       https://www.franzoni.eu/keys/D1270819.txt
 sslverify=1
 ```
 
