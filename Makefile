@@ -1,4 +1,4 @@
-.PHONY: srpm clean distclean pypirelease test fulltest pypirelease
+.PHONY: test fulltest clean distclean stablerelease nextrelease rpm 
 
 SHELL := /bin/bash
 
@@ -13,17 +13,15 @@ test: devenv
 	devenv/bin/python -m unittest2 discover -v
 	devenv/bin/docker-rpm-builder selftest
 
-fulltest: test
+fulltest: test devenv
 	. devenv/bin/activate && cd drb/integration_tests && ./test.sh ${TEST_IMAGES}
-
-tmp:
-	mkdir -p tmp
 
 clean:
 	rm -rf tmp build dist 
 
 distclean: clean
 	rm -rf prodenv devenv *.tar.gz docker-rpm-builder.spec
+
 
 stablerelease:
 ifndef RELEASE_NUMBER
@@ -52,3 +50,18 @@ nextrelease:
 	prodenv/bin/pip freeze > requirements.txt
 	git add version.txt requirements.txt
 	git commit version.txt requirements.txt -m "Bump development version"
+    
+rpm:
+ifndef DOCKERPACKAGE
+    $(error DOCKERPACKAGE is undefined)
+endif
+ifndef BUILD_IMAGE
+    $(error BUILD_IMAGE is undefined)
+endif
+ifndef OUTDIR
+    $(error OUTDIR is undefined)
+endif
+ifndef SIGNKEY
+    $(error SIGNKEY is undefined)
+endif
+	prodenv/bin/docker-rpm-builder dir --sign-with ${SIGNKEY} --download-sources ${BUILD_IMAGE} . ${OUTDIR}
