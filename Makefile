@@ -53,15 +53,15 @@ nextrelease:
     
 rpm:
 ifndef DOCKERPACKAGE
-    $(error DOCKERPACKAGE is undefined)
+	$(error DOCKERPACKAGE is undefined)
 endif
 ifndef BUILD_IMAGE
-    $(error BUILD_IMAGE is undefined)
+	$(error BUILD_IMAGE is undefined)
 endif
 ifndef OUTDIR
-    $(error OUTDIR is undefined)
+	$(error OUTDIR is undefined)
 endif
 ifndef SIGNKEY
-    $(error SIGNKEY is undefined)
+	$(error SIGNKEY is undefined)
 endif
 	prodenv/bin/docker-rpm-builder dir --sign-with ${SIGNKEY} --download-sources ${BUILD_IMAGE} . ${OUTDIR}
