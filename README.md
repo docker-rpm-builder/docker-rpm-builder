@@ -107,7 +107,7 @@ And you're done; skip to the [docker configuration](#docker-configuration) secti
 
 ### Debian and Ubuntu
 
-There're repositories for those three distributions on packagecloud; you'll need to enable the official docker package from docker.io [see install docs](https://docs.docker.com/installation/) or docker-rpm-builder will fail to install.
+There're repositories for those distributions on packagecloud; you'll need to enable the official docker package from docker.io [see install docs](https://docs.docker.com/installation/) or docker-rpm-builder will fail to install.
 
 **Only Ubuntu Trusty is actively tested!**. Please report issues with other distributions' packages.
 
@@ -156,7 +156,7 @@ deb https://packagecloud.io/alanfranz/docker-rpm-builder-v1/debian/ jessie main
 
 ### Other distributions
 
-I hope to create DEB packages for Ubuntu and Debian some day; in the meantime, whatever your distribution is, you can just use the [docker-rpm-builder python package](https://pypi.python.org/pypi/docker-rpm-builder/) and manually configure the system by yourself; the following steps will guide you in such process.
+You can just use the [docker-rpm-builder python package](https://pypi.python.org/pypi/docker-rpm-builder/) and manually configure the system by yourself; the following steps will guide you in such process.
 
 #### Prerequisites
 
