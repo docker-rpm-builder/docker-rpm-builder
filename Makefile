@@ -9,13 +9,6 @@ devenv: setup.py
 	devenv/bin/pip install bpython
 
 
-rpm: tmp 	
-ifndef BUILD_IMAGE
-	@echo "Must pass BUILD_IMAGE
-	@exit 1
-endif
-	VERSION_NUMBER=$(shell python setup.py --version) docker-rpm-builder dir ${BUILD_IMAGE} .
-
 test: devenv
 	devenv/bin/python -m unittest2 discover -v
 	devenv/bin/docker-rpm-builder selftest
@@ -59,19 +52,3 @@ nextrelease:
 	prodenv/bin/pip freeze > requirements.txt
 	git add version.txt requirements.txt
 	git commit version.txt requirements.txt -m "Bump development version"
-
-pypirelease:
-ifndef BUILD_NUMBER
-	@echo "Must pass BUILD_NUMBER for upload"
-	@exit 1
-endif
-	# always recreate
-	rm -rf prodenv
-	virtualenv-2.7 prodenv
-	echo "${BUILD_NUMBER}" >> version.txt
-	prodenv/bin/pip install .
-	prodenv/bin/pip freeze > requirements.txt
-	prodenv/bin/pip install wheel
-	prodenv/bin/python setup.py bdist_wheel sdist 
-	git checkout -- version.txt
-	rm -rf *.egg-info
