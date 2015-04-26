@@ -1,4 +1,7 @@
 %define install_dir /opt/docker-rpm-builder
+%define VIRTUALENV_VERSION 12.1.1
+%define PIP_VERSION 6.1.1
+%define SETUPTOOLS_VERSION 15.2
 
 Summary: build native RPMs through docker
 Name: docker-rpm-builder
@@ -7,11 +10,8 @@ Release: build@BUILD_NUMBER@
 License: Apache-2.0
 Group: Development/Tools
 URL: https://github.com/alanfranz/docker-rpm-builder
-Source0: https://pypi.python.org/packages/source/v/virtualenv/virtualenv-1.11.6.tar.gz
-Source1: https://pypi.python.org/packages/source/p/pip/pip-1.5.6.tar.gz
-Source2: https://pypi.python.org/packages/source/p/pipsi/pipsi-0.8.tar.gz
-Source3: https://pypi.python.org/packages/source/s/setuptools/setuptools-7.0.tar.gz
-Source4: https://pypi.python.org/packages/source/d/docker-rpm-builder/docker-rpm-builder-@VERSION_NUMBER@.tar.gz
+Source0: https://pypi.python.org/packages/source/p/pip/pip-%{PIP_VERSION}.tar.gz
+Source1: https://pypi.python.org/packages/source/s/setuptools/setuptools-%{SETUPTOOLS_VERSION}.tar.gz
 BuildRequires: python
 BuildRoot: /tmp/buildroot-%{name}-%{version}-%{release}.%{_arch}
 Requires: @DOCKERPACKAGE@ >= 1.3.0, bash, python, rpmdevtools
@@ -28,33 +28,22 @@ docker rpm builder
 %install
 pushd $(mktemp -d)
 
-tar xzvf %{_sourcedir}/setuptools-7.0.tar.gz
-pushd setuptools-7.0
+tar xzvf %{_sourcedir}/setuptools-%{SETUPTOOLS_VERSION}.tar.gz
+pushd setuptools-%{SETUPTOOLS_VERSION}
 python setup.py install
 popd
 
-tar xzvf %{_sourcedir}/pip-1.5.6.tar.gz
-pushd pip-1.5.6
+tar xzvf %{_sourcedir}/pip-%{PIP_VERSION}.tar.gz
+pushd pip-%{PIP_VERSION}
 python setup.py install
 popd
 
-tar xzvf %{_sourcedir}/virtualenv-1.11.6.tar.gz
-pushd virtualenv-1.11.6
-pip install .
-popd
+pip install "virtualenv==%{VIRTUALENV_VERSION}"
 
-tar xzvf %{_sourcedir}/pipsi-0.8.tar.gz
-pushd pipsi-0.8
-pip install .
-popd
-
-tar xzvf %{_sourcedir}/docker-rpm-builder-@VERSION_NUMBER@.tar.gz
-pushd docker-rpm-builder-@VERSION_NUMBER@
-# small hack: if we don't do that we'll have some issues with buildrooted paths in virtualenv
+virtualenv %{install_dir}
 mkdir -p %{install_dir}/{bin,env}
-pipsi --home %{install_dir}/env --bin-dir %{install_dir}/bin install --python /usr/bin/python .
-mkdir -p ${RPM_BUILD_ROOT}/$(dirname %{install_dir})
-mv %{install_dir} ${RPM_BUILD_ROOT}/$(dirname %{install_dir})
+%{install_dir}/bin/pip install "docker-rpm-builder==@VERSION_NUMBER@"
+mv /opt ${RPM_BUILD_ROOT}
 
 mkdir -p ${RPM_BUILD_ROOT}/usr/bin
 cd ${RPM_BUILD_ROOT}/usr/bin
