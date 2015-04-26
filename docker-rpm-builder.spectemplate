@@ -42,6 +42,7 @@ pip install "virtualenv==%{VIRTUALENV_VERSION}"
 
 virtualenv %{install_dir}
 mkdir -p %{install_dir}/{bin,env}
+/usr/bin/python -c "import sys; (sys.version_info[1] == 6) and sys.exit(1)" || %{install_dir}/bin/pip install importlib
 %{install_dir}/bin/pip install "docker-rpm-builder==@VERSION_NUMBER@"
 mv /opt ${RPM_BUILD_ROOT}
 
