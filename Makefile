@@ -1,4 +1,4 @@
-.PHONY: test fulltest clean distclean stablerelease nextrelease rpm 
+.PHONY: test fulltest clean distclean stablerelease nextrelease rpm prodenv
 
 SHELL := /bin/bash
 
@@ -22,6 +22,8 @@ clean:
 distclean: clean
 	rm -rf prodenv devenv *.tar.gz docker-rpm-builder.spec
 
+prodenv:
+	rm -rf prodenv
 
 stablerelease:
 ifndef RELEASE_NUMBER
@@ -51,7 +53,7 @@ nextrelease:
 	git add version.txt requirements.txt
 	git commit version.txt requirements.txt -m "Bump development version"
     
-rpm:
+rpm: devenv
 ifndef DOCKERPACKAGE
 	$(error DOCKERPACKAGE is undefined)
 endif
@@ -64,4 +66,4 @@ endif
 ifndef SIGNKEY
 	$(error SIGNKEY is undefined)
 endif
-	prodenv/bin/docker-rpm-builder dir --sign-with ${SIGNKEY} --download-sources ${BUILD_IMAGE} . ${OUTDIR}
+	devenv/bin/docker-rpm-builder dir --sign-with ${SIGNKEY} --download-sources ${BUILD_IMAGE} . ${OUTDIR}
