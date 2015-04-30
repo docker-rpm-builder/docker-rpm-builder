@@ -55,6 +55,9 @@ You should have a vague idea of what [docker](https://www.docker.com) is and you
 
 There's an RPM repository for those distributions - such packages are built via docker-rpm-builder itself. It's kindly hosted by [packagecloud](https://packagecloud.io). Just use this yum repository:
 
+**PLEASE NOTE:** such repositories will probably change URL in the next month or so. If you get a 404, come back to this page
+and check the new repos.
+
 **/etc/yum.repos.d/docker-rpm-builder-v1.repo**
 ```
 [docker-rpm-builder-v1]
@@ -79,6 +82,9 @@ yum install docker-rpm-builder
 And you're done; skip to the [docker configuration](#docker-configuration) section.
 
 ### Fedora 20/21/rawhide (x86_64 only)
+
+**PLEASE NOTE:** such repositories will probably change URL in the next month or so. If you get a 404, come back to this page
+and check the new repos.
 
 Use this yum repository:
 
@@ -128,6 +134,9 @@ apt-get -y install docker-rpm-builder
 ```
 
 Enjoy!
+
+**PLEASE NOTE:** such repositories will probably change URL in the next month or so. If you get a 404, come back to this page
+and check the new repos.
 
 #### Ubuntu Trusty
 
