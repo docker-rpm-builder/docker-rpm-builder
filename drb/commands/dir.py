@@ -105,8 +105,8 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         template = DoubleDelimiterTemplate(codecs.open(spectemplate, "rb", "utf-8").read())
         with_substitutions = template.substitute(os.environ)
         finalspec = NamedTemporaryFile(suffix=".spec")
-        with codecs.open(finalspec, "wb", "utf-8") as f:
-            f.write(with_substitutions)
+        f.write(with_substitutions)
+        f.flush()
         specfile = finalspec.name
         specname = os.path.splitext(os.path.basename(spectemplates))[0] + ".spec"
     else:
