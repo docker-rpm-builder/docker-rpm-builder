@@ -413,9 +413,9 @@ To all the people who gave me feedback or contributed to this project, in no spe
 * Romain P
 
 ## TODOS and ideas
+* add tests for spectemplate behaviour
 * General refactor: remove code duplication, improve setup, etc. - things are currently quite messed up.
 * Support some way to cache build dependencies between builds for the same package (commit after run? commit after build-dep?)
-* DEB package
 * Refactor bash-based test into python-based ones, even when spawning processes
 * Find a better solution than 'spectool' for downloading sources.
 * Option for creating a Dockerfile with build dependencies for a package, that can be used for
