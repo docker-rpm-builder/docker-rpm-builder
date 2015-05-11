@@ -54,3 +54,7 @@ ln -s %{install_dir}/bin/docker-rpm-builder docker-rpm-builder
 %defattr(-, root, root, 0755)
 %{install_dir}/
 /usr/bin/docker-rpm-builder
+
+%posttrans
+grep -q /etc/yum.repos.d/*.repo 'packagecloud.io/alanfranz/docker-rpm-builder-v1' && echo "WARNING: you seem to still rely on packagecloud repo for docker-rpm-builder-v1. Please head to https://github.com/alanfranz/docker-rpm-builder for updated repositories."
+exit 0
