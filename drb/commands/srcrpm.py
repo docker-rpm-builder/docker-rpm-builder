@@ -22,7 +22,7 @@ _HELP = """Builds a binary RPM from .src.rpm file.
     anything that can be passed to `docker run` as an IMAGE parameter will do.
 
     SRCRPM should be a .src.rpm file that contains the .spec and all the
-    references source files.
+    references source files. It will be readonly inside the container.
 
     TARGET_DIRECTORY is where the RPMS will be written. Anything inside
     may be overwritten during the build phase.
@@ -112,7 +112,7 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
         additional_docker_options = internal_docker_options + " ".join(additional_docker_options)
         srpms_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_srcrpmdir}}", **locals()).strip()
         rpms_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_rpmdir}}", **locals()).strip()
-        spawn_func("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts -v {srpms_temp}:{srpms_inner_dir} -v {target_directory}:{rpms_inner_dir}"
+        spawn_func("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts:ro -v {srpms_temp}:{srpms_inner_dir}:ro -v {target_directory}:{rpms_inner_dir}"
            " -w /dockerscripts {image} ./rpmbuild-srcrpm-in-docker.sh {serialized_options}", **locals())
     finally:
         shutil.rmtree(srpms_temp)

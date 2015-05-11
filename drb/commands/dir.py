@@ -24,7 +24,8 @@ _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hoo
     SOURCE_DIRECTORY should be a directory containing the .spec or the
     .spectemplate file and all the source files and patches referenced
     in such spec. If using a .spectemplate the directory should be writeable,
-    since a .spec file will be written there (and then removed).
+    from the host, since a .spec file will be written there (and then removed).
+    Such directory will be read-only inside the container.
 
     TARGET_DIRECTORY is where the RPMS will be written. Anything inside
     may be overwritten during the build phase.
@@ -140,7 +141,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         dockerscripts = getpath("drb/dockerscripts")
         rpms_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_rpmdir}}", **locals()).strip()
         sources_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_sourcedir}}", **locals()).strip()
-        spawn_func("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts -v {source_directory}:{sources_inner_dir} -v {target_directory}:{rpms_inner_dir} {bashonfail_options} -w /dockerscripts {image}  ./rpmbuild-dir-in-docker.sh {serialized_options}", **locals())
+        spawn_func("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts:ro -v {source_directory}:{sources_inner_dir}:ro -v {target_directory}:{rpms_inner_dir} {bashonfail_options} -w /dockerscripts {image}  ./rpmbuild-dir-in-docker.sh {serialized_options}", **locals())
     finally:
         if deletespec:
             os.unlink(specfile)
