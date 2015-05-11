@@ -32,7 +32,6 @@ for image in ${IMAGES}; do
     ARBITRARY_PARAMETER=arbitraryparameter docker-rpm-builder dir ${image} ${SRC_DIR} ${RPM_DIR} --download-sources --always-pull
     [ "$(ls ${RPM_DIR}/x86_64/tmux-*arbitraryparameter* | wc -l)" == "2" ]
     end_test
-    exit 0
 
     start_test "without sources, build fails"
     cp -r tmux-src/* ${SRC_DIR}
