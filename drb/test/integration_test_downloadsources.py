@@ -16,7 +16,7 @@ Group:          Applications/System
 # 3 clause BSD licensed.
 License:        ISC and BSD
 URL:            http://sourceforge.net/projects/tmux
-Source0:        http://pkgs.fedoraproject.org/repo/pkgs/tmux/tmux-%{version}.tar.gz/3e37db24aa596bf108a0442a81c845b3/tmux-1.6.tar.gz
+Source0:        http://pkgs.fedoraproject.org/repo/%{rhel}/%{dist}/pkgs/tmux/tmux-%{version}.tar.gz/3e37db24aa596bf108a0442a81c845b3/tmux-1.6.tar.gz
 BuildRequires:  ncurses-devel
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -42,10 +42,10 @@ class TestMacroResolving(TestCase):
         tmp.write(TMUX_SPEC)
         tmp.flush()
 
-        lines = get_spec_with_resolved_macros(tmp.name)
+        lines = get_spec_with_resolved_macros(tmp.name, "alanfranz/drb-epel-6-x86-64:latest")
         for line in lines:
             if line.startswith("Source0"):
-                self.assertTrue("http://pkgs.fedoraproject.org/repo/pkgs/tmux/tmux-1.6.tar.gz/3e37db24aa596bf108a0442a81c845b3/tmux-1.6.tar.gz" in line)
+                self.assertTrue("http://pkgs.fedoraproject.org/repo/6/.el6/pkgs/tmux/tmux-1.6.tar.gz/3e37db24aa596bf108a0442a81c845b3/tmux-1.6.tar.gz" in line)
                 break
         else:
             self.fail("could not find source line")

@@ -11,16 +11,16 @@ import re
 
 _logger = logging.getLogger("drb.downloadsources")
 
-def downloadsources(source_directory, specfilename):
+def downloadsources(source_directory, specfilename, target_image):
     """Leverages rpmbuild to complete the macros in a spec file, then
     uses wget to fetch source and patch files."""
     _logger.info("Downloading additional sources")
 
-    lines = get_spec_with_resolved_macros(specfilename)
+    lines = get_spec_with_resolved_macros(specfilename, target_image)
     urls = get_source_and_patches_urls(lines)
     download_files(urls, source_directory)
 
-def get_spec_with_resolved_macros(specfilename):
+def get_spec_with_resolved_macros(specfilename, target_image):
     lines_upto_prep =list(takewhile(lambda line: not line.startswith("%prep"),
                                     codecs.open(specfilename, encoding="utf-8")))
 
@@ -34,7 +34,8 @@ def get_spec_with_resolved_macros(specfilename):
 
     try:
         rpmbuild = which("rpmbuild")
-        with_macros = sp("{rpmbuild} --nodeps -bp {tempspec.name}", **locals())
+        docker = which("docker")
+        with_macros = sp("{docker} run -v {tempspec.name}:{tempspec.name}:ro --rm {target_image} {rpmbuild} --nodeps -bp {tempspec.name}", **locals())
     finally:
         tempspec.close()
 

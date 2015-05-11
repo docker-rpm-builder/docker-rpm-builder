@@ -114,7 +114,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         specname = os.path.splitext(os.path.basename(specfile))[0] + ".spec"
 
     if download_sources:
-        downloadsources(source_directory, specfile)
+        downloadsources(source_directory, specfile, image)
 
     _logger.info("Now building project from %s on image %s", source_directory, image)
     dockerexec = which("docker")

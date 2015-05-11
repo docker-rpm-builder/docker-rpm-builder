@@ -53,9 +53,9 @@ def short_test():
 
     tmpdir = mkdtemp()
     try:
-        downloadsources(tmpdir, getpath("drb/test/spectooltest.spec"))
+        downloadsources(tmpdir, getpath("drb/test/spectooltest.spec"), "alanfranz/drb-epel-6-x86-64:latest")
         if not os.path.exists(os.path.join(tmpdir, "README.md")):
-            click.echo("Basic self test failed, could not download sources; probably a spectool issue (missing perl or wrong version?)")
+            click.echo("Basic self test failed, could not download sources")
             sys.exit(1)
     finally:
         shutil.rmtree(tmpdir)
