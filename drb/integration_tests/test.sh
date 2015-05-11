@@ -1,7 +1,9 @@
 #!/bin/bash
 set -x
+shopt -s expand_aliases
 trap "{ echo ERROR detected; exit 1; }" ERR
-echo "Using $(which docker-rpm-builder)"
+[ -n "$DRB_EXEC" ] && alias docker-rpm-builder="${DRB_EXEC}"
+echo "Testing $(type docker-rpm-builder)"
 IMAGES=${1:-alanfranz/drb-epel-6-x86-64:latest alanfranz/drb-epel-5-x86-64:latest alanfranz/drb-epel-7-x86-64:latest alanfranz/drb-fedora-20-x86-64:latest alanfranz/drb-fedora-21-x86-64:latest alanfranz/drb-fedora-rawhide-x86-64:latest}
 
 RPM_DIR=$(mktemp -d)
