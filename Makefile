@@ -14,7 +14,7 @@ test: devenv
 	devenv/bin/docker-rpm-builder selftest
 
 fulltest: test devenv
-	. devenv/bin/activate && cd drb/integration_tests && ./test.sh ${TEST_IMAGES}
+	cd drb/integration_tests && DRB_EXEC=../../bin/docker-rpm-builder ./test.sh ${TEST_IMAGES}
 
 clean:
 	rm -rf tmp build dist 
