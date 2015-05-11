@@ -1,0 +1,15 @@
+#!/bin/bash
+GIT=${GIT:-git}
+set -ex
+MAJOR="$(cat version.txt | cut -d '.' -f 1)" 
+MINOR="$(cat version.txt | cut -d '.' -f 2)" 
+echo ${MAJOR}.$((${MINOR} +1))dev0 > version.txt
+rm -rf *.egg-info
+${GIT} add version.txt
+prodenv/bin/pip uninstall -y wheel docker-rpm-builder
+prodenv/bin/pip install .
+prodenv/bin/pip freeze > requirements.txt
+${GIT} add version.txt requirements.txt
+${GIT} commit version.txt requirements.txt -m "Bump development version"
+
+
