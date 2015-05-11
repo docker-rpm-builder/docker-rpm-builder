@@ -12,6 +12,7 @@ eval $(echo -n $1 | base64 -d)
 RPMS_DIR=$(rpm --eval %{_rpmdir})
 SRPMS_DIR=$(rpm --eval %{_srcrpmdir})
 SOURCE_DIR=$(rpm --eval %{_sourcedir})
+SPECS_DIR=$(rpm --eval %{_specdir})
 
 function finish {
   chown -R ${CALLING_UID}:${CALLING_GID} ${RPMS_DIR} || /bin/true
@@ -19,7 +20,7 @@ function finish {
 trap finish EXIT
 
 echo "starting $0"
-SPEC=$(ls ${SOURCE_DIR}/*.spec | head -n 1)
+SPEC=$(ls ${SPECS_DIR}/*.spec | head -n 1)
 /dockerscripts/rpm-setup-deps.sh
 
 #rpmbuild complains if it can't find a proper user for uid/gid of the source files;

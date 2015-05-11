@@ -5,6 +5,8 @@ import codecs
 import glob
 import logging
 import click
+from tempfile import NamedTemporaryFile
+
 
 from drb.spectemplate import DoubleDelimiterTemplate
 from drb.which import which
@@ -14,6 +16,7 @@ from drb.pull import pull
 from drb.bash import serialize, provide_encoded_signature, spawn_interactive
 from drb.downloadsources import downloadsources
 from drb.parse_ownership import parse_ownership
+from drb.mkdir_p import mkdir_p
 
 _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hood.
 
@@ -89,31 +92,26 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     # TODO: let the user choose $-delimited templates
     uid, gid = parse_ownership(target_ownership)
 
-    deletespec = False
     spectemplates = [os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spectemplate")]
     specfiles = [os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spec")]
-    if len(spectemplates) > 1:
-        raise ValueError("More than one spectemplate found in source directory")
 
-    if not os.path.exists(target_directory):
-        os.mkdir(target_directory)
+    if len(spectemplates) + len(specfiles) != 1:
+        raise ValueError("Source directory contains either zero, or more than one, spec/spectemplate")
+
+    mkdir_p(target_directory)
 
     if spectemplates:
-        if specfiles:
-            raise ValueError("Found both .spec and .spectemplate in source directory.")
         spectemplate = spectemplates[0]
         template = DoubleDelimiterTemplate(codecs.open(spectemplate, "rb", "utf-8").read())
         with_substitutions = template.substitute(os.environ)
-        finalspec = os.path.splitext(spectemplate)[0] + ".spec"
+        finalspec = NamedTemporaryFile(suffix=".spec")
         with codecs.open(finalspec, "wb", "utf-8") as f:
             f.write(with_substitutions)
-        specfiles.append(finalspec)
-        deletespec = True
-
-    if not specfiles or len(specfiles) > 1:
-        raise ValueError("No specfiles or more than one specfile in source directory")
-
-    specfile = specfiles[0]
+        specfile = finalspec.name
+        specname = os.path.splitext(os.path.basename(spectemplates))[0] + ".spec"
+    else:
+        specfile = specfiles[0]
+        specname = os.path.splitext(os.path.basename(specfile))[0] + ".spec"
 
     if download_sources:
         downloadsources(source_directory, specfile)
@@ -136,15 +134,13 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
 
     serialized_options = serialize({"CALLING_UID": uid, "CALLING_GID": gid, "BASH_ON_FAIL":bashonfail, "GPG_PRIVATE_KEY": sign_with_encoded})
 
-    try:
-        additional_docker_options = " ".join(additional_docker_options)
-        dockerscripts = getpath("drb/dockerscripts")
-        rpms_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_rpmdir}}", **locals()).strip()
-        sources_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_sourcedir}}", **locals()).strip()
-        spawn_func("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts:ro -v {source_directory}:{sources_inner_dir}:ro -v {target_directory}:{rpms_inner_dir} {bashonfail_options} -w /dockerscripts {image}  ./rpmbuild-dir-in-docker.sh {serialized_options}", **locals())
-    finally:
-        if deletespec:
-            os.unlink(specfile)
+    additional_docker_options = " ".join(additional_docker_options)
+    dockerscripts = getpath("drb/dockerscripts")
+    rpms_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_rpmdir}}", **locals()).strip()
+    sources_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_sourcedir}}", **locals()).strip()
+    specs_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_specdir}}", **locals()).strip()
+    spawn_func("{dockerexec} run {additional_docker_options} -v {specfile}:{specs_inner_dir}/{specname}:ro -v {dockerscripts}:/dockerscripts:ro -v {source_directory}:{sources_inner_dir}:ro " +
+               "-v {target_directory}:{rpms_inner_dir} {bashonfail_options} -w /dockerscripts {image}  ./rpmbuild-dir-in-docker.sh {serialized_options}", **locals())
 
 
 
