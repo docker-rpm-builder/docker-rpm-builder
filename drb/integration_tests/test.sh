@@ -27,6 +27,12 @@ function end_test {
 }
 
 for image in ${IMAGES}; do
+    start_test "spectemplate variables are substituted"
+    cp -r tmux-src-template/* ${SRC_DIR}
+    ARBITRARY_PARAMETER=arbitraryparameter docker-rpm-builder dir ${image} ${SRC_DIR} ${RPM_DIR} --download-sources --always-pull
+    [ "$(ls ${RPM_DIR}/x86_64/tmux-*arbitraryparameter* | wc -l)" == "2" ]
+    end_test
+
     start_test "without sources, build fails"
     cp -r tmux-src/* ${SRC_DIR}
     docker-rpm-builder dir ${image} ${SRC_DIR} ${RPM_DIR} && { echo "should have failed"; exit 1; }
@@ -37,6 +43,7 @@ for image in ${IMAGES}; do
     docker-rpm-builder dir ${image} ${SRC_DIR} ${RPM_DIR} --download-sources --always-pull
     [ "$(ls ${RPM_DIR}/x86_64/tmux-* | wc -l)" == "2" ]
     end_test
+
 
     start_test "created binaries have the ownership that is passed"
     cp -r tmux-src/* ${SRC_DIR}
@@ -60,6 +67,7 @@ for image in ${IMAGES}; do
     cp ./secret.pub ${RPM_DIR}
     docker run -v ${RPM_DIR}:${RPM_DIR} -w ${RPM_DIR}/x86_64 ${image} /bin/bash -c 'yum install -y rpmdevtools && rpm --import ../secret.pub && /usr/bin/rpmdev-checksig *.rpm'
     end_test
+
 
     start_test "signed srcrpm building"
     docker-rpm-builder srcrpm ${image} tmux-srcrpm/tmux-1.4-3.el5.1.src.rpm ${RPM_DIR} --sign-with ./secret.pgp

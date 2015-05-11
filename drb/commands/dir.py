@@ -106,9 +106,9 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         with_substitutions = template.substitute(os.environ)
         finalspec = NamedTemporaryFile(suffix=".spec")
         finalspec.write(with_substitutions)
-        funalspec.flush()
+        finalspec.flush()
         specfile = finalspec.name
-        specname = os.path.splitext(os.path.basename(spectemplates))[0] + ".spec"
+        specname = os.path.splitext(os.path.basename(specfile))[0] + ".spec"
     else:
         specfile = specfiles[0]
         specname = os.path.splitext(os.path.basename(specfile))[0] + ".spec"
