@@ -17,4 +17,4 @@ def which(program):
             if is_exe(exe_file):
                 return exe_file
 
-    return None
+    raise ValueError("Could not find '{0}' in current path".format(program))
