@@ -25,23 +25,6 @@ distclean: clean
 prodenv:
 	rm -rf prodenv
 
-stablerelease:
-ifndef RELEASE_NUMBER
-	@echo "Must pass RELEASE_NUMBER"
-	@exit 1
-endif
-	# always recreate
-	rm -rf prodenv
-	virtualenv-2.7 prodenv
-	sed -i -e "s/dev0//g" version.txt
-	[ "${RELEASE_NUMBER}" == "$$(cat version.txt)" ] || { echo "Release number version mismatch"; exit 1; }
-	prodenv/bin/pip install .
-	prodenv/bin/pip freeze > requirements.txt
-	prodenv/bin/pip install wheel
-	git add version.txt requirements.txt
-	git commit version.txt requirements.txt -m "Prepare for release ${RELEASE_NUMBER}"
-	git tag ${RELEASE_NUMBER} -m "Release tag"
-	prodenv/bin/python setup.py bdist_wheel sdist register upload
 
 nextrelease:
 	MAJOR="$$(cat version.txt | cut -d '.' -f 1)" ; MINOR="$$(cat version.txt | cut -d '.' -f 2)" ; echo $${MAJOR}.$$(($${MINOR} +1))dev0 > version.txt
