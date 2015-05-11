@@ -51,24 +51,19 @@ You should have a vague idea of what [docker](https://www.docker.com) is and you
 
 ## Installation
 
-### CentOS/RHEL 6.6 and 7.x (x86_64 only)
+### CentOS/RHEL 6.x (with x >= 6) and 7.x (x86_64 only)
 
-There's an RPM repository for those distributions - such packages are built via docker-rpm-builder itself. It's kindly hosted by [packagecloud](https://packagecloud.io). Just use this yum repository:
-
-**PLEASE NOTE:** such repositories will probably change URL in the next month or so. If you get a 404, come back to this page
-and check the new repos.
+There's an RPM repository for those distributions - such packages are built via docker-rpm-builder itself. Just use this yum repository:
 
 **/etc/yum.repos.d/docker-rpm-builder-v1.repo**
 ```
 [docker-rpm-builder-v1]
 name=docker-rpm-builder-v1
-baseurl=https://packagecloud.io/alanfranz/docker-rpm-builder-v1/el/$releasever/$basearch
+baseurl=http://www.a9f.eu/yum/docker-rpm-builder-v1/centos/$releasever/$basearch
 repo_gpgcheck=1
 gpgcheck=1
 enabled=1
-gpgkey=https://packagecloud.io/gpg.key
-       https://www.franzoni.eu/keys/D1270819.txt
-sslverify=1
+gpgkey=https://www.franzoni.eu/keys/D1270819.txt
 ```
 
 Please refer to docker's own installation instructions for [CentOS](https://docs.docker.com/installation/centos/) and [RHEL](https://docs.docker.com/installation/rhel/) for details. You'll probably need to enable [EPEL](https://fedoraproject.org/wiki/EPEL) or distro-specific extras repositories for the install to succeed.
@@ -83,22 +78,17 @@ And you're done; skip to the [docker configuration](#docker-configuration) secti
 
 ### Fedora 20/21/rawhide (x86_64 only)
 
-**PLEASE NOTE:** such repositories will probably change URL in the next month or so. If you get a 404, come back to this page
-and check the new repos.
-
 Use this yum repository:
 
 **/etc/yum.repos.d/docker-rpm-builder-v1.repo**
 ```
 [docker-rpm-builder-v1]
 name=docker-rpm-builder-v1
-baseurl=https://packagecloud.io/alanfranz/docker-rpm-builder-v1/fedora/$releasever/$basearch
+baseurl=http://www.a9f.eu/yum/docker-rpm-builder-v1/fedora/$releasever/$basearch
 repo_gpgcheck=1
 gpgcheck=1
 enabled=1
-gpgkey=https://packagecloud.io/gpg.key
-       https://www.franzoni.eu/keys/D1270819.txt
-sslverify=1
+gpgkey=https://www.franzoni.eu/keys/D1270819.txt
 ```
 
 Please refer to docker installation instructions for [Fedora](https://docs.docker.com/installation/fedora/) for details.
@@ -113,15 +103,13 @@ And you're done; skip to the [docker configuration](#docker-configuration) secti
 
 ### Debian and Ubuntu
 
-There're repositories for those distributions on packagecloud; you'll need to enable the official docker package from docker.io [see install docs](https://docs.docker.com/installation/) or docker-rpm-builder will fail to install.
+There're repositories for those distributions; you'll need to enable the official docker package from docker.io [see install docs](https://docs.docker.com/installation/) or docker-rpm-builder will fail to install.
 
 **Only Ubuntu Trusty is actively tested!**. Please report issues with other distributions' packages.
 
-First, you should make sure that your apt has https configured and that you've got packagecloud gpg key installed:
-
+First, you should make sure that you've got my package signing key properly installed and configured for apt:
 ```
-curl https://packagecloud.io/gpg.key | apt-key add -
-apt-get install -y apt-transport-https
+curl https://www.franzoni.eu/keys/D1270819.txt | sudo apt-key add -
 ```
 
 Then, pick the proper repo for your distribution - see next sections - and save it as **/etc/apt/sources.list.d/docker-rpm-builder.list**
@@ -135,30 +123,34 @@ apt-get -y install docker-rpm-builder
 
 Enjoy!
 
-**PLEASE NOTE:** such repositories will probably change URL in the next month or so. If you get a 404, come back to this page
-and check the new repos.
-
 #### Ubuntu Trusty
 
 ```
-deb https://packagecloud.io/alanfranz/docker-rpm-builder-v1/ubuntu/ trusty main
+deb http://www.a9f.eu/apt/docker-rpm-builder-v1/ubuntu trusty main
 ```
 #### Ubuntu Utopic
 
 ```
-deb https://packagecloud.io/alanfranz/docker-rpm-builder-v1/ubuntu/ utopic main
+deb http://www.a9f.eu/apt/docker-rpm-builder-v1/ubuntu utopic main
 ```
+
+#### Ubuntu Vivid
+
+```
+deb http://www.a9f.eu/apt/docker-rpm-builder-v1/ubuntu vivid main
+```
+
 
 #### Debian Wheezy
 
 ```
-deb https://packagecloud.io/alanfranz/docker-rpm-builder-v1/debian/ wheezy main
+deb http://www.a9f.eu/apt/docker-rpm-builder-v1/debian wheezy main
 ```
 
 #### Debian Jessie
 
 ```
-deb https://packagecloud.io/alanfranz/docker-rpm-builder-v1/debian/ jessie main
+deb http://www.a9f.eu/apt/docker-rpm-builder-v1/debian jessie main
 ```
 
 
