@@ -10,3 +10,8 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:  ncurses-devel
 BuildRequires:  libevent-devel
 
+%description
+asd
+
+%prep
+
