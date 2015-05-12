@@ -16,5 +16,5 @@ ln -s /opt/docker-rpm-builder/bin/docker-rpm-builder .
 cd /
 tar czvf drb.tar.gz /opt/docker-rpm-builder /usr/bin/docker-rpm-builder
 cd /host
-fpm -s tar -t deb --name "docker-rpm-builder" --after-install after-install.sh  --version ${DRB_VERSION} --depends "lxc-docker >= 1.3" --depends "wget" ../drb.tar.gz 
+fpm -s tar -t deb --name "docker-rpm-builder" --after-install ./after-install.sh  --version ${DRB_VERSION} --depends "lxc-docker >= 1.3" --depends "wget" ../drb.tar.gz 
 chmod 666 *.deb
