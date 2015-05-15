@@ -163,9 +163,7 @@ You can just use the [docker-rpm-builder python package](https://pypi.python.org
 
 You must have [docker](https://www.docker.com/) >= 1.3 installed and properly configured (see the [install docs](https://docs.docker.com/installation/#installation) and the [docker configuration](#docker-configuration) section.
 
-Python 2.7, bash, perl and curl should be installed on your system as well. If *spectool* is available
-for your distribution it is recommended to have it available as well, since I've encountered some issues
-with the one I bundle on some distros (and I couldn't find a version that would work on all distros).
+Python 2.7, bash, and wget should be installed on your system as well.
 
 #### Installation from pypi
 
@@ -392,7 +390,7 @@ In the future I may think about adding an option to docker-rpm-builder to help c
 such images without actually needing a Dockerfile on a source repo.
 
 ## Gotchas
-* if you're used to mock, the build system is a bit different, mocks seems to employ different defaults and has different macros, sometimes a build working with mock may file with docker-rpm-builder. I'm investigating the issue. It's quite uncommon BTW.
+* if you're used to mock, the build system is a bit different, mocks seems to employ different defaults and has different macros, sometimes a build working with mock may fail with docker-rpm-builder. I'm investigating the issue. It's quite uncommon BTW.
 * dns default to public ones, will add an option for private ones. Right now you can just pass arbitrary docker options, so pass --dns and/or set your internal
 DNS in the docker config file.
 
@@ -405,11 +403,9 @@ To all the people who gave me feedback or contributed to this project, in no spe
 * Romain P
 
 ## TODOS and ideas
-* add tests for spectemplate behaviour
 * General refactor: remove code duplication, improve setup, etc. - things are currently quite messed up.
 * Support some way to cache build dependencies between builds for the same package (commit after run? commit after build-dep?)
 * Refactor bash-based test into python-based ones, even when spawning processes
-* Find a better solution than 'spectool' for downloading sources.
 * Option for creating a Dockerfile with build dependencies for a package, that can be used for
   repeatable builds and/or caching.
 
