@@ -24,7 +24,7 @@ def get_spec_with_resolved_macros(specfilename, target_image):
     lines_upto_prep =list(takewhile(lambda line: not line.startswith("%prep"),
                                     codecs.open(specfilename, encoding="utf-8")))
 
-    tempspec = NamedTemporaryFile(suffix=".spec")
+    tempspec = NamedTemporaryFile(suffix=".spec", mode="w+")
     tempspec.writelines(lines_upto_prep)
     tempspec.write("%prep\n")
     tempspec.write("cat<<__EOF__\n")
