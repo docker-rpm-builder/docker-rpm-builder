@@ -33,8 +33,8 @@ def get_spec_with_resolved_macros(specfilename, target_image):
     tempspec.flush()
 
     try:
-        rpmbuild = which("rpmbuild")
         docker = which("docker")
+        rpmbuild = sp("{docker} run --rm {target_image} which rpmbuild", **locals()).strip()
         with_macros = sp("{docker} run -v {tempspec.name}:{tempspec.name}:ro --rm {target_image} {rpmbuild} --nodeps -bp {tempspec.name}", **locals())
     finally:
         tempspec.close()
