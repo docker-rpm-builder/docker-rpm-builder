@@ -21,10 +21,10 @@ def downloadsources(source_directory, specfilename, target_image):
     download_files(urls, source_directory)
 
 def get_spec_with_resolved_macros(specfilename, target_image):
-    lines_upto_prep =list(takewhile(lambda line: not line.startswith("%prep"),
+    lines_upto_prep = list(takewhile(lambda line: not line.startswith("%prep"),
                                     codecs.open(specfilename, encoding="utf-8")))
 
-    tempspec = NamedTemporaryFile(suffix=".spec")
+    tempspec = codecs.getwriter("utf-8")(NamedTemporaryFile(suffix=".spec"))
     tempspec.writelines(lines_upto_prep)
     tempspec.write("%prep\n")
     tempspec.write("cat<<__EOF__\n")
