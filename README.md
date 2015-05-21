@@ -2,7 +2,7 @@
 
 ## News
 
-**WARNING: you need to update your repositories, this software is not hosted on packagecloud anymore!**
+**WARNING: you need to update your repositories if you're using the packaged RPM or DEB version, this software's repositories are not hosted on packagecloud anymore!**
 
 See the [News Page](https://github.com/alanfranz/docker-rpm-builder/wiki/News) for the latest news.
 
