@@ -2,6 +2,8 @@
 
 ## News
 
+**WARNING: you need to update your repositories, this software is not hosted on packagecloud anymore!**
+
 See the [News Page](https://github.com/alanfranz/docker-rpm-builder/wiki/News) for the latest news.
 
 ## Preamble
