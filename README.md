@@ -53,7 +53,7 @@ You should have a vague idea of what [docker](https://www.docker.com) is and you
 
 ## Installation
 
-### CentOS/RHEL 6.x (with x >= 6) and 7.x (x86_64 only)
+### CentOS/RHEL 6.x (with x >= 6) and 7.x
 
 There's an RPM repository for those distributions - such packages are built via docker-rpm-builder itself. Just use this yum repository:
 
@@ -78,7 +78,7 @@ yum install docker-rpm-builder
 
 And you're done; skip to the [docker configuration](#docker-configuration) section.
 
-### Fedora 20/21/rawhide (x86_64 only)
+### Fedora 20/21/rawhide
 
 Use this yum repository:
 
