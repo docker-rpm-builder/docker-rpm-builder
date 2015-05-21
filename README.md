@@ -401,6 +401,7 @@ To all the people who gave me feedback or contributed to this project, in no spe
 * Brian Lalor
 * Tobias Widén
 * Romain P
+* Pavel Borzenkov
 
 ## TODOS and ideas
 * General refactor: remove code duplication, improve setup, etc. - things are currently quite messed up.
