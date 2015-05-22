@@ -13,7 +13,10 @@ test: devenv
 	devenv/bin/python -m unittest2 discover -v
 	devenv/bin/docker-rpm-builder selftest
 
-fulltest: test devenv
+integrationtest: devenv
+	devenv/bin/python -m unittest2 discover -p 'integration_test_*' -v
+
+fulltest: test devenv integrationtest
 	cd drb/integration_tests && DRB_EXEC=../../devenv/bin/docker-rpm-builder ./test.sh ${TEST_IMAGES}
 
 clean:

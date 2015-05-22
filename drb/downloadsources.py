@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import logging
-from tempfile import NamedTemporaryFile
 import codecs
 from itertools import takewhile
 from drb.spawn import sp
+from drb.tempdir import TempDir
 from drb.which import which
 from drb.path import getpath
+import os
 import re
 
 _logger = logging.getLogger("drb.downloadsources")
@@ -24,20 +25,22 @@ def get_spec_with_resolved_macros(specfilename, target_image):
     lines_upto_prep = list(takewhile(lambda line: not line.startswith("%prep"),
                                     codecs.open(specfilename, encoding="utf-8")))
 
-    tempspec = codecs.getwriter("utf-8")(NamedTemporaryFile(suffix=".spec"))
-    tempspec.writelines(lines_upto_prep)
-    tempspec.write("%prep\n")
-    tempspec.write("cat<<__EOF__\n")
-    tempspec.writelines(lines_upto_prep)
-    tempspec.write("__EOF__\n")
-    tempspec.flush()
 
-    try:
+
+    with TempDir(os.path.join(os.path.expanduser("~"), "drbtmp.XXXXXX")) as tmpdir:
+        tempspec_path = os.path.join(tmpdir.path, os.path.basename(specfilename))
+        tempspec = codecs.getwriter("utf-8")(open(tempspec_path, "wb"))
+        tempspec.writelines(lines_upto_prep)
+        tempspec.write("%prep\n")
+        tempspec.write("cat<<__EOF__\n")
+        tempspec.writelines(lines_upto_prep)
+        tempspec.write("__EOF__\n")
+        tempspec.close()
+
         docker = which("docker")
         rpmbuild = sp("{docker} run --rm {target_image} which rpmbuild", **locals()).strip()
-        with_macros = sp("{docker} run -v {tempspec.name}:{tempspec.name}:ro --rm {target_image} {rpmbuild} --nodeps -bp {tempspec.name}", **locals())
-    finally:
-        tempspec.close()
+        with_macros = sp("{docker} run --rm -v {tmpdir.path}:{tmpdir.path}:ro --rm {target_image} {rpmbuild} --nodeps -bp {tempspec_path}", **locals())
+
 
     return with_macros.split("\n")
 

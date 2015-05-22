@@ -1,13 +1,14 @@
 #!/bin/bash
 set -x
 shopt -s expand_aliases
-trap "{ echo ERROR detected; exit 1; }" ERR
+RPM_DIR=$(mktemp -d ${HOME}/drb-test-tmp-rpm.XXXXXX)
+SRC_DIR=$(mktemp -d ${HOME}/drb-test-tmp-src.XXXXXX)
+trap "{ echo ERROR detected; rm -rf ${RPM_DIR} ${SRC_DIR} ; exit 1; }" ERR
 [ -n "$DRB_EXEC" ] && alias docker-rpm-builder="${DRB_EXEC}"
 echo "Testing $(type docker-rpm-builder)"
 IMAGES=${1:-alanfranz/drb-epel-6-x86-64:latest alanfranz/drb-epel-5-x86-64:latest alanfranz/drb-epel-7-x86-64:latest alanfranz/drb-fedora-20-x86-64:latest alanfranz/drb-fedora-21-x86-64:latest alanfranz/drb-fedora-rawhide-x86-64:latest}
 
-RPM_DIR=$(mktemp -d)
-SRC_DIR=$(mktemp -d)
+
 
 LATEST_STARTED_TEST=""
 function start_test {
@@ -15,12 +16,12 @@ function start_test {
     rm -rf ${RPM_DIR}
     rm -rf ${SRC_DIR}
     mkdir -p ${SRC_DIR}
-    echo "[$(date --rfc-3339=seconds)] TEST START: $1"
+    echo "[$(date)] TEST START: $1"
     LATEST_STARTED_TEST="$1"
 }
 
 function end_test {
-    echo "[$(date --rfc-3339=seconds)] TEST DONE: ${LATEST_STARTED_TEST}"
+    echo "[$(date)] TEST DONE: ${LATEST_STARTED_TEST}"
     LATEST_STARTED_TEST=""
     rm -rf ${RPM_DIR}
     rm -rf ${SRC_DIR}
