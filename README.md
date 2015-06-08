@@ -278,11 +278,15 @@ You should have a source directory that contains:
 * any file that is set as **SourceX** and **PatchX** in the spec file (
 if any of your SourceX or PatchX files are URLs, you can use the --download-sources option if the files are not already there.)
 
-Then, you should pass a source directory, which will be bind-mounted straight to %{_sourcedir} inside the build container (e.g. /root/rpmbuild/SOURCES on RHEL7 ). You can access such directory straight from your specfile. If you pass --download-sources the URL sources will be downloaded in such directory, so be sure to set the proper ignores for it in your revision control system.
+Then, you should pass a source directory, which will be bind-mounted straight to %{_sourcedir} inside the build container (e.g. /root/rpmbuild/SOURCES on RHEL7 ). You can access such directory straight from your specfile. **The source directory is mounted read-only** to prevent accidental modifications during the build phase.
+
+If you pass --download-sources the URL sources will be downloaded in such directory, so be sure to set the proper ignores for it in your revision control system.
 
 Of course, you should tell the tool which build image you'd like to use; that's the image where. I've baked some [prebuilt images](#prebuilt-images), but you should feel free to create your own, since that's the purpose of this tool.
 
 And you should tell the tool which target directory you'd like to use for rpm output; this directory will be bound straight to %{_rpmdir} inside the build container, so mind that if your build process does something strange with it, files can be deleted. If the target directory doesn't exist it will be created.
+i
+
 
 ### Example
 
@@ -301,6 +305,8 @@ docker-rpm-builder dir --help
 To see everything.
 
 URL-based source/patch downloading, shell spawning on build failure, signing, and always updating the remote images are all supported scenarios.
+
+
 
 
 ## Spectemplates
