@@ -55,6 +55,8 @@ You should have a vague idea of what [docker](https://www.docker.com) is and you
 
 ### CentOS/RHEL 6.x (with x >= 6) and 7.x
 
+**WARNING:** docker support for Centos/RHEL 6 [is being dropped](https://github.com/docker/docker/issues/14365); I recommend you stick with docker 1.6 and migrate to Centos/RHEL7 as soon as possible.
+
 There's an RPM repository for those distributions - such packages are built via docker-rpm-builder itself. Just use this yum repository:
 
 **/etc/yum.repos.d/docker-rpm-builder-v1.repo**
