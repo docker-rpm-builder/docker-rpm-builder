@@ -70,6 +70,8 @@ enabled=1
 gpgkey=https://www.franzoni.eu/keys/D1270819.txt
 ```
 
+Such repo should work properly for Centos, RHEL and Oracle Linux. Scientific Linux insists, AFAIK, un using sub-releases on $releasever, you should substitute your major to $releasever in the above URL if you're using SL.
+
 Please refer to docker's own installation instructions for [CentOS](https://docs.docker.com/installation/centos/) and [RHEL](https://docs.docker.com/installation/rhel/) for details. You'll probably need to enable [EPEL](https://fedoraproject.org/wiki/EPEL) or distro-specific extras repositories for the install to succeed.
 
 docker-rpm-builder already depends on the proper docker package for each distribution; once your repos are in place, just
