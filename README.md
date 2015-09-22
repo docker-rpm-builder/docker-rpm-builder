@@ -176,7 +176,7 @@ You can just use the [docker-rpm-builder python package](https://pypi.python.org
 
 #### Prerequisites
 
-You must have [docker](https://www.docker.com/) >= 1.3 installed and properly configured (see the [install docs](https://docs.docker.com/installation/#installation) and the [docker configuration](#docker-configuration) section.
+You must have [docker](https://www.docker.com/) >= 1.8 installed and properly configured (see the [install docs](https://docs.docker.com/installation/#installation) and the [docker configuration](#docker-configuration) section.
 
 Python 2.7, bash, and wget should be installed on your system as well.
 
