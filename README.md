@@ -2,8 +2,6 @@
 
 ## News
 
-**WARNING: you need to update your repositories if you're using the packaged RPM or DEB version, this software's repositories are not hosted on packagecloud anymore!**
-
 See the [News Page](https://github.com/alanfranz/docker-rpm-builder/wiki/News) for the latest news.
 
 ## Preamble
@@ -61,9 +59,9 @@ See the [docker configuration](#docker-configuration) section for details on som
 
 ## Installation
 
-### CentOS/RHEL 6.x (with x >= 6) and 7.x
+### CentOS 7.x / RHEL 7.x
 
-**WARNING:** docker support for Centos/RHEL 6 [is being dropped](https://github.com/docker/docker/issues/14365); I recommend you stick with docker 1.6 and migrate to Centos/RHEL7 as soon as possible.
+CentOS 6 / RHEL 6 support for docker-rpm-builder has been discontinued along docker's own support. I'm sorry. If you really need to use such distros, you can try the source install described below, along with docker 1.7.
 
 There's an RPM repository for those distributions - such packages are built via docker-rpm-builder itself. Just use this yum repository:
 
