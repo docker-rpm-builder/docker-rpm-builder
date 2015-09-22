@@ -6,7 +6,7 @@ SRC_DIR=$(mktemp -d ${HOME}/drb-test-tmp-src.XXXXXX)
 trap "{ echo ERROR detected; rm -rf ${RPM_DIR} ${SRC_DIR} ; exit 1; }" ERR
 [ -n "$DRB_EXEC" ] && alias docker-rpm-builder="${DRB_EXEC}"
 echo "Testing $(type docker-rpm-builder)"
-IMAGES=${1:-alanfranz/drb-epel-6-x86-64:latest alanfranz/drb-epel-5-x86-64:latest alanfranz/drb-epel-7-x86-64:latest alanfranz/drb-fedora-20-x86-64:latest alanfranz/drb-fedora-21-x86-64:latest alanfranz/drb-fedora-rawhide-x86-64:latest}
+IMAGES=${1:-alanfranz/drb-epel-6-x86-64:latest alanfranz/drb-epel-5-x86-64:latest alanfranz/drb-epel-7-x86-64:latest alanfranz/drb-fedora-20-x86-64:latest alanfranz/drb-fedora-21-x86-64:latest alanfranz/drb-fedora-22-x86-64:latest}
 
 
 
