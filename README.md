@@ -45,11 +45,19 @@ depending e.g. on current time - but no external influence is possible (assuming
 
 ## Limitations
 
-* Currently limited to x86_64 for both host and target. That's a docker limitation which is unlikely to go away soon.
+* Currently limited to x86_64 for both host and target. That's a docker limitation which is unlikely to go away soon. 32 bit images for Docker do exist, but they're considered unsupported by this tool.
 
 ## Required knowledge
 
 You should have a vague idea of what [docker](https://www.docker.com) is and you should already know how to build an RPM - see to [Maximum RPM](http://www.rpm.org/max-rpm/) and other documentation from Fedora [HowTO](https://fedoraproject.org/wiki/How_to_create_an_RPM_package) [RPM Guide](http://docs.fedoraproject.org/en-US/Fedora_Draft_Documentation/0.1/html/RPM_Guide/).
+
+## Prerequisites
+
+At the beginning of this tool, I tried to make it work with any version of *docker* that would come from the distributions' repository or from official repository. This proved to be quite troublesome, and the docker environment is advancing rapidly; it makes no sense to use or support older versions of *docker*.
+
+So, **docker >= 1.8** is currently a prerequisite. If you're using the prebuilt RPMs or DEBs, they expect the **docker-engine** package from yum.dockerproject.org or apt.dockerproject.org to be available; just follow the official install instructions.
+
+See the [docker configuration](#docker-configuration) section for details on some post-install actions for docker.
 
 ## Installation
 
