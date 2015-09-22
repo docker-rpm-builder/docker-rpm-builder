@@ -29,9 +29,6 @@ prodenv:
 	rm -rf prodenv
     
 rpm: devenv
-ifndef DOCKERPACKAGE
-	$(error DOCKERPACKAGE is undefined)
-endif
 ifndef BUILD_IMAGE
 	$(error BUILD_IMAGE is undefined)
 endif

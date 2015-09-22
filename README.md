@@ -22,7 +22,7 @@ RPM by itself is not very suited to a continuous integration environment, requir
 
 ## Key features
 
-**docker-rpm-builder** works on any host distributions that supports [docker](https://www.docker.com/), and is currently tested to build 64 bit Centos 5, 6 and 7 RPM packages, as well as Fedora 20, 21 and rawhide.
+**docker-rpm-builder** works on any host distributions that supports [docker](https://www.docker.com/), and is currently tested to build 64 bit Centos 5, 6 and 7 RPM packages, as well as Fedora 20, 21, 22, and rawhide.
 
 It's designed to be a very **small and hackable wrapper** to help in rpm building, and lets you build binary RPMs on the fly, **without generating an intermediate source rpm** - which is required by tools like *mock* and it's a bit of an unnecessary byproduct nowadays, since most source tracking is done in a revision control system. Docker capabilities are leveraged to make the build **fast**; copy is limited, and bind-mount between host and container is privileged whenever it's possible.
 
@@ -82,7 +82,10 @@ yum install docker-rpm-builder
 
 And you're done; skip to the [docker configuration](#docker-configuration) section.
 
-### Fedora 20/21/rawhide
+### Fedora 20/21/22
+
+If you're using a pre-release Fedora version (F23 at this time) or rawhide, you may experience better luck with the
+install from source method.
 
 Use this yum repository:
 
@@ -120,7 +123,7 @@ curl https://www.franzoni.eu/keys/D1270819.txt | sudo apt-key add -
 
 Then, pick the proper repo for your distribution - see next sections - and save it as **/etc/apt/sources.list.d/docker-rpm-builder.list**
 
-Now you're ready to 
+Now you're ready to
 
 ```
 apt-get update
