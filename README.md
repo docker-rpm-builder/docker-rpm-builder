@@ -4,7 +4,7 @@
 
 See the [News Page](https://github.com/alanfranz/docker-rpm-builder/wiki/News) for the latest news.
 
-See also [FPM within docker](https://github.com/alanfranz/fpm-within-docker) - an alternative way of building RPMs and DEBs
+See also [FPM within Docker](https://github.com/alanfranz/fpm-within-docker) - an alternative way of building RPMs and DEBs
 that could make things even easier for you.
 
 ## Preamble
