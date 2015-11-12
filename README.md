@@ -4,6 +4,9 @@
 
 See the [News Page](https://github.com/alanfranz/docker-rpm-builder/wiki/News) for the latest news.
 
+See also [FPM within docker](https://github.com/alanfranz/fpm-within-docker) - an alternative way of building RPMs and DEBs
+that could make things even easier for you.
+
 ## Preamble
 
 While other deployment systems are at rage today, software delivery via RPM is still pretty widespread; its integration with the distributions' own tools makes it a good choice in many environments.
