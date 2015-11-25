@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from unittest2 import TestCase
-from drb.spectemplate import DoubleDelimiterTemplate
+from drb.spectemplate import DoubleDelimiterTemplate, SpecTemplate
+from tempfile import NamedTemporaryFile
+from StringIO import StringIO
 
 class TestTemplateTransformation(TestCase):
     def test_templatetransformation_from_string(self):
@@ -18,3 +20,18 @@ class TestTemplateTransformation(TestCase):
         ddt = DoubleDelimiterTemplate(u"ààasd@{pippo}@xyz@pluto@what")
         result = ddt.safe_substitute({u"pippo": u"v1", u"pluto": u"v2ù"})
         self.assertEquals(u"ààasdv1xyzv2ùwhat", result)
+
+class TestSpecTemplate(TestCase):
+    def test_spectemplate(self):
+        tmp = NamedTemporaryFile()
+        tmp.write("aaaa @VARIABLE@ cccc @SOMETHING@ eeee")
+        tmp.flush()
+
+        st = SpecTemplate.from_path(tmp.name)
+
+        writer = StringIO()
+        st.write(writer, {"VARIABLE": "bbbb", "SOMETHING": "dddd"})
+        writer.seek(0)
+        self.assertEquals("aaaa bbbb cccc dddd eeee", writer.read())
+
+

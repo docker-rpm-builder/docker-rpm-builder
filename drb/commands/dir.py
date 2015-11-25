@@ -8,7 +8,7 @@ import click
 from tempfile import NamedTemporaryFile
 
 
-from drb.spectemplate import DoubleDelimiterTemplate
+from drb.spectemplate import SpecTemplate
 from drb.which import which
 from drb.spawn import sp
 from drb.path import getpath
@@ -102,10 +102,8 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
 
     if spectemplates:
         spectemplate = spectemplates[0]
-        template = DoubleDelimiterTemplate(codecs.open(spectemplate, "rb", "utf-8").read())
-        with_substitutions = template.substitute(os.environ)
         finalspec = NamedTemporaryFile(suffix=".spec", prefix=os.path.join(os.path.expanduser("~"), "drb-temp.XXXXXX"))
-        finalspec.write(with_substitutions)
+        SpecTemplate(spectemplate).write(finalspec, os.environ)
         finalspec.flush()
         specfile = finalspec.name
         specname = os.path.splitext(os.path.basename(specfile))[0] + ".spec"
