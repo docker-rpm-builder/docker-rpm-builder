@@ -1,4 +1,4 @@
-.PHONY: test fulltest clean distclean stablerelease nextrelease rpm prodenv
+.PHONY: test fulltest clean distclean rpm prodenv
 
 SHELL := /bin/bash
 
