@@ -1,9 +1,10 @@
 .PHONY: test fulltest clean distclean rpm prodenv
 
+VIRTUALENV ?= virtualenv-2.7
 SHELL := /bin/bash
 
 devenv: setup.py
-	test -r devenv || virtualenv-2.7 devenv
+	test -r devenv || $(VIRTUALENV) devenv
 	devenv/bin/pip install --editable . --upgrade
 	devenv/bin/pip install wheel
 	devenv/bin/pip install bpython
