@@ -23,8 +23,15 @@ class TestDirCommand(TestCase):
         with open(os.path.join(self.src.path, "tmux.spec"), "wb") as f:
             f.write(TMUX_SPEC)
 
-        self.assertRaises(SpawnedProcessError, self.runner.invoke, dir, [REFERENCE_IMAGE, self.src.path, self.rpm.path], catch_exceptions=False)
+        self.assertRaises(SpawnedProcessError, self.runner.invoke, dir, [REFERENCE_IMAGE, self.src.path, self.rpm.path],
+                          catch_exceptions=False)
 
+    def test_dir_command_produces_binary_rpm_and_debuginfo_packages_if_valid_spec_passed_and_downloadsources_enabled(self):
+        with open(os.path.join(self.src.path, "tmux.spec"), "wb") as f:
+            f.write(TMUX_SPEC)
+
+        self.runner.invoke( dir, [REFERENCE_IMAGE, self.src.path, self.rpm.path, "--download-sources"],  catch_exceptions=False)
+        self.assertEquals(2, len(os.listdir(os.path.join(self.rpm.path, "x86_64"))))
 
 
 
