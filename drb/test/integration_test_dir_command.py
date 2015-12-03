@@ -2,15 +2,11 @@ from drb.spawn import SpawnedProcessError
 from unittest2 import TestCase
 from click.testing import CliRunner
 import os
-import sys
 
 from drb.tempdir import TempDir
 from drb.commands.dir import dir
 
 REFERENCE_IMAGE = "alanfranz/drb-epel-7-x86-64:latest"
-import logging
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-
 
 class TestDirCommand(TestCase):
     def setUp(self):
@@ -28,6 +24,8 @@ class TestDirCommand(TestCase):
             f.write(TMUX_SPEC)
 
         self.assertRaises(SpawnedProcessError, self.runner.invoke, dir, [REFERENCE_IMAGE, self.src.path, self.rpm.path], catch_exceptions=False)
+
+
 
 
 
