@@ -1,7 +1,8 @@
 from drb.spawn import SpawnedProcessError
-from unittest2 import TestCase
+from unittest2 import TestCase, skipIf
 from click.testing import CliRunner
 import os
+import sys
 
 from drb.tempdir import TempDir
 from drb.commands.dir import dir
@@ -32,6 +33,23 @@ class TestDirCommand(TestCase):
 
         self.runner.invoke( dir, [REFERENCE_IMAGE, self.src.path, self.rpm.path, "--download-sources"],  catch_exceptions=False)
         self.assertEquals(2, len(os.listdir(os.path.join(self.rpm.path, "x86_64"))))
+
+    @skipIf(sys.platform == "darwin", "Has no effect on OSX/Kitematic/boot2docker")
+    def test_created_binaries_have_proper_ownership(self):
+        with open(os.path.join(self.src.path, "tmux.spec"), "wb") as f:
+            f.write(TMUX_SPEC)
+
+        self.runner.invoke(dir, [REFERENCE_IMAGE, self.src.path, self.rpm.path, "--download-sources",
+                                 "--target-ownership", "{0}:{1}".format(os.getuid(), 1234)],
+                           catch_exceptions=False)
+
+        basedir = os.path.join(self.rpm.path, "x86_64")
+        for filename in os.listdir(basedir):
+            sr = os.stat(os.path.join(basedir, filename))
+            self.assertEquals(os.getuid(), sr.st_uid)
+            self.assertEquals(1234, sr.st_gid)
+
+
 
 
 

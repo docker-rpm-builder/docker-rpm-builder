@@ -61,6 +61,8 @@ _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hoo
 
     --target-ownership: a string in NN:MM format, which let you choose the ownership of the files
     in the output directory. Defaults to current user's uid:gid if not passed. Must be numeric.
+    This option has NO EFFECT when using OSX; Kitematic/docker-machine/boot2docker will always
+    set the launching user's permissions on bind-mounted directories.
 
     Examples:
 
@@ -88,9 +90,11 @@ _logger = logging.getLogger("drb.commands.dir")
 @click.option("--target-ownership", type=click.STRING, default="{0}:{1}".format(os.getuid(), os.getgid()))
 def dir(image, source_directory, target_directory, additional_docker_options, download_sources,
         bash_on_failure, sign_with, always_pull, target_ownership):
+
     # TODO: let spectemplate and/or spec be optional parameters
     # TODO: let the user choose $-delimited templates
     uid, gid = parse_ownership(target_ownership)
+
 
     spectemplates = [os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spectemplate")]
     specfiles = [os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spec")]
