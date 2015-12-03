@@ -1,4 +1,4 @@
-from drb.spawn import SpawnedProcessError
+from drb.spawn import SpawnedProcessError, sp
 from unittest2 import TestCase, skipIf
 from click.testing import CliRunner
 import os
@@ -6,6 +6,7 @@ import sys
 
 from drb.tempdir import TempDir
 from drb.commands.dir import dir
+from drb.docker import Docker
 
 REFERENCE_IMAGE = "alanfranz/drb-epel-7-x86-64:latest"
 
@@ -34,6 +35,25 @@ class TestDirCommand(TestCase):
         self.runner.invoke( dir, [REFERENCE_IMAGE, self.src.path, self.rpm.path, "--download-sources"],  catch_exceptions=False)
         self.assertEquals(2, len(os.listdir(os.path.join(self.rpm.path, "x86_64"))))
 
+
+    def test_dir_command_produces_signed_binary_rpm_if_signing_requested(self):
+        with open(os.path.join(self.src.path, "tmux.spec"), "wb") as f:
+            f.write(TMUX_SPEC)
+        with open(os.path.join(self.src.path, "sign.gpg"), "wb") as f:
+            f.write(SIGN_PRIV)
+        with open(os.path.join(self.rpm.path, "sign.pub"), "wb") as f:
+            f.write(SIGN_PUB)
+
+        self.runner.invoke(dir, [REFERENCE_IMAGE, self.src.path, self.rpm.path, "--download-sources", "--sign-with", os.path.join(self.src.path, "sign.gpg") ],  catch_exceptions=False)
+
+        # TODO: we should cache the verification image; otherwise this test grows unnecessarily slow.
+        Docker().rm().bindmount(self.rpm.path, "/rpm").workdir("/rpm/x86_64").image(REFERENCE_IMAGE).\
+            cmd_and_args("/bin/bash", "-c", "'yum install -y rpmdevtools && rpm --import ../sign.pub && /usr/bin/rpmdev-checksig *.rpm'").run()
+
+
+
+
+
     @skipIf(sys.platform == "darwin", "Has no effect on OSX/Kitematic/boot2docker")
     def test_created_binaries_have_proper_ownership(self):
         with open(os.path.join(self.src.path, "tmux.spec"), "wb") as f:
@@ -48,13 +68,6 @@ class TestDirCommand(TestCase):
             sr = os.stat(os.path.join(basedir, filename))
             self.assertEquals(os.getuid(), sr.st_uid)
             self.assertEquals(1234, sr.st_gid)
-
-
-
-
-
-
-
 
 TMUX_SPEC = """
 Name:           tmux
@@ -117,3 +130,38 @@ fi
 - Remove tmux from the shells file upon package removal (RH bug #972633)
 """
 
+SIGN_PUB = """-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG v1
+
+mI0EVJ/XBgEEAOGka0Qsia3La0uSnduWfbp9/s08RHOjXNyHPayeBmOMPGidlqD3
+qaADhQiOHHufmyC0EwDgghVGKBz/V6E6JrI10Va7iA/p5PNrSfbNiRBjM+oF+z0T
+cU5tkOZcwQAGW4z64vYiVHlAgly4t6BD7s/OIoQygkH3GTsB1xR3UodrABEBAAG0
+G215dXNlciA8bXl1c2VyQGV4YW1wbGUuY29tPoi+BBMBAgAoBQJUn9cGAhsDBQkB
+4TOABgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIXgAAKCRCpvP7x+6fJu+gYA/9Jm2XJ
+00JgvDz2Qf7Q9JiussX5SIApgCT3A7ThHGcFg6/1bc788RIkylDuquraLgGkk1e9
+SW6RhwZsu/6tSI6HJ6uVJ1sjLKoWHoJt592GQ+H2mD1OpVeYYlTybyAmTZHmhTz0
+9ZDdjKMRF73f410W/20JKAktHCPomgEmsSshAg==
+=ErQ2
+-----END PGP PUBLIC KEY BLOCK-----
+"""
+
+SIGN_PRIV = """-----BEGIN PGP PRIVATE KEY BLOCK-----
+Version: GnuPG v1
+
+lQHYBFSf1wYBBADhpGtELImty2tLkp3bln26ff7NPERzo1zchz2sngZjjDxonZag
+96mgA4UIjhx7n5sgtBMA4IIVRigc/1ehOiayNdFWu4gP6eTza0n2zYkQYzPqBfs9
+E3FObZDmXMEABluM+uL2IlR5QIJcuLegQ+7PziKEMoJB9xk7AdcUd1KHawARAQAB
+AAP7BSGqitY5CHwVGrtOubz/a0cM1kJTnemgeALfXA0v97kG3z4yzlTqaezBbHo9
+v98go09VFHK9fgfLIppCSFlhNLkZ8LGN/ln9RvnwjwxaqScARG5eX/sdSyFEccZ6
+yCw2a7YKWRMrneDnJ1359EXmHL45Ph6dyD2BuwzLk9Nri1kCAOUB1UzCA3DPr0XH
+HiXE9FhG5KymH1adjeDXIPKx6UNT91QnwvrrqIGIMs2zBH3iMB1D3UtIl4/9wAnS
+iS2f6EcCAPw9DUK7wlLRuGSBU7nZ4q7Wiz04pEQz32tzyGV5DXaK2VH371diWoh5
+S5w4zliej5XuE4GIucNAMOXZsWtsHb0CAJ0PpIMdve4mcBShrqJCnHU5z8jCFgAp
+xReBPWmBK3UyrgFl1go2T6U97XaywgzwZExboI5APKB7BkRmyOsk6dqeCrQbbXl1
+c2VyIDxteXVzZXJAZXhhbXBsZS5jb20+iL4EEwECACgFAlSf1wYCGwMFCQHhM4AG
+CwkIBwMCBhUIAgkKCwQWAgMBAh4BAheAAAoJEKm8/vH7p8m76BgD/0mbZcnTQmC8
+PPZB/tD0mK6yxflIgCmAJPcDtOEcZwWDr/VtzvzxEiTKUO6q6touAaSTV71JbpGH
+Bmy7/q1Ijocnq5UnWyMsqhYegm3n3YZD4faYPU6lV5hiVPJvICZNkeaFPPT1kN2M
+oxEXvd/jXRb/bQkoCS0cI+iaASaxKyEC
+=h8fb
+-----END PGP PRIVATE KEY BLOCK-----"""
