@@ -6,7 +6,7 @@ import shutil
 import logging
 import tempfile
 import click
-
+from drb.tempdir import TempDir
 from drb.which import which
 from drb.spawn import sp
 from drb.path import getpath
@@ -50,6 +50,7 @@ _HELP = """Builds a binary RPM from .src.rpm file.
 
     --target-ownership: a string in NN:MM format, which let you choose the ownership of the files
     in the output directory. Defaults to current user's uid:gid if not passed. Must be numeric.
+    Not supported on OSX.
 
     Examples:
 
@@ -84,8 +85,8 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
 
     dockerexec = which("docker")
     dockerscripts = getpath("drb/dockerscripts")
-    srpms_temp = tempfile.mkdtemp("SRPMS")
-    shutil.copy(srcrpm, srpms_temp)
+    srpms_temp = TempDir.platformwise()
+    shutil.copy(srcrpm, srpms_temp.path)
     internal_docker_options = set()
     srcrpm_basename = os.path.basename(srcrpm)
 
@@ -112,8 +113,8 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
         additional_docker_options = internal_docker_options + " ".join(additional_docker_options)
         srpms_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_srcrpmdir}}", **locals()).strip()
         rpms_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_rpmdir}}", **locals()).strip()
-        spawn_func("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts:ro -v {srpms_temp}:{srpms_inner_dir}:ro -v {target_directory}:{rpms_inner_dir}"
+        spawn_func("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts:ro -v {srpms_temp.path}:{srpms_inner_dir}:ro -v {target_directory}:{rpms_inner_dir}"
            " -w /dockerscripts {image} ./rpmbuild-srcrpm-in-docker.sh {serialized_options}", **locals())
     finally:
-        shutil.rmtree(srpms_temp)
+        srpms_temp.delete()
 
