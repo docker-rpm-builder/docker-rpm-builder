@@ -11,7 +11,7 @@ from drb.docker import Docker
 
 REFERENCE_IMAGE = "alanfranz/drb-epel-7-x86-64:latest"
 
-class TestDirCommand(TestCase):
+class TestSrcRpmCommand(TestCase):
     def setUp(self):
         self.runner = CliRunner()
         self.src = TempDir.platformwise()
@@ -22,7 +22,7 @@ class TestDirCommand(TestCase):
         self.src.delete()
         self.rpm.delete()
 
-    def test_srcrpm_command(self):
+    def test_srcrpm_building(self):
         with open(os.path.join(self.src.path, "tmux.src.rpm"), "wb") as f:
             f.write(base64.decodestring(TMUX_143_SRC_RPM_B64))
 
