@@ -53,7 +53,6 @@ class TestMacroResolving(TestCase):
         lines = get_spec_with_resolved_macros(tmp.name, "alanfranz/drb-epel-7-x86-64:latest")
         for line in lines:
             if line.startswith("Source0"):
-                print line
                 self.assertTrue("http://pkgs.fedoraproject.org/repo/7/.el7.centos/pkgs/tmux/tmux-1.6.tar.gz/3e37db24aa596bf108a0442a81c845b3/tmux-1.6.tar.gz" in line)
                 break
         else:
@@ -82,7 +81,7 @@ class TestMacroResolving(TestCase):
         with TempDir.platformwise() as tmpdir:
             download_files(["http://mirror.centos.org/centos/7.1.1503/os/x86_64/Packages/ElectricFence-2.2.2-39.el7.i686.rpm",
                         "http://mirror.centos.org/centos/7.1.1503/os/x86_64/Packages/GeoIP-devel-1.5.0-9.el7.x86_64.rpm"],
-                       tmpdir)
+                       tmpdir.path)
             self.assertTrue(os.path.exists(os.path.join(tmpdir.path, "ElectricFence-2.2.2-39.el7.i686.rpm")))
             self.assertTrue(os.path.exists(os.path.join(tmpdir.path, "GeoIP-devel-1.5.0-9.el7.x86_64.rpm")))
 
