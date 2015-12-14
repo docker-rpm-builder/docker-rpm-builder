@@ -22,12 +22,41 @@ class TestSrcRpmCommand(TestCase):
         self.src.delete()
         self.rpm.delete()
 
-    def test_srcrpm_building(self):
+    def test_srcrpm_command_rebuilds_package_from_srcrpm(self):
         with open(os.path.join(self.src.path, "tmux.src.rpm"), "wb") as f:
             f.write(base64.decodestring(TMUX_143_SRC_RPM_B64))
 
         self.runner.invoke(srcrpm, [REFERENCE_IMAGE, os.path.join(self.src.path, "tmux.src.rpm"), self.rpm.path],  catch_exceptions=False)
         self.assertEquals(2, len(os.listdir(os.path.join(self.rpm.path, "x86_64"))))
+
+    def test_srcrpm_signed_packages_can_be_verified(self):
+        with open(os.path.join(self.src.path, "tmux.src.rpm"), "wb") as f:
+            f.write(base64.decodestring(TMUX_143_SRC_RPM_B64))
+        with open(os.path.join(self.src.path, "sign.gpg"), "wb") as f:
+            f.write(SIGN_PRIV)
+        with open(os.path.join(self.rpm.path, "sign.pub"), "wb") as f:
+            f.write(SIGN_PUB)
+
+        self.runner.invoke(srcrpm, [REFERENCE_IMAGE, os.path.join(self.src.path, "tmux.src.rpm"), self.rpm.path, "--sign-with", os.path.join(self.src.path, "sign.gpg")],  catch_exceptions=False)
+
+        # TODO: we should cache the verification image; otherwise this test grows unnecessarily slow.
+        Docker().rm().bindmount(self.rpm.path, "/rpm").workdir("/rpm/x86_64").image(REFERENCE_IMAGE).\
+            cmd_and_args("/bin/bash", "-c", "'yum install -y rpmdevtools && rpm --import ../sign.pub && /usr/bin/rpmdev-checksig *.rpm'").run()
+
+    @skipIf(sys.platform == "darwin", "Has no effect on OSX/Kitematic/boot2docker")
+    def test_created_binaries_have_proper_ownership(self):
+        with open(os.path.join(self.src.path, "tmux.src.rpm"), "wb") as f:
+            f.write(base64.decodestring(TMUX_143_SRC_RPM_B64))
+
+        self.runner.invoke(srcrpm, [REFERENCE_IMAGE, os.path.join(self.src.path, "tmux.src.rpm"), self.rpm.path,
+                                 "--target-ownership", "{0}:{1}".format(os.getuid(), 1234)],
+                           catch_exceptions=False)
+
+        basedir = os.path.join(self.rpm.path, "x86_64")
+        for filename in os.listdir(basedir):
+            sr = os.stat(os.path.join(basedir, filename))
+            self.assertEquals(os.getuid(), sr.st_uid)
+            self.assertEquals(1234, sr.st_gid)
 
 
 

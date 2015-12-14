@@ -50,10 +50,6 @@ class TestDirCommand(TestCase):
         Docker().rm().bindmount(self.rpm.path, "/rpm").workdir("/rpm/x86_64").image(REFERENCE_IMAGE).\
             cmd_and_args("/bin/bash", "-c", "'yum install -y rpmdevtools && rpm --import ../sign.pub && /usr/bin/rpmdev-checksig *.rpm'").run()
 
-
-
-
-
     @skipIf(sys.platform == "darwin", "Has no effect on OSX/Kitematic/boot2docker")
     def test_created_binaries_have_proper_ownership(self):
         with open(os.path.join(self.src.path, "tmux.spec"), "wb") as f:
