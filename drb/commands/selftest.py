@@ -18,25 +18,20 @@ get tested along this tool.
 @click.command(help=_HELP)
 @click.option("--full", is_flag=True)
 def selftest(full=False):
-    short_test()
-    if full:
-        long_test(additional_test_options)
-
-
-
-def short_test():
     # TODO: run unitests as well here
-    click.echo("Starting short self test. May take a lot the first time it is launched, because a docker image will be downloaded.")
+    click.echo("Starting self test. May take a lot of time, especially the first time it is launched. Requires networking.")
 
     loader = TestLoader()
-    all_suites = []
-    all_suites.append(loader.discover(getpath(".")))
-    all_suites.append(loader.discover(getpath("."), pattern="integration_test_basic.py"))
+    all_suites = [loader.discover(getpath("."))]
+
+    integration_test_pattern = "integration_test_*" if full else "integration_test_basic.py"
+    all_suites.append(loader.discover(getpath("."), pattern=integration_test_pattern))
+
     runner = TextTestRunner(verbosity=2)
     result = runner.run(TestSuite(all_suites))
 
     if not result.wasSuccessful():
-        click.echo("Basic self test failed: docker run failed. Checklist:\n\nVerify the docker service is running\n"
+        click.echo("Self test failed. Checklist:\n\nVerify the docker service is running\n"
                    "Verify the 'docker' group exists and your user belongs to it\n"
                    "If you had to add the group, verify you've restarted the 'docker' service after such addition\n"
                    "Verify you've logged out+in after adding your user to the group\n"
@@ -44,18 +39,4 @@ def short_test():
                    "Verify your disk has enough free space\n")
         sys.exit(1)
 
-    click.echo("Short self test succeeded.")
-
-def long_test(additional_test_options):
-    click.echo("")
-    click.echo("Starting long test suite. Requires networking and may take a VERY long time.")
-
-    loader = TestLoader()
-    runner = TextTestRunner(verbosity=2)
-    result = runner.run(loader.discover(getpath("."), pattern="integration_test*"))
-
-    if result.wasSuccessful():
-        click.echo("Long test completed successfully.")
-    else:
-        click.echo("Long test failed.")
-        sys.exit(1)
+    click.echo("Self test succeeded.")
