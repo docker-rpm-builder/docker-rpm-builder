@@ -27,7 +27,7 @@ def get_spec_with_resolved_macros(specfilename, target_image):
 
 
 
-    with TempDir(os.path.join(os.path.expanduser("~"), "drbtmp.XXXXXX")) as tmpdir:
+    with TempDir.platformwise() as tmpdir:
         tempspec_path = os.path.join(tmpdir.path, os.path.basename(specfilename))
         tempspec = codecs.getwriter("utf-8")(open(tempspec_path, "wb"))
         tempspec.writelines(lines_upto_prep)
