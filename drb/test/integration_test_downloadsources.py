@@ -79,15 +79,13 @@ class TestMacroResolving(TestCase):
                           out)
 
     def test_download_files(self):
-        tmpdir = mkdtemp()
-        try:
+        with TempDir.platformwise() as tmpdir:
             download_files(["http://mirror.centos.org/centos/7.1.1503/os/x86_64/Packages/ElectricFence-2.2.2-39.el7.i686.rpm",
                         "http://mirror.centos.org/centos/7.1.1503/os/x86_64/Packages/GeoIP-devel-1.5.0-9.el7.x86_64.rpm"],
                        tmpdir)
-            self.assertTrue(os.path.exists(os.path.join(tmpdir, "ElectricFence-2.2.2-39.el7.i686.rpm")))
-            self.assertTrue(os.path.exists(os.path.join(tmpdir, "GeoIP-devel-1.5.0-9.el7.x86_64.rpm")))
-        finally:
-            shutil.rmtree(tmpdir)
+            self.assertTrue(os.path.exists(os.path.join(tmpdir.path, "ElectricFence-2.2.2-39.el7.i686.rpm")))
+            self.assertTrue(os.path.exists(os.path.join(tmpdir.path, "GeoIP-devel-1.5.0-9.el7.x86_64.rpm")))
+
 
     def test_downloadsources(self):
         with TempDir.platformwise() as tmpdir:

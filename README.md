@@ -430,9 +430,9 @@ To all the people who gave me feedback or contributed to this project, in no spe
 ## TODOS and ideas
 * General refactor: remove code duplication, improve setup, etc. - things are currently quite messed up.
 * Support some way to cache build dependencies between builds for the same package (commit after run? commit after build-dep?)
-* Refactor bash-based test into python-based ones, even when spawning processes
 * Option for creating a Dockerfile with build dependencies for a package, that can be used for
   repeatable builds and/or caching.
+* Convert the mixed spawn/bashinteractive commands into Docker-wrapped ones.
 
 ## Disclaimer
 

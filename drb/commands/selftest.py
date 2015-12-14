@@ -1,23 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import click
 import sys
-import os
-import shutil
-from subprocess import Popen
-from tempfile import mkdtemp
-from drb.spawn import sp
-from drb.which import which
-from drb.path import getpath
-from drb.downloadsources import downloadsources
-from drb.tempdir import TempDir
 
+import click
+from drb.path import getpath
+from unittest2 import TestLoader, TextTestRunner, TestSuite
 
 _HELP = """
 Perform a selftest.
-
-ADDITIONAL_TEST_OPTIONS will be passed straight to the integration_test script
-for the full test
 
 --full can be passed to run the full test suite - may take a very long time,
 especially at the first run when it's required to download all the images that
@@ -27,8 +17,7 @@ get tested along this tool.
 
 @click.command(help=_HELP)
 @click.option("--full", is_flag=True)
-@click.argument("additional_test_options", type=click.STRING, nargs=-1)
-def selftest(additional_test_options, full=False):
+def selftest(full=False):
     short_test()
     if full:
         long_test(additional_test_options)
@@ -37,39 +26,36 @@ def selftest(additional_test_options, full=False):
 
 def short_test():
     # TODO: run unitests as well here
-    click.echo("Starting short self test. Requires networking and may take a bit of time especially at the first run, because data will be downloaded")
+    click.echo("Starting short self test. May take a lot the first time it is launched, because a docker image will be downloaded.")
 
-    dockerexec = which("docker")
-    testpath = getpath("drb/test")
-    result = sp("{dockerexec} run --rm -v {testpath}:/testpath phusion/baseimage /bin/bash -c 'cat /testpath/everythinglooksgood.txt'", **locals())
-    if result.strip() != "everything looks good":
+    loader = TestLoader()
+    all_suites = []
+    all_suites.append(loader.discover(getpath(".")))
+    all_suites.append(loader.discover(getpath("."), pattern="integration_test_basic.py"))
+    runner = TextTestRunner(verbosity=2)
+    result = runner.run(TestSuite(all_suites))
+
+    if not result.wasSuccessful():
         click.echo("Basic self test failed: docker run failed. Checklist:\n\nVerify the docker service is running\n"
                    "Verify the 'docker' group exists and your user belongs to it\n"
                    "If you had to add the group, verify you've restarted the 'docker' service after such addition\n"
                    "Verify you've logged out+in after adding your user to the group\n"
                    "Verify selinux is disabled\n"
-                   "Verify your disk has enough free space\n"
-                   "Error:\n%s\n" % result)
+                   "Verify your disk has enough free space\n")
         sys.exit(1)
-
-
-
-    for fn in os.listdir(getpath("drb/dockerscripts")):
-        if not os.access(os.path.join(getpath("drb/dockerscripts"), fn), os.X_OK):
-            click.echo("File {0} is not executable, probably an install error has happened. Make sure you're using a recent python+virtualenv".format(fn))
-            sys.exit(1)
 
     click.echo("Short self test succeeded.")
 
 def long_test(additional_test_options):
-    click.echo("Starting full test suite. Requires networking and may take a long time, especially the first time, since docker will be downloading lot of data.")
-    test_script = getpath("drb/integration_tests/test.sh")
-    additional_test_options = " ".join(additional_test_options)
-    os.chdir(getpath("drb/integration_tests"))
-    p = Popen("{test_script} {additional_test_options}".format(**locals()), shell=True)
-    exitcode = p.wait()
-    if exitcode == 0:
-        click.echo("Full test completed successfully.")
+    click.echo("")
+    click.echo("Starting long test suite. Requires networking and may take a VERY long time.")
+
+    loader = TestLoader()
+    runner = TextTestRunner(verbosity=2)
+    result = runner.run(loader.discover(getpath("."), pattern="integration_test*"))
+
+    if result.wasSuccessful():
+        click.echo("Long test completed successfully.")
     else:
-        click.echo("Full test failed.")
+        click.echo("Long test failed.")
         sys.exit(1)
