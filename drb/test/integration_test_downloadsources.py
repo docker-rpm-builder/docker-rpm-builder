@@ -48,10 +48,13 @@ class TestMacroResolving(TestCase):
         tmp.write(TMUX_SPEC)
         tmp.flush()
 
-        lines = get_spec_with_resolved_macros(tmp.name, "alanfranz/drb-epel-6-x86-64:latest")
+        # this is used for macro resolving, we shouldn't point to REFERENCE_IMAGE,
+        # because it wouldn't work (the macro %dist is test or something like that)
+        lines = get_spec_with_resolved_macros(tmp.name, "alanfranz/drb-epel-7-x86-64:latest")
         for line in lines:
             if line.startswith("Source0"):
-                self.assertTrue("http://pkgs.fedoraproject.org/repo/6/.el6/pkgs/tmux/tmux-1.6.tar.gz/3e37db24aa596bf108a0442a81c845b3/tmux-1.6.tar.gz" in line)
+                print line
+                self.assertTrue("http://pkgs.fedoraproject.org/repo/7/.el7.centos/pkgs/tmux/tmux-1.6.tar.gz/3e37db24aa596bf108a0442a81c845b3/tmux-1.6.tar.gz" in line)
                 break
         else:
             self.fail("could not find source line")
