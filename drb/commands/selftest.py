@@ -10,6 +10,7 @@ from drb.spawn import sp
 from drb.which import which
 from drb.path import getpath
 from drb.downloadsources import downloadsources
+from drb.tempdir import TempDir
 
 
 _HELP = """
@@ -51,14 +52,11 @@ def short_test():
                    "Error:\n%s\n" % result)
         sys.exit(1)
 
-    tmpdir = mkdtemp()
-    try:
-        downloadsources(tmpdir, getpath("drb/test/spectooltest.spec"), "alanfranz/drb-epel-6-x86-64:latest")
-        if not os.path.exists(os.path.join(tmpdir, "README.md")):
+    with TempDir.platformwise() as tmpdir:
+        downloadsources(tmpdir.path, getpath("drb/test/spectooltest.spec"), "alanfranz/drb-epel-6-x86-64:latest")
+        if not os.path.exists(os.path.join(tmpdir.path, "README.md")):
             click.echo("Basic self test failed, could not download sources")
             sys.exit(1)
-    finally:
-        shutil.rmtree(tmpdir)
 
     for fn in os.listdir(getpath("drb/dockerscripts")):
         if not os.access(os.path.join(getpath("drb/dockerscripts"), fn), os.X_OK):
