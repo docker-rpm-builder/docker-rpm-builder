@@ -434,6 +434,7 @@ To all the people who gave me feedback or contributed to this project, in no spe
   repeatable builds and/or caching.
 * Convert the mixed spawn/bashinteractive commands into Docker-wrapped ones.
 * better logger config: only show everything that's being done when invoking with a verbose option
+* Remove wget dependency
 
 ## Disclaimer
 
