@@ -1,7 +1,11 @@
 from __future__ import unicode_literals
 import shutil
+
+from drb.path import getpath
+from drb.tempdir import TempDir
 from unittest2 import TestCase
-from drb.downloadsources import get_spec_with_resolved_macros, get_source_and_patches_urls, download_files
+from drb.downloadsources import get_spec_with_resolved_macros, get_source_and_patches_urls, download_files, \
+    downloadsources
 from tempfile import NamedTemporaryFile, mkdtemp
 import os
 
@@ -35,6 +39,8 @@ touch /tmp/sarcazzo_123
 %configure
 make %{?_smp_mflags} LDFLAGS="%{optflags}"
 """
+
+REFERENCE_IMAGE = "alanfranz/drb-epel-7-x86-64:latest"
 
 class TestMacroResolving(TestCase):
     def test_get_spec_with_resolved_macros(self):
@@ -79,6 +85,12 @@ class TestMacroResolving(TestCase):
             self.assertTrue(os.path.exists(os.path.join(tmpdir, "GeoIP-devel-1.5.0-9.el7.x86_64.rpm")))
         finally:
             shutil.rmtree(tmpdir)
+
+    def test_downloadsources(self):
+        with TempDir.platformwise() as tmpdir:
+            downloadsources(tmpdir.path, getpath("drb/test/spectooltest.spec"), REFERENCE_IMAGE)
+            self.assertTrue(os.path.exists(os.path.join(tmpdir.path, "README.md")))
+
 
 
 

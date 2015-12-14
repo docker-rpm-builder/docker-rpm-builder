@@ -52,11 +52,7 @@ def short_test():
                    "Error:\n%s\n" % result)
         sys.exit(1)
 
-    with TempDir.platformwise() as tmpdir:
-        downloadsources(tmpdir.path, getpath("drb/test/spectooltest.spec"), "alanfranz/drb-epel-6-x86-64:latest")
-        if not os.path.exists(os.path.join(tmpdir.path, "README.md")):
-            click.echo("Basic self test failed, could not download sources")
-            sys.exit(1)
+
 
     for fn in os.listdir(getpath("drb/dockerscripts")):
         if not os.access(os.path.join(getpath("drb/dockerscripts"), fn), os.X_OK):
