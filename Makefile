@@ -12,9 +12,8 @@ devenv: setup.py
 
 test: devenv
 	devenv/bin/python -m unittest2 discover -v
-	devenv/bin/docker-rpm-builder selftest
 
-integrationtest: devenv
+integrationtest: devenv test
 	devenv/bin/python -m unittest2 discover -p 'integration_test_*' -v
 
 clean:
