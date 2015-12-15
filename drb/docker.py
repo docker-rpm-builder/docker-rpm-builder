@@ -41,7 +41,9 @@ class Docker(object):
 
         self._logger.debug("Now executing:\n%s\n", fullcmd)
 
-        # we're using an additional indirection level which might just be unuseful (or harmful indeed)
+        # we're using a shell even though we don't need it?
+        # but we had problems with Docker without a shell;
+        # TODO: verify this behaviour
         process = Popen(fullcmd, stdout=PIPE, stderr=PIPE, shell=True)
         output, error = process.communicate()
         retcode = process.poll()
