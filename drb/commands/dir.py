@@ -148,7 +148,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     #should add a flag to retain the old container.
 
     # TODO: bashonfail re-enable
-    docker.additional_options(additional_docker_options).bindmount_file(specfile, "{specs_inner_dir}/{specname}".format(**locals())).bindmount_dir(dockerscripts, "/dockerscripts") \
+    docker.additional_options(additional_docker_options).bindmount_file(specfile, os.path.join(specs_inner_dir, specname)).bindmount_dir(dockerscripts, "/dockerscripts") \
         .bindmount_dir(source_directory, sources_inner_dir).bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
         .cmd_and_args("./rpmbuild-dir-in-docker.sh", serialized_options).run()
 
