@@ -7,7 +7,7 @@ import logging
 import click
 from tempfile import NamedTemporaryFile
 
-
+from drb.docker import Docker
 from drb.spectemplate import SpecTemplate
 from drb.which import which
 from drb.spawn import sp
@@ -124,25 +124,38 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     bashonfail = "dontspawn"
     bashonfail_options = ""
     spawn_func = sp
-    if bash_on_failure:
-        bashonfail = "bashonfail"
-        bashonfail_options = "-i -t"
-        spawn_func = spawn_interactive
+    # if bash_on_failure:
+    #     bashonfail = "bashonfail"
+    #     bashonfail_options = "-i -t"
+    #     spawn_func = spawn_interactive
 
     sign_with_encoded = provide_encoded_signature(sign_with)
 
     if always_pull:
         pull(dockerexec, image)
 
-    serialized_options = serialize({"CALLING_UID": uid, "CALLING_GID": gid, "BASH_ON_FAIL":bashonfail, "GPG_PRIVATE_KEY": sign_with_encoded})
+    docker = Docker().rm().image(image)
 
+    rpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_rpmdir}").run()
+    sources_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_sourcedir}").run()
+    specs_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_specdir}").run()
+
+    serialized_options = serialize({"CALLING_UID": uid, "CALLING_GID": gid, "BASH_ON_FAIL":bashonfail, "GPG_PRIVATE_KEY": sign_with_encoded})
     additional_docker_options = " ".join(additional_docker_options)
     dockerscripts = getpath("drb/dockerscripts")
-    rpms_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_rpmdir}}", **locals()).strip()
-    sources_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_sourcedir}}", **locals()).strip()
-    specs_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_specdir}}", **locals()).strip()
-    spawn_func("{dockerexec} run {additional_docker_options} -v {specfile}:{specs_inner_dir}/{specname}:ro -v {dockerscripts}:/dockerscripts:ro -v {source_directory}:{sources_inner_dir}:ro " +
-               "-v {target_directory}:{rpms_inner_dir} {bashonfail_options} -w /dockerscripts {image}  ./rpmbuild-dir-in-docker.sh {serialized_options}", **locals())
+
+    #TODO: consider whether we want not to use --rm here - I think we shouldn't! and maybe we
+    #should add a flag to retain the old container.
+
+    # TODO: bashonfail re-enable
+    docker.additional_options(additional_docker_options).bindmount_file(specfile, "{specs_inner_dir}/{specname}".format(**locals())).bindmount_dir(dockerscripts, "/dockerscripts") \
+        .bindmount_dir(source_directory, sources_inner_dir).bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
+        .cmd_and_args("./rpmbuild-dir-in-docker.sh", serialized_options).run()
+
+
+
+
+
 
 
 

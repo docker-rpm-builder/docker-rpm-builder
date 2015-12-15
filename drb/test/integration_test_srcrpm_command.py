@@ -40,7 +40,7 @@ class TestSrcRpmCommand(TestCase):
         self.runner.invoke(srcrpm, [REFERENCE_IMAGE, os.path.join(self.src.path, "tmux.src.rpm"), self.rpm.path, "--sign-with", os.path.join(self.src.path, "sign.gpg")],  catch_exceptions=False)
 
         # TODO: we should cache the verification image; otherwise this test grows unnecessarily slow.
-        Docker().rm().bindmount(self.rpm.path, "/rpm").workdir("/rpm/x86_64").image(REFERENCE_IMAGE).\
+        Docker().rm().bindmount_dir(self.rpm.path, "/rpm").workdir("/rpm/x86_64").image(REFERENCE_IMAGE).\
             cmd_and_args("/bin/bash", "-c", "'yum install -y rpmdevtools && rpm --import ../sign.pub && /usr/bin/rpmdev-checksig *.rpm'").run()
 
     @skipIf(sys.platform == "darwin", "Has no effect on OSX/Kitematic/boot2docker")

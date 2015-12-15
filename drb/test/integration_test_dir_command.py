@@ -47,8 +47,8 @@ class TestDirCommand(TestCase):
         self.runner.invoke(dir, [REFERENCE_IMAGE, self.src.path, self.rpm.path, "--download-sources", "--sign-with", os.path.join(self.src.path, "sign.gpg") ],  catch_exceptions=False)
 
         # TODO: we should cache the verification image; otherwise this test grows unnecessarily slow.
-        Docker().rm().bindmount(self.rpm.path, "/rpm").workdir("/rpm/x86_64").image(REFERENCE_IMAGE).\
-            cmd_and_args("/bin/bash", "-c", "'yum install -y rpmdevtools && rpm --import ../sign.pub && /usr/bin/rpmdev-checksig *.rpm'").run()
+        Docker().rm().bindmount_dir(self.rpm.path, "/rpm").workdir("/rpm/x86_64").image(REFERENCE_IMAGE).\
+            cmd_and_args("/bin/bash", "-c", "yum install -y rpmdevtools && rpm --import ../sign.pub && /usr/bin/rpmdev-checksig *.rpm").run()
 
     @skipIf(sys.platform == "darwin", "Has no effect on OSX/Kitematic/boot2docker")
     def test_created_binaries_have_proper_ownership(self):
