@@ -37,11 +37,12 @@ class TestSrcRpmCommand(TestCase):
         with open(os.path.join(self.rpm.path, "sign.pub"), "wb") as f:
             f.write(SIGN_PUB)
 
-        self.runner.invoke(srcrpm, [REFERENCE_IMAGE, os.path.join(self.src.path, "tmux.src.rpm"), self.rpm.path, "--sign-with", os.path.join(self.src.path, "sign.gpg")],  catch_exceptions=False)
-
-        # TODO: we should cache the verification image; otherwise this test grows unnecessarily slow.
-        Docker().rm().bindmount_dir(self.rpm.path, "/rpm").workdir("/rpm/x86_64").image(REFERENCE_IMAGE).\
-            cmd_and_args("/bin/bash", "-c", "yum install -y rpmdevtools && rpm --import ../sign.pub && /usr/bin/rpmdev-checksig *.rpm").run()
+        self.runner.invoke(srcrpm, [REFERENCE_IMAGE, os.path.join(self.src.path, "tmux.src.rpm"), self.rpm.path,
+                                    "--sign-with", os.path.join(self.src.path, "sign.gpg")],  catch_exceptions=False)
+        out = Docker().rm().bindmount_dir(self.rpm.path, "/rpm").workdir("/rpm/x86_64").image(REFERENCE_IMAGE).\
+            cmd_and_args("/bin/bash", "-c", "rpm --import ../sign.pub && rpm -K *.rpm").run()
+        self.assertTrue("pgp" in out)
+        self.assertTrue("OK" in out)
 
     @skipIf(sys.platform == "darwin", "Has no effect on OSX/Kitematic/boot2docker")
     def test_created_binaries_have_proper_ownership(self):
