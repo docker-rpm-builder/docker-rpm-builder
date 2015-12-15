@@ -41,7 +41,7 @@ class TestSrcRpmCommand(TestCase):
 
         # TODO: we should cache the verification image; otherwise this test grows unnecessarily slow.
         Docker().rm().bindmount_dir(self.rpm.path, "/rpm").workdir("/rpm/x86_64").image(REFERENCE_IMAGE).\
-            cmd_and_args("/bin/bash", "-c", "'yum install -y rpmdevtools && rpm --import ../sign.pub && /usr/bin/rpmdev-checksig *.rpm'").run()
+            cmd_and_args("/bin/bash", "-c", "yum install -y rpmdevtools && rpm --import ../sign.pub && /usr/bin/rpmdev-checksig *.rpm").run()
 
     @skipIf(sys.platform == "darwin", "Has no effect on OSX/Kitematic/boot2docker")
     def test_created_binaries_have_proper_ownership(self):
