@@ -18,7 +18,6 @@ get tested along this tool.
 @click.command(help=_HELP)
 @click.option("--full", is_flag=True)
 def selftest(full=False):
-    # TODO: run unitests as well here
     click.echo("Starting self test. May take a lot of time, especially the first time it is launched. Requires networking.")
 
     loader = TestLoader()
