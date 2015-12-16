@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 import logging
 import codecs
 from itertools import takewhile
+
+from drb.docker import Docker
 from drb.spawn import sp
 from drb.tempdir import TempDir
 from drb.which import which
@@ -37,10 +39,10 @@ def get_spec_with_resolved_macros(specfilename, target_image):
         tempspec.write("__EOF__\n")
         tempspec.close()
 
-        docker = which("docker")
-        rpmbuild = sp("{docker} run --rm {target_image} which rpmbuild", **locals()).strip()
-        with_macros = sp("{docker} run --rm -v {tmpdir.path}:{tmpdir.path}:ro --rm {target_image} {rpmbuild} --nodeps -bp {tempspec_path}", **locals())
-
+        docker = Docker().rm().image(target_image)
+        rpmbuild = docker.cmd_and_args("which", "rpmbuild").run()
+        with_macros = docker.bindmount_dir(tmpdir.path, tmpdir.path).cmd_and_args(rpmbuild, "--nodeps", "-bp",
+                                                                                  tempspec_path).run()
 
     return with_macros.split("\n")
 
