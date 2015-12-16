@@ -12,7 +12,6 @@ from drb.spectemplate import SpecTemplate
 from drb.which import which
 from drb.spawn import sp
 from drb.path import getpath
-from drb.pull import pull
 from drb.bash import serialize, provide_encoded_signature, spawn_interactive
 from drb.downloadsources import downloadsources
 from drb.parse_ownership import parse_ownership
@@ -131,10 +130,10 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
 
     sign_with_encoded = provide_encoded_signature(sign_with)
 
-    if always_pull:
-        pull(dockerexec, image)
-
     docker = Docker().rm().image(image)
+
+    if always_pull:
+        docker.pull(ignore_errors=True)
 
     rpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_rpmdir}").run()
     sources_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_sourcedir}").run()

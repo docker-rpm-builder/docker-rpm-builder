@@ -28,6 +28,33 @@ class Docker(object):
         self._cmd_and_args = None
         self._logger = getLogger(self.__class__.__name__)
 
+    # TODO: this addition is a bit clumsy, since it actually ignores
+    # a lot of options, only taking image into account...
+    # we should refactor this class to only have docker command
+    # methods and returning sub-objects with the right options.
+    def pull(self, ignore_errors=False):
+        precondition(self._image is not None, "image must be set")
+
+        fullcmd = "{docker_exec} pull {image}".format(
+            docker_exec=self._docker_exec,
+            image=pipes.quote(self._image)
+        )
+
+        self._logger.debug("Now executing:\n%s\n", fullcmd)
+
+        # we're using a shell even though we don't need it?
+        # but we had problems with Docker without a shell;
+        # TODO: verify this behaviour
+        process = Popen(fullcmd, stdout=PIPE, stderr=PIPE, shell=True)
+        output, error = process.communicate()
+        retcode = process.poll()
+        if retcode and not ignore_errors:
+            raise SpawnedProcessError(retcode, fullcmd, output=output, error=error)
+        return output.strip()
+
+
+
+
     def run(self):
         precondition(self._image is not None, "image must be set")
         precondition(self._cmd_and_args is not None, "cmd_and_args must be set")

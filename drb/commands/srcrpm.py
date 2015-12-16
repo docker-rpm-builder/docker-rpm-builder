@@ -6,11 +6,11 @@ import shutil
 import logging
 import tempfile
 import click
+from drb.docker import Docker
 from drb.tempdir import TempDir
 from drb.which import which
 from drb.spawn import sp
 from drb.path import getpath
-from drb.pull import pull
 from drb.bash import serialize, provide_encoded_signature, spawn_interactive
 from drb.parse_ownership import parse_ownership
 
@@ -83,7 +83,7 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
     if not os.path.exists(target_directory):
         os.mkdir(target_directory)
 
-    dockerexec = which("docker")
+
     dockerscripts = getpath("drb/dockerscripts")
     srpms_temp = TempDir.platformwise()
     shutil.copy(srcrpm, srpms_temp.path)
@@ -103,8 +103,10 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
     internal_docker_options = " ".join(internal_docker_options)
     encoded_signature = provide_encoded_signature(sign_with)
 
+    docker = Docker().rm().image(image)
+
     if always_pull:
-        pull(dockerexec, image)
+        docker.pull(ignore_errors=True)
 
     serialized_options = serialize({"CALLING_UID": uid, "CALLING_GID": gid, "BASH_ON_FAIL":bashonfail, "RPMBUILD_OPTIONS": rpmbuild_options, "SRCRPM": srcrpm_basename,
                                     "GPG_PRIVATE_KEY": encoded_signature})
