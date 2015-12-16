@@ -21,6 +21,9 @@ class SpawnedProcessError(Exception):
 
 class Docker(object):
     def __init__(self,  docker_exec=which("docker")):
+        # WARNING: whatever is set here as a variable will
+        # be then passed to a shell,
+        # and MUST be already quoted when set.
         self._docker_exec = pipes.quote(docker_exec)
         self._options = []
         self._image = None
@@ -36,7 +39,7 @@ class Docker(object):
 
         fullcmd = "{docker_exec} pull {image}".format(
             docker_exec=self._docker_exec,
-            image=pipes.quote(self._image)
+            image=self._image
         )
 
         self._logger.debug("Now executing:\n%s\n", fullcmd)
@@ -58,8 +61,8 @@ class Docker(object):
         fullcmd = "{docker_exec} run {options} {image} {cmd_and_args}".format(
             docker_exec=self._docker_exec,
             options=" ".join(self._options),
-            image=pipes.quote(self._image),
-            cmd_and_args=" ".join([pipes.quote(arg) for arg in self._cmd_and_args])
+            image=self._image,
+            cmd_and_args=" ".join(self._cmd_and_args)
         )
 
         self._logger.debug("Now executing:\n%s\n", fullcmd)
@@ -75,16 +78,15 @@ class Docker(object):
         return output.strip()
 
     def additional_options(self, *options):
-        # must be already quoted, if needed
-        self._options.extend(options)
+        self._options.extend([pipes.quote(opt) for opt in options])
         return self
 
     def image(self, image):
-        self._image = image
+        self._image = pipes.quote(image)
         return self
 
     def cmd_and_args(self, *caa):
-        self._cmd_and_args = caa
+        self._cmd_and_args = [pipes.quote(arg) for arg in caa]
         return self
 
     def rm(self):
@@ -105,7 +107,6 @@ class Docker(object):
         precondition(os.path.isfile(host_file), "host_file must be a file")
         precondition(os.path.isabs(guest_file), "guest_file must be absolute")
 
-        # TODO check quoting
         option = "--volume={0}:{1}{2}".format(pipes.quote(os.path.abspath(host_file)), pipes.quote(guest_file), ("", ":ro")[read_only])
         self._options.append(option)
         return self
@@ -116,7 +117,3 @@ class Docker(object):
         option = "--workdir={0}".format(pipes.quote(guest_dir))
         self._options.append(option)
         return self
-
-
-
-
