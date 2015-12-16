@@ -9,7 +9,7 @@ import click
 from drb.docker import Docker
 from drb.tempdir import TempDir
 from drb.path import getpath
-from drb.bash import serialize, provide_encoded_signature, spawn_interactive
+from drb.bash import provide_encoded_signature
 from drb.parse_ownership import parse_ownership
 
 _HELP = """Builds a binary RPM from .src.rpm file.
@@ -99,8 +99,8 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
     if always_pull:
         docker.pull(ignore_errors=True)
 
-    serialized_options = serialize({"CALLING_UID": uid, "CALLING_GID": gid, "BASH_ON_FAIL":bashonfail, "RPMBUILD_OPTIONS": rpmbuild_options, "SRCRPM": srcrpm_basename,
-                                    "GPG_PRIVATE_KEY": encoded_signature})
+    #serialized_options = serialize({"CALLING_UID": uid, "CALLING_GID": gid, "BASH_ON_FAIL":bashonfail, "RPMBUILD_OPTIONS": rpmbuild_options, "SRCRPM": srcrpm_basename,
+    #                                "GPG_PRIVATE_KEY": encoded_signature})
 
     try:
         srpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_srcrpmdir}").run()
@@ -108,7 +108,10 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
         docker.additional_options(*(list(internal_docker_options) + list(additional_docker_options)))
         docker.bindmount_dir(dockerscripts, "/dockerscripts").bindmount_dir(srpms_temp.path, srpms_inner_dir) \
             .bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
-            .cmd_and_args("./rpmbuild-srcrpm-in-docker.sh", serialized_options)
+            .env("CALLING_UID", str(uid)).env("CALLING_GID", str(gid)).env("BASH_ON_FAIL", bashonfail) \
+            .env("RPMBUILD_OPTIONS", rpmbuild_options).env("SRCRPM", srcrpm_basename) \
+            .env("GPG_PRIVATE_KEY", encoded_signature) \
+            .cmd_and_args("./rpmbuild-srcrpm-in-docker.sh")
         if bash_on_failure:
             docker.run_interactive()
         else:

@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import pipes
 
 import os
@@ -103,6 +105,13 @@ class Docker(object):
 
     def additional_options(self, *options):
         self._options.extend([pipes.quote(opt) for opt in options])
+        return self
+
+    def env(self, key, value):
+        precondition(isinstance(key, basestring), "key must be str or unicode")
+        precondition(isinstance(value, basestring), "value must be str or unicode")
+
+        self._options.append("--env={0}={1}".format(pipes.quote(key), pipes.quote(value)))
         return self
 
     def image(self, image):

@@ -1,12 +1,9 @@
 #!/bin/bash
 set -ex
-# verify: security implications.
-[ -z "$1" ] && { echo "Missing parameters"; /bin/false; }
-eval $(echo -n $1 | base64 -d)
 
 [ -z "${CALLING_UID}" ] && { echo "Missing CALLING_UID"; /bin/false; }
 [ -z "${CALLING_GID}" ] && { echo "Missing CALLING_GID"; /bin/false; }
-[ -z "${BASH_ON_FAIL}" ] && { echo "Missing BASH_ON_FAIL"; /bin/false; }
+[ -z "${BASH_ON_FAIL}" ] && { echo "Missing BASH_ON_FAIL. Won't drop into interactive shell if errors are found"; }
 [ -z "${GPG_PRIVATE_KEY}" ] && { echo "Private key not passed; rpm won't be signed"; }
 
 RPMS_DIR=$(rpm --eval %{_rpmdir})
