@@ -21,7 +21,7 @@ class SpawnedProcessError(Exception):
 
 class Docker(object):
     def __init__(self,  docker_exec=which("docker")):
-        self._docker_exec = docker_exec
+        self._docker_exec = pipes.quote(docker_exec)
         self._options = []
         self._image = None
         self._cmd_and_args = None

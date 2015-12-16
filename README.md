@@ -432,7 +432,6 @@ To all the people who gave me feedback or contributed to this project, in no spe
 * Support some way to cache build dependencies between builds for the same package (commit after run? commit after build-dep?)
 * Option for creating a Dockerfile with build dependencies for a package, that can be used for
   repeatable builds and/or caching.
-* Convert the mixed spawn/bashinteractive commands into Docker-wrapped ones.
 * better logger config: only show everything that's being done when invoking with a verbose option
 * Remove wget dependency
 
