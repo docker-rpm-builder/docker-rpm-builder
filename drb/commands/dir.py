@@ -93,7 +93,6 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     # TODO: let the user choose $-delimited templates
     uid, gid = parse_ownership(target_ownership)
 
-
     spectemplates = [os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spectemplate")]
     specfiles = [os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spec")]
 
@@ -117,15 +116,9 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         downloadsources(source_directory, specfile, image)
 
     _logger.info("Now building project from %s on image %s", source_directory, image)
-    dockerexec = which("docker")
 
-    bashonfail = "dontspawn"
-    bashonfail_options = ""
-    # spawn_func = sp
-    # if bash_on_failure:
-    #     bashonfail = "bashonfail"
-    #     bashonfail_options = "-i -t"
-    #     spawn_func = spawn_interactive
+
+    bashonfail = "bashonfail" if bash_on_failure else ""
 
     sign_with_encoded = provide_encoded_signature(sign_with)
 
@@ -141,13 +134,13 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     serialized_options = serialize({"CALLING_UID": uid, "CALLING_GID": gid, "BASH_ON_FAIL":bashonfail, "GPG_PRIVATE_KEY": sign_with_encoded})
     dockerscripts = getpath("drb/dockerscripts")
 
-    #TODO: consider whether we want not to use --rm here - I think we shouldn't! and maybe we
-    #should add a flag to retain the old container.
-
-    # TODO: bashonfail re-enable
     docker.additional_options(*additional_docker_options).bindmount_file(specfile, os.path.join(specs_inner_dir, specname)).bindmount_dir(dockerscripts, "/dockerscripts") \
         .bindmount_dir(source_directory, sources_inner_dir).bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
-        .cmd_and_args("./rpmbuild-dir-in-docker.sh", serialized_options).run()
+        .cmd_and_args("./rpmbuild-dir-in-docker.sh", serialized_options)
+    if bash_on_failure:
+        docker.run_interactive()
+    else:
+        docker.run()
 
 
 

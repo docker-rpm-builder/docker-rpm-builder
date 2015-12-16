@@ -90,13 +90,7 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
 
     rpmbuild_options = "" if verify_signature else "--nosignature"
 
-    bashonfail = ""
-    # spawn_func = sp
-    # if bash_on_failure:
-    #     internal_docker_options.add("-i")
-    #     internal_docker_options.add("-t")
-    #     bashonfail = "bashonfail"
-    #     spawn_func = spawn_interactive
+    bashonfail = "bashonfail" if bash_on_failure else ""
 
     encoded_signature = provide_encoded_signature(sign_with)
 
@@ -108,15 +102,17 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
     serialized_options = serialize({"CALLING_UID": uid, "CALLING_GID": gid, "BASH_ON_FAIL":bashonfail, "RPMBUILD_OPTIONS": rpmbuild_options, "SRCRPM": srcrpm_basename,
                                     "GPG_PRIVATE_KEY": encoded_signature})
 
-    # TODO: re-enable interactive version
     try:
-
         srpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_srcrpmdir}").run()
         rpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_rpmdir}").run()
         docker.additional_options(*(list(internal_docker_options) + list(additional_docker_options)))
         docker.bindmount_dir(dockerscripts, "/dockerscripts").bindmount_dir(srpms_temp.path, srpms_inner_dir) \
             .bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
-            .cmd_and_args("./rpmbuild-srcrpm-in-docker.sh", serialized_options).run()
+            .cmd_and_args("./rpmbuild-srcrpm-in-docker.sh", serialized_options)
+        if bash_on_failure:
+            docker.run_interactive()
+        else:
+            docker.run()
     finally:
         srpms_temp.delete()
 

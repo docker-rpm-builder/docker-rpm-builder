@@ -54,6 +54,33 @@ class Docker(object):
             raise SpawnedProcessError(retcode, fullcmd, output=output, error=error)
         return output.strip()
 
+    def run_interactive(self):
+        precondition(self._image is not None, "image must be set")
+        precondition(self._cmd_and_args is not None, "cmd_and_args must be set")
+
+        options_local = list(self._options)
+        if "-i" not in options_local:
+            options_local.append("-i")
+        if "-t" not in options_local:
+            options_local.append("-t")
+
+        fullcmd = "{docker_exec} run {options} {image} {cmd_and_args}".format(
+            docker_exec=self._docker_exec,
+            options=" ".join(options_local),
+            image=self._image,
+            cmd_and_args=" ".join(self._cmd_and_args)
+        )
+
+        self._logger.debug("Now executing:\n%s\n", fullcmd)
+
+        popen_args = [which("bash"), "-i", "-c", fullcmd]
+        process = Popen(popen_args, stdin=0, stdout=1, stderr=2)
+
+        process.communicate()
+        retcode = process.poll()
+        if retcode:
+            raise SpawnedProcessError(retcode, " ".join(popen_args), output="", error="")
+
     def run(self):
         precondition(self._image is not None, "image must be set")
         precondition(self._cmd_and_args is not None, "cmd_and_args must be set")
@@ -67,9 +94,6 @@ class Docker(object):
 
         self._logger.debug("Now executing:\n%s\n", fullcmd)
 
-        # we're using a shell even though we don't need it?
-        # but we had problems with Docker without a shell;
-        # TODO: verify this behaviour
         process = Popen(fullcmd, stdout=PIPE, stderr=PIPE, shell=True)
         output, error = process.communicate()
         retcode = process.poll()
