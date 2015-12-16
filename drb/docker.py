@@ -51,9 +51,6 @@ class Docker(object):
             raise SpawnedProcessError(retcode, fullcmd, output=output, error=error)
         return output.strip()
 
-
-
-
     def run(self):
         precondition(self._image is not None, "image must be set")
         precondition(self._cmd_and_args is not None, "cmd_and_args must be set")
