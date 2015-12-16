@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 import base64
 from subprocess import Popen
 import logging
-from drb.spawn import SpawnedProcessError
+#from drb.spawn import SpawnedProcessError
 
 def serialize(d):
     joined = ";".join("export {0}='{1}'".format(k, "{0}".format(v).replace("'", "'\\''")) for k,v in d.iteritems())

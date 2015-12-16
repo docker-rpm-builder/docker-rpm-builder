@@ -1,8 +1,7 @@
 import os
 import os
+from drb.docker import Docker
 from drb.path import getpath
-from drb.spawn import sp
-from drb.which import which
 from unittest2 import TestCase
 
 
@@ -12,9 +11,10 @@ class TestBasicIntegration(TestCase):
 
     def test_basic_docker_integration(self):
         image = REFERENCE_IMAGE
-        dockerexec = which("docker")
         testpath = getpath("drb/test")
-        result = sp("{dockerexec} run --rm -v {testpath}:/testpath {image} /bin/bash -c 'cat /testpath/everythinglooksgood.txt'", **locals())
+
+        result = Docker().rm().bindmount_dir(testpath, "/testpath").image(image) \
+                .cmd_and_args("/bin/bash", "-c", "cat /testpath/everythinglooksgood.txt").run()
         self.assertEquals("everything looks good", result.strip())
 
     def test_docker_scripts_permissions(self):

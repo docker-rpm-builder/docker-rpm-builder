@@ -8,8 +8,6 @@ import tempfile
 import click
 from drb.docker import Docker
 from drb.tempdir import TempDir
-from drb.which import which
-from drb.spawn import sp
 from drb.path import getpath
 from drb.bash import serialize, provide_encoded_signature, spawn_interactive
 from drb.parse_ownership import parse_ownership
@@ -93,14 +91,13 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
     rpmbuild_options = "" if verify_signature else "--nosignature"
 
     bashonfail = ""
-    spawn_func = sp
-    if bash_on_failure:
-        internal_docker_options.add("-i")
-        internal_docker_options.add("-t")
-        bashonfail = "bashonfail"
-        spawn_func = spawn_interactive
+    # spawn_func = sp
+    # if bash_on_failure:
+    #     internal_docker_options.add("-i")
+    #     internal_docker_options.add("-t")
+    #     bashonfail = "bashonfail"
+    #     spawn_func = spawn_interactive
 
-    internal_docker_options = " ".join(internal_docker_options)
     encoded_signature = provide_encoded_signature(sign_with)
 
     docker = Docker().rm().image(image)
@@ -111,12 +108,15 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
     serialized_options = serialize({"CALLING_UID": uid, "CALLING_GID": gid, "BASH_ON_FAIL":bashonfail, "RPMBUILD_OPTIONS": rpmbuild_options, "SRCRPM": srcrpm_basename,
                                     "GPG_PRIVATE_KEY": encoded_signature})
 
+    # TODO: re-enable interactive version
     try:
-        additional_docker_options = internal_docker_options + " ".join(additional_docker_options)
-        srpms_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_srcrpmdir}}", **locals()).strip()
-        rpms_inner_dir = sp("{dockerexec} run --rm {image} rpm --eval %{{_rpmdir}}", **locals()).strip()
-        spawn_func("{dockerexec} run {additional_docker_options} -v {dockerscripts}:/dockerscripts:ro -v {srpms_temp.path}:{srpms_inner_dir}:ro -v {target_directory}:{rpms_inner_dir}"
-           " -w /dockerscripts {image} ./rpmbuild-srcrpm-in-docker.sh {serialized_options}", **locals())
+
+        srpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_srcrpmdir}").run()
+        rpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_rpmdir}").run()
+        docker.additional_options(*(list(internal_docker_options) + list(additional_docker_options)))
+        docker.bindmount_dir(dockerscripts, "/dockerscripts").bindmount_dir(srpms_temp.path, srpms_inner_dir) \
+            .bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
+            .cmd_and_args("./rpmbuild-srcrpm-in-docker.sh", serialized_options).run()
     finally:
         srpms_temp.delete()
 

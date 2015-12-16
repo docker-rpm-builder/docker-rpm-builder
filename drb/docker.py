@@ -6,7 +6,6 @@ from logging import getLogger
 
 from drb.which import which
 from drb.dbc import precondition
-from drb.spawn import sp
 
 
 class SpawnedProcessError(Exception):

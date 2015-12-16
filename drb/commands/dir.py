@@ -10,7 +10,6 @@ from tempfile import NamedTemporaryFile
 from drb.docker import Docker
 from drb.spectemplate import SpecTemplate
 from drb.which import which
-from drb.spawn import sp
 from drb.path import getpath
 from drb.bash import serialize, provide_encoded_signature, spawn_interactive
 from drb.downloadsources import downloadsources
@@ -122,7 +121,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
 
     bashonfail = "dontspawn"
     bashonfail_options = ""
-    spawn_func = sp
+    # spawn_func = sp
     # if bash_on_failure:
     #     bashonfail = "bashonfail"
     #     bashonfail_options = "-i -t"
@@ -140,14 +139,13 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     specs_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_specdir}").run()
 
     serialized_options = serialize({"CALLING_UID": uid, "CALLING_GID": gid, "BASH_ON_FAIL":bashonfail, "GPG_PRIVATE_KEY": sign_with_encoded})
-    additional_docker_options = " ".join(additional_docker_options)
     dockerscripts = getpath("drb/dockerscripts")
 
     #TODO: consider whether we want not to use --rm here - I think we shouldn't! and maybe we
     #should add a flag to retain the old container.
 
     # TODO: bashonfail re-enable
-    docker.additional_options(additional_docker_options).bindmount_file(specfile, os.path.join(specs_inner_dir, specname)).bindmount_dir(dockerscripts, "/dockerscripts") \
+    docker.additional_options(*additional_docker_options).bindmount_file(specfile, os.path.join(specs_inner_dir, specname)).bindmount_dir(dockerscripts, "/dockerscripts") \
         .bindmount_dir(source_directory, sources_inner_dir).bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
         .cmd_and_args("./rpmbuild-dir-in-docker.sh", serialized_options).run()
 
