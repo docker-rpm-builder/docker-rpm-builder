@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import logging
+import pipes
+
 import codecs
 from itertools import takewhile
 
@@ -77,12 +79,12 @@ def get_source_and_patches_urls(speclines):
     return [result.group(1) for result in only_matches]
 
 def download_files(urls, download_dir):
-    wget = which("wget")
-    #TODO: think about URL sanitization.
+    wget = pipes.quote(which("wget"))
+    download_dir = pipes.quote(download_dir)
     #TODO: think about whether it's better to use URLLib or something like that
     #to download files. We use wget right now because it's easier and has
     #builtin timestamping support.
-    joined_urls = " ".join(urls)
+    joined_urls = " ".join([pipes.quote(url) for url in urls])
     sp("{wget} --directory-prefix={download_dir} --timestamping {joined_urls}", **locals())
 
 
