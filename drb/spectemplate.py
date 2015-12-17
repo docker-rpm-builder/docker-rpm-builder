@@ -1,9 +1,13 @@
 from collections import Mapping
 from string import Template
+from tempfile import NamedTemporaryFile, gettempprefix
+
+import sys
+
 from drb import dbc
 import codecs
 import os
-
+from drb.tempdir import TempDir
 
 
 class DoubleDelimiterTemplate(Template):
@@ -37,10 +41,13 @@ class SpecTemplate(object):
             s = SpecTemplate(f)
         return s
 
-    def write(self, file_open_for_writing, substitution_mapping):
+    def render(self, substitution_mapping):
         dbc.precondition(isinstance(substitution_mapping, Mapping), "Substitution mapping must be a Mapping instance")
         with_substitutions = self._ddtemplate.substitute(substitution_mapping)
-        file_open_for_writing.write(with_substitutions)
+        rendered = NamedTemporaryFile(suffix=".spec", prefix=os.path.expanduser("~") if sys.platform == "darwin" else gettempprefix())
+        rendered.write(with_substitutions)
+        rendered.flush()
+        return rendered
 
 
 

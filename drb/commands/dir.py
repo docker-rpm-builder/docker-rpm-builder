@@ -99,10 +99,8 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
 
     if spectemplates:
         spectemplate = spectemplates[0]
-        finalspec = NamedTemporaryFile(suffix=".spec", prefix=os.path.join(os.path.expanduser("~"), "drb-temp.XXXXXX"))
-        SpecTemplate.from_path(spectemplate).write(finalspec, os.environ)
-        finalspec.flush()
-        specfile = finalspec.name
+        rendered = SpecTemplate.from_path(spectemplate).render(os.environ)
+        specfile = rendered.name
     else:
         specfile = specfiles[0]
 
