@@ -30,7 +30,7 @@ class TestSpecTemplate(TestCase):
         st = SpecTemplate.from_path(tmp.name)
 
         rendered = st.render({"VARIABLE": "bbbb", "SOMETHING": "dddd"})
-        rendered.seek(0)
-        self.assertEquals("aaaa bbbb cccc dddd eeee", rendered.read())
+
+        self.assertEquals("aaaa bbbb cccc dddd eeee", open(rendered).read())
 
 

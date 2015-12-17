@@ -7,7 +7,7 @@ import sys
 from drb import dbc
 import codecs
 import os
-from drb.tempdir import TempDir
+import atexit
 
 
 class DoubleDelimiterTemplate(Template):
@@ -44,14 +44,10 @@ class SpecTemplate(object):
     def render(self, substitution_mapping):
         dbc.precondition(isinstance(substitution_mapping, Mapping), "Substitution mapping must be a Mapping instance")
         with_substitutions = self._ddtemplate.substitute(substitution_mapping)
-        rendered = NamedTemporaryFile(suffix=".spec", prefix=os.path.expanduser("~") if sys.platform == "darwin" else gettempprefix())
+        rendered = NamedTemporaryFile(suffix=".spec", prefix=os.path.expanduser("~") if sys.platform == "darwin" else gettempprefix(), delete=False)
         rendered.write(with_substitutions)
         rendered.flush()
-        return rendered
-
-
-
-
-
+        atexit.register(os.remove, rendered.name)
+        return rendered.name
 
 __all__ = ("SpecTemplate", )

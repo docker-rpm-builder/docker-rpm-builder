@@ -89,20 +89,12 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
 
     uid, gid = parse_ownership(target_ownership)
 
-    spectemplates = [os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spectemplate")]
-    specfiles = [os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spec")]
+    specfile = one([os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spectemplate")] + \
+            [os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spec")])
 
-    if len(spectemplates) + len(specfiles) != 1:
-        raise ValueError("Source directory contains either zero, or more than one, spec/spectemplate")
-
-    mkdir_p(target_directory)
-
-    if spectemplates:
-        spectemplate = spectemplates[0]
-        rendered = SpecTemplate.from_path(spectemplate).render(os.environ)
-        specfile = rendered.name
-    else:
-        specfile = specfiles[0]
+    if os.path.splitext(specfile)[1] == ".spectemplate":
+        rendered_filename = SpecTemplate.from_path(specfile).render(os.environ)
+        specfile = rendered_filename
 
     specname = os.path.splitext(os.path.basename(specfile))[0] + ".spec"
 
@@ -113,6 +105,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
 
     bashonfail = "bashonfail" if bash_on_failure else ""
 
+    mkdir_p(target_directory)
 
     docker = Docker().rm().image(image)
 
@@ -132,6 +125,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         .bindmount_dir(source_directory, sources_inner_dir).bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
         .env("CALLING_UID", str(uid)).env("CALLING_GID", str(gid)).env("BASH_ON_FAIL", bashonfail) \
         .cmd_and_args("./rpmbuild-dir-in-docker.sh")
+
     if bash_on_failure:
         docker.run_interactive()
     else:

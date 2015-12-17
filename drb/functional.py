@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-class TooFewException(Exception):
+class TooFewException(ValueError):
     pass
 
-class TooManyException(Exception):
+class TooManyException(ValueError):
     pass
 
 def one(iterable):
