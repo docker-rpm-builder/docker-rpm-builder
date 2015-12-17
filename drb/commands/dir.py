@@ -12,6 +12,7 @@ from drb.path import getpath
 from drb.downloadsources import downloadsources
 from drb.parse_ownership import parse_ownership
 from drb.mkdir_p import mkdir_p
+from drb.functional import one
 
 _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hood.
 
@@ -99,13 +100,13 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     if spectemplates:
         spectemplate = spectemplates[0]
         finalspec = NamedTemporaryFile(suffix=".spec", prefix=os.path.join(os.path.expanduser("~"), "drb-temp.XXXXXX"))
-        SpecTemplate(spectemplate).write(finalspec, os.environ)
+        SpecTemplate.from_path(spectemplate).write(finalspec, os.environ)
         finalspec.flush()
         specfile = finalspec.name
-        specname = os.path.splitext(os.path.basename(specfile))[0] + ".spec"
     else:
         specfile = specfiles[0]
-        specname = os.path.splitext(os.path.basename(specfile))[0] + ".spec"
+
+    specname = os.path.splitext(os.path.basename(specfile))[0] + ".spec"
 
     if download_sources:
         downloadsources(source_directory, specfile, image)
