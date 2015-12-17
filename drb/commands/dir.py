@@ -87,40 +87,33 @@ _logger = logging.getLogger("drb.commands.dir")
 def dir(image, source_directory, target_directory, additional_docker_options, download_sources,
         bash_on_failure, sign_with, always_pull, target_ownership):
 
-    uid, gid = parse_ownership(target_ownership)
+    docker = Docker().rm().image(image)
+
+    if always_pull:
+        _logger.info("Now pulling remote image")
+        docker.pull(ignore_errors=True)
 
     specfile = one([os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spectemplate")] + \
             [os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spec")])
-
     if os.path.splitext(specfile)[1] == ".spectemplate":
         rendered_filename = SpecTemplate.from_path(specfile).render(os.environ)
         specfile = rendered_filename
-
     specname = os.path.splitext(os.path.basename(specfile))[0] + ".spec"
 
     if download_sources:
         downloadsources(source_directory, specfile, image)
 
-    _logger.info("Now building project from %s on image %s", source_directory, image)
-
-    bashonfail = "bashonfail" if bash_on_failure else ""
-
-    mkdir_p(target_directory)
-
-    docker = Docker().rm().image(image)
-
-    if always_pull:
-        docker.pull(ignore_errors=True)
-
     rpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_rpmdir}").run()
     sources_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_sourcedir}").run()
     specs_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_specdir}").run()
-
+    bashonfail = "bashonfail" if bash_on_failure else
+    uid, gid = parse_ownership(target_ownership)
     dockerscripts = getpath("drb/dockerscripts")
-
     if sign_with:
         docker.bindmount_file(sign_with, "/private.key")
 
+    _logger.info("Now building project from %s on image %s", source_directory, image)
+    mkdir_p(target_directory)
     docker.additional_options(*additional_docker_options).bindmount_file(specfile, os.path.join(specs_inner_dir, specname)).bindmount_dir(dockerscripts, "/dockerscripts") \
         .bindmount_dir(source_directory, sources_inner_dir).bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
         .env("CALLING_UID", str(uid)).env("CALLING_GID", str(gid)).env("BASH_ON_FAIL", bashonfail) \
