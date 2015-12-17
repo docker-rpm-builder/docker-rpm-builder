@@ -4,12 +4,10 @@ from __future__ import unicode_literals
 import os
 import shutil
 import logging
-import tempfile
 import click
 from drb.docker import Docker
 from drb.tempdir import TempDir
 from drb.path import getpath
-from drb.bash import provide_encoded_signature
 from drb.parse_ownership import parse_ownership
 
 _HELP = """Builds a binary RPM from .src.rpm file.
@@ -92,7 +90,7 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
 
     bashonfail = "bashonfail" if bash_on_failure else ""
 
-    encoded_signature = provide_encoded_signature(sign_with)
+    sign_with
 
     docker = Docker().rm().image(image)
 
@@ -106,11 +104,12 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
         srpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_srcrpmdir}").run()
         rpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_rpmdir}").run()
         docker.additional_options(*(list(internal_docker_options) + list(additional_docker_options)))
+        if sign_with:
+            docker.bindmount_file(sign_with, "/private.key")
         docker.bindmount_dir(dockerscripts, "/dockerscripts").bindmount_dir(srpms_temp.path, srpms_inner_dir) \
             .bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
             .env("CALLING_UID", str(uid)).env("CALLING_GID", str(gid)).env("BASH_ON_FAIL", bashonfail) \
             .env("RPMBUILD_OPTIONS", rpmbuild_options).env("SRCRPM", srcrpm_basename) \
-            .env("GPG_PRIVATE_KEY", encoded_signature) \
             .cmd_and_args("./rpmbuild-srcrpm-in-docker.sh")
         if bash_on_failure:
             docker.run_interactive()

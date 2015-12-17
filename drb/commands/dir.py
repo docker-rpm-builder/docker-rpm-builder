@@ -9,7 +9,6 @@ from tempfile import NamedTemporaryFile
 from drb.docker import Docker
 from drb.spectemplate import SpecTemplate
 from drb.path import getpath
-from drb.bash import provide_encoded_signature
 from drb.downloadsources import downloadsources
 from drb.parse_ownership import parse_ownership
 from drb.mkdir_p import mkdir_p
@@ -117,7 +116,6 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
 
     bashonfail = "bashonfail" if bash_on_failure else ""
 
-    sign_with_encoded = provide_encoded_signature(sign_with)
 
     docker = Docker().rm().image(image)
 
@@ -128,13 +126,15 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     sources_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_sourcedir}").run()
     specs_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_specdir}").run()
 
-    #serialized_options = serialize({"CALLING_UID": uid, "CALLING_GID": gid, "BASH_ON_FAIL":bashonfail, "GPG_PRIVATE_KEY": sign_with_encoded})
     dockerscripts = getpath("drb/dockerscripts")
+
+    if sign_with:
+        docker.bindmount_file(sign_with, "/private.key")
 
     docker.additional_options(*additional_docker_options).bindmount_file(specfile, os.path.join(specs_inner_dir, specname)).bindmount_dir(dockerscripts, "/dockerscripts") \
         .bindmount_dir(source_directory, sources_inner_dir).bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
         .env("CALLING_UID", str(uid)).env("CALLING_GID", str(gid)).env("BASH_ON_FAIL", bashonfail) \
-        .env("GPG_PRIVATE_KEY", sign_with_encoded).cmd_and_args("./rpmbuild-dir-in-docker.sh")
+        .cmd_and_args("./rpmbuild-dir-in-docker.sh")
     if bash_on_failure:
         docker.run_interactive()
     else:

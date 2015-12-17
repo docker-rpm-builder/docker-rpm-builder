@@ -4,7 +4,6 @@ set -ex
 [ -z "${CALLING_UID}" ] && { echo "Missing CALLING_UID"; /bin/false; }
 [ -z "${CALLING_GID}" ] && { echo "Missing CALLING_GID"; /bin/false; }
 [ -z "${BASH_ON_FAIL}" ] && { echo "Missing BASH_ON_FAIL. Won't drop into interactive shell if errors are found"; }
-[ -z "${GPG_PRIVATE_KEY}" ] && { echo "Private key not passed; rpm won't be signed"; }
 
 RPMS_DIR=$(rpm --eval %{_rpmdir})
 SRPMS_DIR=$(rpm --eval %{_srcrpmdir})
@@ -31,10 +30,10 @@ for uid in $(stat -c '%u' ${SOURCE_DIR}/*); do
 done
 
 
-if [ -n "${GPG_PRIVATE_KEY}" ]
+if [ -r "/private.key" ]
 then
     echo "Running with RPM signing"
-    echo -e "${GPG_PRIVATE_KEY}" | gpg --import
+    gpg --import /private.key
     [[ $(gpg --list-secret-keys) =~ uid(.*) ]]
     KEYNAME="${BASH_REMATCH[1]}"
     [ -n "${KEYNAME}" ] || { echo "could not find key for signing purpose"; exit 1; }
