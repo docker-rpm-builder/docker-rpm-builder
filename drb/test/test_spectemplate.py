@@ -29,9 +29,8 @@ class TestSpecTemplate(TestCase):
 
         st = SpecTemplate.from_path(tmp.name)
 
-        writer = StringIO()
-        st.write(writer, {"VARIABLE": "bbbb", "SOMETHING": "dddd"})
-        writer.seek(0)
-        self.assertEquals("aaaa bbbb cccc dddd eeee", writer.read())
+        rendered = st.render({"VARIABLE": "bbbb", "SOMETHING": "dddd"})
+        rendered.seek(0)
+        self.assertEquals("aaaa bbbb cccc dddd eeee", rendered.read())
 
 
