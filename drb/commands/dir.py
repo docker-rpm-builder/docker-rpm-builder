@@ -114,6 +114,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         docker.bindmount_file(sign_with, "/private.key")
 
     _logger.info("Now building project from %s on image %s", source_directory, image)
+
     mkdir_p(target_directory)
     docker.additional_options(*additional_docker_options).bindmount_file(specfile, os.path.join(specs_inner_dir, specname)).bindmount_dir(dockerscripts, "/dockerscripts") \
         .bindmount_dir(source_directory, sources_inner_dir).bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
