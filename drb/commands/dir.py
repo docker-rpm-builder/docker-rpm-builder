@@ -86,8 +86,6 @@ _logger = logging.getLogger("drb.commands.dir")
 def dir(image, source_directory, target_directory, additional_docker_options, download_sources,
         bash_on_failure, sign_with, always_pull, target_ownership):
 
-    # TODO: let spectemplate and/or spec be optional parameters
-    # TODO: let the user choose $-delimited templates
     uid, gid = parse_ownership(target_ownership)
 
     spectemplates = [os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spectemplate")]
