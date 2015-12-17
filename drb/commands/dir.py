@@ -101,6 +101,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     specname = os.path.splitext(os.path.basename(specfile))[0] + ".spec"
 
     if download_sources:
+        _logger.info("Now downloading sources")
         downloadsources(source_directory, specfile, image)
 
     rpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_rpmdir}").run()
