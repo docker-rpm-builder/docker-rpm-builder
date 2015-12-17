@@ -20,11 +20,11 @@ echo "starting $0"
 #rpmbuild complains if it can't find a proper user for uid/gid of the source files;
 #we should add all uid/gids for source files.
 for gid in $(stat -c '%g' ${SRPMS_DIR}/*); do
-    groupadd -g $gid "group$gid" || /bin/true
+    groupadd -g $gid "group$gid" >/dev/null 2>&1 || /bin/true
 done
 
 for uid in $(stat -c '%u' ${SRPMS_DIR}/*); do
-    useradd -u $uid "user$uid" || /bin/true
+    useradd -u $uid "user$uid" >/dev/null 2>&1 || /bin/true
 done
 
 # we don't check the gpg signature at this time, we don't really care;
