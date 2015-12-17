@@ -106,7 +106,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     rpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_rpmdir}").run()
     sources_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_sourcedir}").run()
     specs_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_specdir}").run()
-    bashonfail = "bashonfail" if bash_on_failure else
+    bashonfail = "bashonfail" if bash_on_failure else ""
     uid, gid = parse_ownership(target_ownership)
     dockerscripts = getpath("drb/dockerscripts")
     if sign_with:
