@@ -6,6 +6,7 @@ import shutil
 import logging
 import click
 from drb.docker import Docker
+from drb.mkdir_p import mkdir_p
 from drb.tempdir import TempDir
 from drb.path import getpath
 from drb.parse_ownership import parse_ownership
@@ -73,48 +74,36 @@ _logger = logging.getLogger("drb.commands.srcrpm")
 @click.option("--target-ownership", type=click.STRING, default="{0}:{1}".format(os.getuid(), os.getgid()))
 def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_signature, bash_on_failure,
            sign_with, always_pull, target_ownership):
-    uid, gid = parse_ownership(target_ownership)
-
-    _logger.info("Now building %(srcrpm)s on image %(image)s", locals())
-    if not os.path.exists(target_directory):
-        os.mkdir(target_directory)
-
-
-    dockerscripts = getpath("drb/dockerscripts")
-    srpms_temp = TempDir.platformwise()
-    shutil.copy(srcrpm, srpms_temp.path)
-    internal_docker_options = set()
-    srcrpm_basename = os.path.basename(srcrpm)
-
-    rpmbuild_options = "" if verify_signature else "--nosignature"
-
-    bashonfail = "bashonfail" if bash_on_failure else ""
-
-    sign_with
 
     docker = Docker().rm().image(image)
 
     if always_pull:
+        _logger.info("Now pulling remote image")
         docker.pull(ignore_errors=True)
 
-    #serialized_options = serialize({"CALLING_UID": uid, "CALLING_GID": gid, "BASH_ON_FAIL":bashonfail, "RPMBUILD_OPTIONS": rpmbuild_options, "SRCRPM": srcrpm_basename,
-    #                                "GPG_PRIVATE_KEY": encoded_signature})
 
-    try:
-        srpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_srcrpmdir}").run()
-        rpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_rpmdir}").run()
-        docker.additional_options(*(list(internal_docker_options) + list(additional_docker_options)))
-        if sign_with:
-            docker.bindmount_file(sign_with, "/private.key")
+    mkdir_p(target_directory)
+
+    srpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_srcrpmdir}").run()
+    rpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_rpmdir}").run()
+    uid, gid = parse_ownership(target_ownership)
+    rpmbuild_options = "" if verify_signature else "--nosignature"
+    dockerscripts = getpath("drb/dockerscripts")
+    bashonfail = "bashonfail" if bash_on_failure else ""
+    docker.additional_options(*additional_docker_options)
+    if sign_with:
+        docker.bindmount_file(sign_with, "/private.key")
+
+    with TempDir.platformwise() as srpms_temp:
+        shutil.copy(srcrpm, srpms_temp.path)
+        srcrpm_basename = os.path.basename(srcrpm)
         docker.bindmount_dir(dockerscripts, "/dockerscripts").bindmount_dir(srpms_temp.path, srpms_inner_dir) \
             .bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
             .env("CALLING_UID", str(uid)).env("CALLING_GID", str(gid)).env("BASH_ON_FAIL", bashonfail) \
             .env("RPMBUILD_OPTIONS", rpmbuild_options).env("SRCRPM", srcrpm_basename) \
             .cmd_and_args("./rpmbuild-srcrpm-in-docker.sh")
+        _logger.info("Now building %(srcrpm)s on image %(image)s", locals())
         if bash_on_failure:
             docker.run_interactive()
         else:
             docker.run()
-    finally:
-        srpms_temp.delete()
-
