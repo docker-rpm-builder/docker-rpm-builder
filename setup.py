@@ -8,7 +8,7 @@ from os.path import dirname, join
 VERSION=open(join(dirname(__file__), "version.txt")).read().replace(" ", "").replace("\n", "")
 
 install_requires = [
-    'Click==3.3',
+    'Click==6.2',
     'unittest2 == 0.8.0',
     'setuptools == 12.0.5',
     'tzlocal == 1.2',
