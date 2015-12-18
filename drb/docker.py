@@ -74,8 +74,7 @@ class Docker(object):
 
         self._logger.debug("Now executing:\n%s\n", fullcmd)
 
-        popen_args = [which("bash"), "-i", "-c", fullcmd]
-        process = Popen(popen_args, stdin=0, stdout=1, stderr=2)
+        process = Popen(fullcmd, stdout=PIPE, stderr=PIPE, shell=True)
 
         process.communicate()
         retcode = process.poll()
