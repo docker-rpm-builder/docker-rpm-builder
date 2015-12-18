@@ -7,7 +7,7 @@ import click
 from . import commands
 
 @click.group()
-def cmdline(debug):
+def cmdline():
     pass
 
 def autoload_commands(group, source_package):
