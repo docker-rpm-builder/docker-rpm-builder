@@ -35,7 +35,7 @@ class Docker(object):
     # a lot of options, only taking image into account...
     # we should refactor this class to only have docker command
     # methods and returning sub-objects with the right options.
-    def pull(self, ignore_errors=False):
+    def do_pull(self, ignore_errors=False):
         precondition(self._image is not None, "image must be set")
 
         fullcmd = "{docker_exec} pull {image}".format(
@@ -45,9 +45,6 @@ class Docker(object):
 
         self._logger.debug("Now executing:\n%s\n", fullcmd)
 
-        # we're using a shell even though we don't need it?
-        # but we had problems with Docker without a shell;
-        # TODO: verify this behaviour
         process = Popen(fullcmd, stdout=PIPE, stderr=PIPE, shell=True)
         output, error = process.communicate()
         retcode = process.poll()
@@ -55,34 +52,16 @@ class Docker(object):
             raise SpawnedProcessError(retcode, fullcmd, output=output, error=error)
         return output.strip()
 
-    def run_interactive(self):
-        precondition(self._image is not None, "image must be set")
-        precondition(self._cmd_and_args is not None, "cmd_and_args must be set")
+    def do_launch_interactively(self):
+        """Launch command in docker container; inherit fds from the parent, hence showing what happens inside the
+        container in real time. returns None"""
+        self._run(fds={"stdout":1, "stderr":2, "stdin":0})
 
-        options_local = list(self._options)
-        if "-i" not in options_local:
-            options_local.append("-i")
-        if "-t" not in options_local:
-            options_local.append("-t")
-
-        fullcmd = "{docker_exec} run {options} {image} {cmd_and_args}".format(
-            docker_exec=self._docker_exec,
-            options=" ".join(options_local),
-            image=self._image,
-            cmd_and_args=" ".join(self._cmd_and_args)
-        )
-
-        self._logger.debug("Now executing:\n%s\n", fullcmd)
-
-        process = Popen(fullcmd, stdout=PIPE, stderr=PIPE, shell=True)
-
-        process.communicate()
-        retcode = process.poll()
-        if retcode:
-            raise SpawnedProcessError(retcode, " ".join(popen_args), output="", error="")
-
-    def run(self):
+    def do_run(self):
         """Launch command in docker container and get its stdout as result"""
+        return self._run()
+
+    def _run(self, fds={"stdout":PIPE, "stderr":PIPE}):
 
         precondition(self._image is not None, "image must be set")
         precondition(self._cmd_and_args is not None, "cmd_and_args must be set")
@@ -96,7 +75,7 @@ class Docker(object):
 
         self._logger.debug("Now executing:\n%s\n", fullcmd)
 
-        process = Popen(fullcmd, stdout=PIPE, stderr=PIPE, shell=True)
+        process = Popen(fullcmd, shell=True, **fds)
         output, error = process.communicate()
         retcode = process.poll()
         if retcode:
@@ -124,6 +103,10 @@ class Docker(object):
 
     def rm(self):
         self._options.append("--rm")
+        return self
+
+    def interactive_and_tty(self):
+        self._options.append("-i -t")
         return self
 
     def bindmount_dir(self, host_dir, guest_dir, read_only=True):

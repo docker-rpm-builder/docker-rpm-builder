@@ -65,9 +65,9 @@ def get_spec_with_resolved_macros(specfilename, target_image):
         tempspec.close()
 
         docker = Docker().rm().image(target_image)
-        rpmbuild = docker.cmd_and_args("which", "rpmbuild").run()
+        rpmbuild = docker.cmd_and_args("which", "rpmbuild").do_run()
         with_macros = docker.bindmount_dir(tmpdir.path, tmpdir.path).cmd_and_args(rpmbuild, "--nodeps", "-bp",
-                                                                                  tempspec_path).run()
+                                                                                  tempspec_path).do_run()
 
     return with_macros.split("\n")
 

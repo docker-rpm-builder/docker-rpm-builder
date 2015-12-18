@@ -83,17 +83,20 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
 
     if always_pull:
         _logger.info("Now pulling remote image")
-        docker.pull(ignore_errors=True)
+        docker.do_pull(ignore_errors=True)
 
-    srpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_srcrpmdir}").run()
-    rpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_rpmdir}").run()
+    srpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_srcrpmdir}").do_run()
+    rpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_rpmdir}").do_run()
     uid, gid = parse_ownership(target_ownership)
     rpmbuild_options = "" if verify_signature else "--nosignature"
     dockerscripts = getpath("drb/dockerscripts")
-    bashonfail = "bashonfail" if bash_on_failure else ""
     docker.additional_options(*additional_docker_options)
     if sign_with:
         docker.bindmount_file(sign_with, "/private.key")
+    bashonfail =  ""
+    if bash_on_failure:
+        bashonfail = "bashonfail"
+        docker.interactive_and_tty()
 
     with TempDir.platformwise() as srpms_temp:
         shutil.copy(srcrpm, srpms_temp.path)
@@ -106,7 +109,7 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
             .cmd_and_args("./rpmbuild-srcrpm-in-docker.sh")
         _logger.info("Now building %(srcrpm)s on image %(image)s", locals())
 
-        if bash_on_failure:
-            docker.run_interactive()
+        if bash_on_failure or verbose:
+            docker.do_launch_interactively()
         else:
-            docker.run()
+            docker.do_run()

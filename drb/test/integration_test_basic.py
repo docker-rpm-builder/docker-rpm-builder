@@ -14,7 +14,7 @@ class TestBasicIntegration(TestCase):
         testpath = getpath("drb/test")
 
         result = Docker().rm().bindmount_dir(testpath, "/testpath").image(image) \
-                .cmd_and_args("/bin/bash", "-c", "cat /testpath/everythinglooksgood.txt").run()
+                .cmd_and_args("/bin/bash", "-c", "cat /testpath/everythinglooksgood.txt").do_run()
         self.assertEquals("everything looks good", result.strip())
 
     def test_docker_scripts_permissions(self):

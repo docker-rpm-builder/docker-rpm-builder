@@ -94,7 +94,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
 
     if always_pull:
         _logger.info("Now pulling remote image")
-        docker.pull(ignore_errors=True)
+        docker.do_pull(ignore_errors=True)
 
     specfile = one([os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spectemplate")] + \
             [os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spec")])
@@ -107,14 +107,17 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         _logger.info("Now downloading sources")
         downloadsources(source_directory, specfile, image)
 
-    rpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_rpmdir}").run()
-    sources_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_sourcedir}").run()
-    specs_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_specdir}").run()
-    bashonfail = "bashonfail" if bash_on_failure else ""
+    rpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_rpmdir}").do_run()
+    sources_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_sourcedir}").do_run()
+    specs_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_specdir}").do_run()
     uid, gid = parse_ownership(target_ownership)
     dockerscripts = getpath("drb/dockerscripts")
     if sign_with:
         docker.bindmount_file(sign_with, "/private.key")
+    bashonfail = ""
+    if bash_on_failure:
+        bashonfail = "bashonfail"
+        docker.interactive_and_tty()
 
     _logger.info("Now building project from %s on image %s", source_directory, image)
 
@@ -124,10 +127,10 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         .env("CALLING_UID", str(uid)).env("CALLING_GID", str(gid)).env("BASH_ON_FAIL", bashonfail) \
         .cmd_and_args("./rpmbuild-dir-in-docker.sh")
 
-    if bash_on_failure:
-        docker.run_interactive()
+    if bash_on_failure or verbose:
+        docker.do_launch_interactively()
     else:
-        docker.run()
+        docker.do_run()
 
 
 
