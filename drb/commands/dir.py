@@ -4,8 +4,9 @@ import os
 import glob
 import logging
 import click
-from tempfile import NamedTemporaryFile
 
+
+from drb.configure_logging import configure_root_logger
 from drb.docker import Docker
 from drb.spectemplate import SpecTemplate
 from drb.path import getpath
@@ -84,8 +85,10 @@ _logger = logging.getLogger("drb.commands.dir")
 @click.option("--sign-with", nargs=1, type=click.Path(exists=True, dir_okay=False, resolve_path=True), default=None)
 @click.option("--always-pull", is_flag=True, default=False)
 @click.option("--target-ownership", type=click.STRING, default="{0}:{1}".format(os.getuid(), os.getgid()))
+@click.option('--verbose', is_flag=True, default=False)
 def dir(image, source_directory, target_directory, additional_docker_options, download_sources,
-        bash_on_failure, sign_with, always_pull, target_ownership):
+        bash_on_failure, sign_with, always_pull, target_ownership, verbose):
+    configure_root_logger(verbose)
 
     docker = Docker().rm().image(image)
 

@@ -1,7 +1,6 @@
 # I don't really like this but I don't seem to have a good option to setup testing log
 # otherwise. We rely on the "singleton import" feature.
 
-import logging
-import sys
 
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG, format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
+from drb.configure_logging import configure_root_logger
+configure_root_logger(debug=True)

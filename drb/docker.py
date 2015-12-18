@@ -9,7 +9,6 @@ from logging import getLogger
 from drb.which import which
 from drb.dbc import precondition
 
-
 class SpawnedProcessError(Exception):
 
     def __init__(self, returncode, cmd, output="", error=""):
@@ -84,6 +83,8 @@ class Docker(object):
             raise SpawnedProcessError(retcode, " ".join(popen_args), output="", error="")
 
     def run(self):
+        """Launch command in docker container and get its stdout as result"""
+
         precondition(self._image is not None, "image must be set")
         precondition(self._cmd_and_args is not None, "cmd_and_args must be set")
 

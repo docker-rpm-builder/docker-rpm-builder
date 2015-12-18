@@ -3,6 +3,7 @@
 import sys
 
 import click
+from drb.configure_logging import configure_root_logger
 from drb.path import getpath
 from unittest2 import TestLoader, TextTestRunner, TestSuite
 
@@ -17,8 +18,10 @@ get tested along this tool.
 
 @click.command(help=_HELP)
 @click.option("--full", is_flag=True)
+
 def selftest(full=False):
     click.echo("Starting self test. May take a lot of time, especially the first time it is launched. Requires networking.")
+    configure_root_logger(debug=True)
 
     loader = TestLoader()
     all_suites = [loader.discover(getpath("."))]

@@ -1,19 +1,15 @@
 import os
-import sys
 from pkgutil import iter_modules
 from importlib import import_module
-import logging
 
 import click
 
 from . import commands
 
-
 @click.group()
-def cmdline():
-    logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format="%(asctime)s:" + logging.BASIC_FORMAT,
-                        datefmt="%Y-%m-%dT%H:%M:%S%z")
-
+@click.option('--debug/--no-debug', default=False)
+def cmdline(debug):
+    print debug
 
 def autoload_commands(group, source_package):
     """

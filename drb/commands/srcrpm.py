@@ -5,6 +5,8 @@ import os
 import shutil
 import logging
 import click
+
+from drb.configure_logging import configure_root_logger
 from drb.docker import Docker
 from drb.mkdir_p import mkdir_p
 from drb.tempdir import TempDir
@@ -72,8 +74,10 @@ _logger = logging.getLogger("drb.commands.srcrpm")
 @click.option("--sign-with", nargs=1, type=click.Path(exists=True, dir_okay=False, resolve_path=True), default=None)
 @click.option("--always-pull", is_flag=True, default=False)
 @click.option("--target-ownership", type=click.STRING, default="{0}:{1}".format(os.getuid(), os.getgid()))
+@click.option('--verbose', is_flag=True, default=False)
 def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_signature, bash_on_failure,
-           sign_with, always_pull, target_ownership):
+           sign_with, always_pull, target_ownership, verbose):
+    configure_root_logger(verbose)
 
     docker = Docker().rm().image(image)
 
