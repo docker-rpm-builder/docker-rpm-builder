@@ -2,7 +2,6 @@ blessings==1.6
 bpython==0.14.2
 click==6.2
 curtsies==0.1.19
--e git+git@github.com:alanfranz/docker-rpm-builder.git@0d45e0d98c185b2841264948892b765e10f12cfc#egg=docker_rpm_builder-origin_v1dev
 greenlet==0.4.9
 Pygments==2.0.2
 pytz==2015.7
