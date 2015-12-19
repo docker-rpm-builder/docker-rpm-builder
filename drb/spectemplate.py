@@ -44,7 +44,7 @@ class SpecTemplate(object):
     def render(self, substitution_mapping):
         dbc.precondition(isinstance(substitution_mapping, Mapping), "Substitution mapping must be a Mapping instance")
         with_substitutions = self._ddtemplate.substitute(substitution_mapping)
-        rendered = NamedTemporaryFile(suffix=".spec", prefix=os.path.expanduser("~") if sys.platform == "darwin" else gettempprefix(), delete=False)
+        rendered = NamedTemporaryFile(suffix=".spec", prefix=os.path.join(os.path.expanduser("~"), "") if sys.platform == "darwin" else gettempprefix(), delete=False)
         rendered.write(with_substitutions)
         rendered.flush()
         atexit.register(os.remove, rendered.name)
