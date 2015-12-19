@@ -3,6 +3,7 @@ from pkgutil import iter_modules
 from importlib import import_module
 
 import click
+click.disable_unicode_literals_warning = True
 
 from . import commands
 

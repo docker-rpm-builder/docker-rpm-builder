@@ -8,6 +8,7 @@ import click
 
 from drb.configure_logging import configure_root_logger
 from drb.docker import Docker
+from drb.exception_transformer import UserExceptionTransformer
 from drb.mkdir_p import mkdir_p
 from drb.tempdir import TempDir
 from drb.path import getpath
@@ -109,7 +110,8 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
             .cmd_and_args("./rpmbuild-srcrpm-in-docker.sh")
         _logger.info("Now building %(srcrpm)s on image %(image)s", locals())
 
-        if bash_on_failure or verbose:
-            docker.do_launch_interactively()
-        else:
-            docker.do_run()
+        with UserExceptionTransformer(Exception, "docker run error", append_original_message=True):
+            if bash_on_failure or verbose:
+                docker.do_launch_interactively()
+            else:
+                docker.do_run()

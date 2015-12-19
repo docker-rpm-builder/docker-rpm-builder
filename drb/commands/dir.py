@@ -14,6 +14,7 @@ from drb.downloadsources import downloadsources
 from drb.parse_ownership import parse_ownership
 from drb.mkdir_p import mkdir_p
 from drb.functional import one
+from drb.exception_transformer import UserExceptionTransformer
 
 _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hood.
 
@@ -96,8 +97,10 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         _logger.info("Now pulling remote image")
         docker.do_pull(ignore_errors=True)
 
-    specfile = one([os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spectemplate")] + \
-            [os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spec")])
+    with UserExceptionTransformer(Exception, "There must be exactly one spec or spectemplate in source directory."):
+        specfile = one([os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spectemplate")] + \
+                [os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spec")])
+
     if os.path.splitext(specfile)[1] == ".spectemplate":
         rendered_filename = SpecTemplate.from_path(specfile).render(os.environ)
         specfile = rendered_filename
@@ -105,7 +108,8 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
 
     if download_sources:
         _logger.info("Now downloading sources")
-        downloadsources(source_directory, specfile, image)
+        with UserExceptionTransformer(Exception, "it was impossible to download at least one source file", append_original_message=True):
+            downloadsources(source_directory, specfile, image)
 
     rpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_rpmdir}").do_run()
     sources_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_sourcedir}").do_run()
@@ -127,10 +131,12 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         .env("CALLING_UID", str(uid)).env("CALLING_GID", str(gid)).env("BASH_ON_FAIL", bashonfail) \
         .cmd_and_args("./rpmbuild-dir-in-docker.sh")
 
-    if bash_on_failure or verbose:
-        docker.do_launch_interactively()
-    else:
-        docker.do_run()
+
+    with UserExceptionTransformer(Exception, "docker run error", append_original_message=True):
+        if bash_on_failure or verbose:
+            docker.do_launch_interactively()
+        else:
+            docker.do_run()
 
 
 

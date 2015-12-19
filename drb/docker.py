@@ -16,6 +16,7 @@ class SpawnedProcessError(Exception):
         self.cmd = cmd
         self.output = output
         self.error = error
+        super(SpawnedProcessError, self).__init__(str(self))
 
     def __str__(self):
         return "Command '%s' returned non-zero exit status %d:\n%s\n%s\n" % (self.cmd, self.returncode, self.output, self.error)
