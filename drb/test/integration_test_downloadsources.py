@@ -40,7 +40,7 @@ touch /tmp/sarcazzo_123
 make %{?_smp_mflags} LDFLAGS="%{optflags}"
 """
 
-REFERENCE_IMAGE = "alanfranz/drb-epel-7-x86-64:latest"
+REFERENCE_IMAGE = os.environ.get("REFERENCE_IMAGE") or "alanfranz/drb-epel-7-x86-64:latest"
 
 class TestMacroResolving(TestCase):
     def test_get_spec_with_resolved_macros(self):

@@ -8,7 +8,7 @@ from drb.tempdir import TempDir
 from drb.commands.dir import dir
 from drb.docker import Docker
 
-REFERENCE_IMAGE = "alanfranz/drb-epel-7-x86-64:latest"
+REFERENCE_IMAGE = os.environ.get("REFERENCE_IMAGE") or "alanfranz/drb-epel-7-x86-64:latest"
 
 class TestDirCommand(TestCase):
     def setUp(self):
