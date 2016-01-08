@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-
+import os
 import click
 from drb.configure_logging import configure_root_logger
 from drb.path import getpath
@@ -24,10 +24,10 @@ def selftest(full=False):
     configure_root_logger(debug=True)
 
     loader = TestLoader()
-    all_suites = [loader.discover(getpath("."))]
+    all_suites = [loader.discover(getpath(os.path.join("drb", "test")))]
 
     integration_test_pattern = "integration_test_*" if full else "integration_test_basic.py"
-    all_suites.append(loader.discover(getpath("."), pattern=integration_test_pattern))
+    all_suites.append(loader.discover(getpath(os.path.join("drb", "test")), pattern=integration_test_pattern))
 
     runner = TextTestRunner(verbosity=2)
     result = runner.run(TestSuite(all_suites))
