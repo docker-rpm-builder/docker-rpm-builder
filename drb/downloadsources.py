@@ -9,7 +9,6 @@ from itertools import takewhile
 from drb.docker import Docker
 from drb.tempdir import TempDir
 from drb.which import which
-from drb.path import getpath
 import os
 import re
 
