@@ -14,3 +14,4 @@ prodenv
 .eggs
 *.rpm
 *.deb
+packaging/**/.vagrant
