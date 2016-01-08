@@ -1,0 +1,14 @@
+#!/bin/bash -ex
+# we should always set proper ownership before exiting, otherwise
+# the created logs will have root:root ownership and we'll be unable
+# to delete them from our host.
+trap 'chown -R --reference /test-inside/test /test-logs/' EXIT
+
+yum -y install /out/*.rpm
+
+export DOCKER_TLS_VERIFY="1"
+export DOCKER_HOST="tcp://192.168.99.100:2376"
+#export DOCKER_CERT_PATH="/Users/alan/.docker/machine/machines/default"
+export DOCKER_MACHINE_NAME="default"
+
+docker-rpm-builder selftest

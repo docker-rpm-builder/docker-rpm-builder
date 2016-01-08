@@ -1,0 +1,12 @@
+#!/bin/bash -ex
+# we should always set proper ownership before exiting, otherwise
+# the created logs will have root:root ownership and we'll be unable
+# to delete them from our host.
+trap 'chown -R --reference /test-inside/test /test-logs/' EXIT
+
+#we must do this in order to install a deb and missing deps afaik
+dpkg -i /out/*.deb
+apt-get -f -y install
+
+cd /usr/local/lua/tests
+/usr/local/lua/bin/lua -e"_U=true" all.lua 2>&1 | tee /test-logs/lua.log
