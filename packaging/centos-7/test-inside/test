@@ -1,14 +1,15 @@
 #!/bin/bash -ex
-# we should always set proper ownership before exiting, otherwise
-# the created logs will have root:root ownership and we'll be unable
-# to delete them from our host.
-trap 'chown -R --reference /test-inside/test /test-logs/' EXIT
+cat > /etc/yum.repos.d/docker.repo <<EOF
+[docker]
+name=docker
+baseurl=https://yum.dockerproject.org/repo/main/centos/7/
+gpgcheck=1
+gpgkey=https://yum.dockerproject.org/gpg
+EOF
 
-yum -y install /out/*.rpm
+yum -y install /home/vagrant/sync/out/*.rpm
 
-export DOCKER_TLS_VERIFY="1"
-export DOCKER_HOST="tcp://192.168.99.100:2376"
-#export DOCKER_CERT_PATH="/Users/alan/.docker/machine/machines/default"
-export DOCKER_MACHINE_NAME="default"
+usermod -a -G docker vagrant || /bin/true
+service docker start || /bin/true
 
 docker-rpm-builder selftest

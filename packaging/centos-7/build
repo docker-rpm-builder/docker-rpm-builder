@@ -14,9 +14,13 @@ rm -rf out
 
 docker run --env "BUILD_NUMBER=${BUILD_NUMBER}" --env "GIT_COMMIT=${GIT_COMMIT}" --env-file ../env.list --rm -v $(pwd)/build-inside:/build-inside:ro -v ${SRC_DIR}:/source:ro -v $(pwd)/out:/out -w /build-inside ${BUILD_IMAGE} /build-inside/build-package
 
-docker build --pull -t ${TEST_IMAGE} test-image
+trap 'vagrant destroy --force' EXIT
+vagrant up
+vagrant ssh -c "sudo /home/vagrant/sync/test-inside/test"
 
-rm -rf test-logs
+#docker build --pull -t ${TEST_IMAGE} test-image
 
-docker run --env-file ../env.list --rm -v ${HOME}/.docker/machine/machines/default:/root/.docker:ro -v $(pwd)/test-inside:/test-inside:ro -v $(pwd)/out:/out:ro -v $(pwd)/test-logs:/test-logs -w /test-inside ${TEST_IMAGE} /test-inside/test || { echo "ERROR: the test phase failed." ; exit 1 ; }
+#rm -rf test-logs
+
+#docker run --env-file ../env.list --rm -v ${HOME}/.docker/machine/machines/default:/root/.docker:ro -v $(pwd)/test-inside:/test-inside:ro -v $(pwd)/out:/out:ro -v $(pwd)/test-logs:/test-logs -w /test-inside ${TEST_IMAGE} /test-inside/test || { echo "ERROR: the test phase failed." ; exit 1 ; }
 echo "Test phase succeeded."
