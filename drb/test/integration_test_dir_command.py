@@ -52,7 +52,7 @@ class TestDirCommand(TestCase):
         with open(os.path.join(self.rpm.path, "sign.pub"), "wb") as f:
             f.write(SIGN_PUB)
 
-        self.runner.invoke(dir, [REFERENCE_IMAGE, self.src.path, self.rpm.path, "--download-sources", "--sign-with", os.path.join(self.src.path, "sign.gpg") ],  catch_exceptions=False)
+        self.runner.invoke(dir, [REFERENCE_IMAGE, self.src.path, self.rpm.path, "--download-sources", "--sign-with", os.path.join(self.src.path, "sign.gpg"), "--verbose" ],  catch_exceptions=False)
 
         out = Docker().rm().bindmount_dir(self.rpm.path, "/rpm").workdir("/rpm/x86_64").image(REFERENCE_IMAGE).\
             cmd_and_args("/bin/bash", "-c", "rpm --import ../sign.pub && rpm -K *.rpm").do_run()
@@ -202,12 +202,12 @@ Version: GnuPG v1
 mI0EVJ/XBgEEAOGka0Qsia3La0uSnduWfbp9/s08RHOjXNyHPayeBmOMPGidlqD3
 qaADhQiOHHufmyC0EwDgghVGKBz/V6E6JrI10Va7iA/p5PNrSfbNiRBjM+oF+z0T
 cU5tkOZcwQAGW4z64vYiVHlAgly4t6BD7s/OIoQygkH3GTsB1xR3UodrABEBAAG0
-G215dXNlciA8bXl1c2VyQGV4YW1wbGUuY29tPoi+BBMBAgAoBQJUn9cGAhsDBQkB
-4TOABgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIXgAAKCRCpvP7x+6fJu+gYA/9Jm2XJ
-00JgvDz2Qf7Q9JiussX5SIApgCT3A7ThHGcFg6/1bc788RIkylDuquraLgGkk1e9
-SW6RhwZsu/6tSI6HJ6uVJ1sjLKoWHoJt592GQ+H2mD1OpVeYYlTybyAmTZHmhTz0
-9ZDdjKMRF73f410W/20JKAktHCPomgEmsSshAg==
-=ErQ2
+G215dXNlciA8bXl1c2VyQGV4YW1wbGUuY29tPoi4BBMBAgAiAhsDBgsJCAcDAgYV
+CAIJCgsEFgIDAQIeAQIXgAUCVpGWjAAKCRCpvP7x+6fJu9JSA/9IUqOTo12xhbgH
+l1/h1MpraTOrTLbyZQ6pzOMtcrjVf1My9DdAS5ZmerkwXZcBtSmWQh4taUp2Yjic
+0Jd3XtMTqTeeRmLs3CsODbv+5Ocd5Eok4L6FemWbblhENrLnZC8dguY+5+l8KAai
+L3SrMY8blhrhN7hhIzYdb/wCZfWa2Q==
+=y0vQ
 -----END PGP PUBLIC KEY BLOCK-----
 """
 
@@ -224,10 +224,11 @@ HiXE9FhG5KymH1adjeDXIPKx6UNT91QnwvrrqIGIMs2zBH3iMB1D3UtIl4/9wAnS
 iS2f6EcCAPw9DUK7wlLRuGSBU7nZ4q7Wiz04pEQz32tzyGV5DXaK2VH371diWoh5
 S5w4zliej5XuE4GIucNAMOXZsWtsHb0CAJ0PpIMdve4mcBShrqJCnHU5z8jCFgAp
 xReBPWmBK3UyrgFl1go2T6U97XaywgzwZExboI5APKB7BkRmyOsk6dqeCrQbbXl1
-c2VyIDxteXVzZXJAZXhhbXBsZS5jb20+iL4EEwECACgFAlSf1wYCGwMFCQHhM4AG
-CwkIBwMCBhUIAgkKCwQWAgMBAh4BAheAAAoJEKm8/vH7p8m76BgD/0mbZcnTQmC8
-PPZB/tD0mK6yxflIgCmAJPcDtOEcZwWDr/VtzvzxEiTKUO6q6touAaSTV71JbpGH
-Bmy7/q1Ijocnq5UnWyMsqhYegm3n3YZD4faYPU6lV5hiVPJvICZNkeaFPPT1kN2M
-oxEXvd/jXRb/bQkoCS0cI+iaASaxKyEC
-=h8fb
+c2VyIDxteXVzZXJAZXhhbXBsZS5jb20+iLgEEwECACICGwMGCwkIBwMCBhUIAgkK
+CwQWAgMBAh4BAheABQJWkZaMAAoJEKm8/vH7p8m70lID/0hSo5OjXbGFuAeXX+HU
+ymtpM6tMtvJlDqnM4y1yuNV/UzL0N0BLlmZ6uTBdlwG1KZZCHi1pSnZiOJzQl3de
+0xOpN55GYuzcKw4Nu/7k5x3kSiTgvoV6ZZtuWEQ2sudkLx2C5j7n6XwoBqIvdKsx
+jxuWGuE3uGEjNh1v/AJl9ZrZ
+=EcCS
 -----END PGP PRIVATE KEY BLOCK-----"""
+
