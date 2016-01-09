@@ -1,6 +1,7 @@
 from drb.docker import SpawnedProcessError
 from unittest2 import TestCase, skipIf
 from click.testing import CliRunner
+from click import ClickException
 import os
 import sys
 
@@ -24,9 +25,10 @@ class TestDirCommand(TestCase):
     def test_dir_command_fails_if_sources_unavailable_and_downloadsources_not_enabled(self):
         with open(os.path.join(self.src.path, "tmux.spec"), "wb") as f:
             f.write(TMUX_SPEC)
-
-        self.assertRaises(SpawnedProcessError, self.runner.invoke, dir, [REFERENCE_IMAGE, self.src.path, self.rpm.path],
+	
+	result = self.runner.invoke( dir, [REFERENCE_IMAGE, self.src.path, self.rpm.path],
                           catch_exceptions=False)
+	self.assertFalse(result.exit_code == 0)
 
     def test_dir_command_produces_binary_rpm_and_debuginfo_packages_if_valid_spec_passed_and_downloadsources_enabled(self):
         with open(os.path.join(self.src.path, "tmux.spec"), "wb") as f:
