@@ -10,4 +10,4 @@ cd /usr/bin
 ln -s ${INSTALL_DIR}/bin/docker-rpm-builder docker-rpm-builder
 
 cd /out
-fpm -t deb -s dir -n docker-rpm-builder --version ${VERSION} --iteration ${BUILD_NUMBER} --description "docker-rpm-builder" --depends "docker-engine >= 1.8.0" --depends python --depends wget -C / /opt/docker-rpm-builder /usr/bin/docker-rpm-builder
+fpm -t deb -s dir -n docker-rpm-builder --version ${VERSION} --iteration ${BUILD_NUMBER} --description "docker-rpm-builder ${GIT_COMMIT}" --depends "docker-engine >= 1.8.0" --depends python --depends wget -C / /opt/docker-rpm-builder /usr/bin/docker-rpm-builder
