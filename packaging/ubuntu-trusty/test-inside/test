@@ -6,9 +6,9 @@ EOF
 curl https://apt.dockerproject.org/gpg | apt-key add -
 apt-get update
 dpkg -i /home/vagrant/sync/out/*.deb || /bin/true
-apt-get -f install
+apt-get -f -y install
 
 usermod -a -G docker vagrant || /bin/true
 service docker start || /bin/true
 
-docker-rpm-builder selftest
+docker-rpm-builder selftest --full
