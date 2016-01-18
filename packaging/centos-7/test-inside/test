@@ -7,6 +7,8 @@ gpgcheck=1
 gpgkey=https://yum.dockerproject.org/gpg
 EOF
 
+yum -y install "docker-engine-1.8.3"
+
 yum -y install /home/vagrant/sync/out/*.rpm
 
 usermod -a -G docker vagrant || /bin/true
