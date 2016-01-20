@@ -25,7 +25,7 @@ done
 
 vagrant ssh -c "cat /tmp/test.log"
 
-TEST_EXIT=$(vagrant ssh -c "cat /tmp/test.exit" | xargs echo -n)
+TEST_EXIT=$(vagrant ssh -c "cat /tmp/test.exit" | tr -d '[:space:]')
 if [ "${TEST_EXIT}" -ne 0 ];
 then
     exit ${TEST_EXIT}
