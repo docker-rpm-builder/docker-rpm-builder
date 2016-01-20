@@ -1,4 +1,8 @@
 #!/bin/bash -ex
+rm -f /tmp/test.exit
+EXIT_CODE=1
+trap 'echo ${EXIT_CODE} > /tmp/test.exit' EXIT
+
 cat > /etc/yum.repos.d/docker.repo <<EOF
 [docker]
 name=docker
@@ -15,3 +19,4 @@ usermod -a -G docker vagrant || /bin/true
 service docker start || /bin/true
 
 docker-rpm-builder selftest --full
+EXIT_CODE="$?"

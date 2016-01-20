@@ -16,11 +16,19 @@ docker run --env "BUILD_NUMBER=${BUILD_NUMBER:-0}" --env "GIT_COMMIT=${GIT_COMMI
 
 trap 'vagrant destroy --force' EXIT
 vagrant up
-vagrant ssh -c "sudo /home/vagrant/sync/test-inside/test"
+vagrant ssh -c 'nohup sudo -b /home/vagrant/sync/test-inside/test > /tmp/test.log 2>&1'
 
-#docker build --pull -t ${TEST_IMAGE} test-image
+while vagrant ssh -c "test ! -r /tmp/test.exit"; 
+do
+    sleep 1
+done
 
-#rm -rf test-logs
+vagrant ssh -c "cat /tmp/test.log"
 
-#docker run --env-file ../env.list --rm -v ${HOME}/.docker/machine/machines/default:/root/.docker:ro -v $(pwd)/test-inside:/test-inside:ro -v $(pwd)/out:/out:ro -v $(pwd)/test-logs:/test-logs -w /test-inside ${TEST_IMAGE} /test-inside/test || { echo "ERROR: the test phase failed." ; exit 1 ; }
+TEST_EXIT=$(vagrant ssh -c "cat /tmp/test.exit" | xargs echo -n)
+if [ "${TEST_EXIT}" -ne 0 ];
+then
+    exit ${TEST_EXIT}
+fi
+
 echo "Test phase succeeded."
