@@ -11,7 +11,7 @@ gpgcheck=1
 gpgkey=https://yum.dockerproject.org/gpg
 EOF
 
-yum -y install "docker-engine-1.8.3"
+#yum -y install "docker-engine-1.8.3"
 
 yum -y install /home/vagrant/sync/out/*.rpm
 
@@ -20,3 +20,4 @@ service docker start || /bin/true
 
 docker-rpm-builder selftest --full
 EXIT_CODE="$?"
+exit ${EXIT_CODE}
