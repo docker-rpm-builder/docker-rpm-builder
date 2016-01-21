@@ -1,0 +1,21 @@
+#!/bin/bash -ex
+cat > /etc/apt/sources.list.d/docker.list <<EOF
+deb https://apt.dockerproject.org/repo ubuntu-wily main
+EOF
+
+rm -f /tmp/test.exit
+EXIT_CODE=1
+trap 'echo ${EXIT_CODE} > /tmp/test.exit' EXIT
+
+curl https://apt.dockerproject.org/gpg | apt-key add -
+apt-get update
+#apt-get -y install 'docker-engine=1.8.3*'
+dpkg -i /home/vagrant/sync/out/*.deb || /bin/true
+apt-get -f -y install
+
+usermod -a -G docker vagrant || /bin/true
+service docker start || /bin/true
+
+docker-rpm-builder selftest --full
+EXIT_CODE=$?
+exit ${EXIT_CODE}
