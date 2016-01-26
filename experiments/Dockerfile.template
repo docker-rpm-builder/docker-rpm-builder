@@ -1,4 +1,0 @@
-FROM alanfranz/drb-epel-6-x86-64
-MAINTAINER Alan Franzoni username@franzoni.eu
-ADD uuid.spec /tmp/uuid.spec
-RUN yum-builddep /tmp/uuid.spec
