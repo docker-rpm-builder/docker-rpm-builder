@@ -2,10 +2,10 @@ import sys
 
 from setuptools import setup, find_packages
 from os.path import dirname, join
+from os import environ
 
 # this smells, but I don't know how to do better than this right now.
-# let's remove all kind of whitespace/newline everywhere
-VERSION=open(join(dirname(__file__), "version.txt")).read().replace(" ", "").replace("\n", "")
+VERSION=environ.get("VERSION") or "0.99.dev0"
 
 install_requires = [
     'Click==6.2',
