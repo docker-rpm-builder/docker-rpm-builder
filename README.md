@@ -58,7 +58,12 @@ At the dawn of this tool, I tried to make it work with any version of *docker* t
 
 So, **docker >= 1.8** is currently a prerequisite. If you're using the prebuilt RPMs or DEBs, they expect the **docker-engine** package from yum.dockerproject.org or apt.dockerproject.org to be available; just follow the [official install instructions](https://docs.docker.com/engine/installation/).
 
+Python 2.7, bash, and wget should be installed on your system as well. If you're using a packaged version, the package will take care of that.
+
 See the [docker configuration](#docker-configuration) section for details on some post-install actions for docker.
+
+This tool is designed to use a docker-engine on the very same machine where it's running. On OSX, it uses docker-machine, but make sure all the files
+you're using reside in ```/Users```.
 
 ## Installation
 
@@ -91,10 +96,11 @@ yum install docker-rpm-builder
 
 And you're done; skip to the [docker configuration](#docker-configuration) section.
 
-### Fedora 20/21/22
+#### Support plan
 
-If you're using a pre-release Fedora version (F23 at this time) or rawhide, you may experience better luck with the
-install from source method.
+I plan to support the latest CentOS/RHEL stable.
+
+### Fedora 23
 
 Use this yum repository:
 
@@ -119,18 +125,30 @@ yum install docker-rpm-builder
 
 And you're done; skip to the [docker configuration](#docker-configuration) section.
 
-### Debian and Ubuntu
+#### Support plan
+
+I'll probably always support the latest released Fedora distribution. When a new Fedora is released,
+I'll try supporting the new release as well as the old one for a couple of months, then drop the old one.
+
+Example (January 2016). There's a package for Fedora 23. Fedora 24 is planned for June 2016. Once it's out, I'll create a new package
+for Fedora 24. Around September 2016, any support for Fedora 23 will be dropped.
+
+
+
+### Debian Jessie
 
 There're repositories for those distributions; you'll need to enable the official docker package from docker.io [see install docs](https://docs.docker.com/installation/) or docker-rpm-builder will fail to install.
-
-**Only Ubuntu Trusty is actively tested!**. Please report issues with other distributions' packages.
 
 First, you should make sure that you've got my package signing key properly installed and configured for apt:
 ```
 curl https://www.franzoni.eu/keys/D1270819.txt | sudo apt-key add -
 ```
 
-Then, pick the proper repo for your distribution - see next sections - and save it as **/etc/apt/sources.list.d/docker-rpm-builder.list**
+Then, pick the repo for your distribution - see below - and save it as **/etc/apt/sources.list.d/docker-rpm-builder.list**
+
+```
+deb http://www.a9f.eu/apt/docker-rpm-builder-v1/debian jessie main
+```
 
 Now you're ready to
 
@@ -141,118 +159,61 @@ apt-get -y install docker-rpm-builder
 
 Enjoy!
 
-#### Ubuntu Trusty
+#### Support plan
+
+I plan to support the latest stable Debian release. When a new release comes out,
+I'll support the oldstable for a few months before dropping it.
+
+
+### Ubuntu
+
+There're repositories for those distributions; you'll need to enable the official docker package from docker.io [see install docs](https://docs.docker.com/installation/) or docker-rpm-builder will fail to install.
+
+First, you should make sure that you've got my package signing key properly installed and configured for apt:
+```
+curl https://www.franzoni.eu/keys/D1270819.txt | sudo apt-key add -
+```
+
+Then, pick the repo for your distribution - see below - and save it as **/etc/apt/sources.list.d/docker-rpm-builder.list**
+
+**Trusty**
 
 ```
 deb http://www.a9f.eu/apt/docker-rpm-builder-v1/ubuntu trusty main
 ```
-#### Ubuntu Utopic
+
+**Wily**
 
 ```
-deb http://www.a9f.eu/apt/docker-rpm-builder-v1/ubuntu utopic main
+deb http://www.a9f.eu/apt/docker-rpm-builder-v1/ubuntu wily main
 ```
 
-#### Ubuntu Vivid
+Now you're ready to
 
 ```
-deb http://www.a9f.eu/apt/docker-rpm-builder-v1/ubuntu vivid main
+apt-get update
+apt-get -y install docker-rpm-builder
 ```
 
+Enjoy!
 
-#### Debian Wheezy
+#### Support plan
 
-```
-deb http://www.a9f.eu/apt/docker-rpm-builder-v1/debian wheezy main
-```
-
-#### Debian Jessie
-
-```
-deb http://www.a9f.eu/apt/docker-rpm-builder-v1/debian jessie main
-```
+I plan to support the latest Ubuntu LTS as well as the latest-and-greatest Ubuntu release.
+Whenever a new version comes out there'll be probably be some months of overlapping support,
+and I'll probably choose to support older LTSes for more time than "standard" releases
+(e.g. I don't plan dropping Ubuntu 14.04 support for the whole 2016, even though 16.04 is
+scheduled for April 2016)
 
 
+### Other distributions and OSX
 
-### Other distributions
-
-You can just use the [docker-rpm-builder python package](https://pypi.python.org/pypi/docker-rpm-builder/) and manually configure the system by yourself; the following steps will guide you in such process.
-
-#### Prerequisites
-
-You must have [docker](https://www.docker.com/) >= 1.8 installed and properly configured (see the [install docs](https://docs.docker.com/installation/#installation) and the [docker configuration](#docker-configuration) section.
-
-Python 2.7, bash, and wget should be installed on your system as well.
-
-#### Installation from pypi
-
-docker-rpm-builder is a pure Python package; if you know python packaging works,
-I recommend you just create a virtualenv and ```pip install docker-rpm-builder``` inside it.
-You'll get a ```docker-rpm-builder``` executable in the env's bin directory.
-
-If you don't know how python packaging works, here's a quick guide to installing
-docker-rpm-builder.
-
-First, verify *python2.7* is available on your system
-
-```
-~/bin$ python --version
-Python 2.7.6
-```
-
-*There may be multiple Python versions installed on your system; check for pythonX.X
-executables, and use such executables everywhere in the following steps. If multiple Python versions are installed
-you could probably find multiple virtualenv executables like virtualenv-X.X as well*
-
-Then, check whether an executable called ```pip``` is available in your system;
-it's probably installed by default on most Linux distributions that offer Python as well.
-If it isn't installed, and it's not available in your package manager, you need to
-[install it](https://pip.pypa.io/en/latest/installing.html), which probably means
-something like:
-
-**PLEASE NOTE:** If you've got a distribution shipping an outdated version of pip,
-you may want to update it, maybe on a per-user basis.
-
-##### Installing an up-to-date pip system-wide
-
-```
-curl https://bootstrap.pypa.io/get-pip.py | sudo python
-```
-
-##### Installing a local up-to-date pip for the current user.
-
-```
-curl https://bootstrap.pypa.io/get-pip.py > get-pip.py && python get-pip.py --user
-```
-
-This will add the pip executable to .local/bin; make sure it's in your PATH.
-
-##### Going on
-
-Once you've got pip in place, I recommend using [pipsi](https://github.com/mitsuhiko/pipsi)
-to install docker-rpm-builder; it's a tool that will create an isolated environment for
-a package along with dependencies, without polluting the global environment. Make
-sure ~/.local/bin is in your PATH, then execute something like (remove the --user flag if you want to install it globally):
-
-```
-pip install --user virtualenv pipsi
-```
-
-and then
-
-`````
-pipsi install docker-rpm-builder
-```
-
-And you'll find a ready-to-use *docker-rpm-builder* executable in ~/.local/bin .
-
-To get a more recent version, just use:
-
-```
-pipsi upgrade docker-rpm-builder
-```
-
-pipsi work for any python package that should run in an isolated environment; it's a good
-idea to use it a lot.
+* make sure you've got ```python 2.7``` and ```virtualenv``` available on your system. You can pass VIRTUALENV to make to tell him which virtualenv to use.
+* clone this repository
+* run ```make```
+* ```devenv/bin/docker-rpm-builder``` will contain the docker-rpm-builder executable.
+* Now check [prerequisites](#prerequisites) and [docker configuration](#docker-configuration)
+* Run the integrated test suite
 
 ## Docker configuration
 
@@ -301,8 +262,6 @@ If you pass --download-sources the URL sources will be downloaded in such direct
 Of course, you should tell the tool which build image you'd like to use; that's the image where the build will happen. I've baked some [prebuilt images](#prebuilt-images), but you should feel free to create your own, since that's the purpose of this tool.
 
 And you should tell the tool which target directory you'd like to use for rpm output; this directory will be bound straight to %{_rpmdir} inside the build container, so mind that if your build process does something strange with it, files can be deleted. If the target directory doesn't exist it will be created.
-i
-
 
 ### Example
 
@@ -321,9 +280,6 @@ docker-rpm-builder dir --help
 To see everything.
 
 URL-based source/patch downloading, shell spawning on build failure, signing, and always updating the remote images are all supported scenarios.
-
-
-
 
 ## Spectemplates
 
@@ -363,14 +319,7 @@ thing to do is probably add an entry to *BuildRequires* in the spec file.
 
 ### Prebuilt images
 
-There are some prebuilt configurations for Centos 5-6-7+EPEL and Fedora 20-21-rawhide at [https://github.com/alanfranz/docker-rpm-builder-configurations](https://github.com/alanfranz/docker-rpm-builder-configurations); those are available on [my docker hub page](https://hub.docker.com/u/alanfranz/) as well, so they can be used immediately out of the box. The following are all valid build images:
-
-- alanfranz/drb-epel-5-x86-64:latest
-- alanfranz/drb-epel-6-x86-64:latest
-- alanfranz/drb-epel-7-x86-64:latest
-- alanfranz/drb-fedora-20-x86-64:latest
-- alanfranz/drb-fedora-21-x86-64:latest
-- alanfranz/drb-fedora-rawhide-x86-64:latest
+There are some prebuilt configurations for Centos+EPEL and Fedora at [https://github.com/alanfranz/docker-rpm-builder-configurations](https://github.com/alanfranz/docker-rpm-builder-configurations); those are available on [my docker hub page](https://hub.docker.com/u/alanfranz/) as well, so they can be used immediately out of the box.
 
 ## Speedup your build: image reuse
 
@@ -428,7 +377,6 @@ To all the people who gave me feedback or contributed to this project, in no spe
 * Pavel Borzenkov
 
 ## TODOS and ideas
-* General refactor: remove code duplication, improve setup, etc. - things are currently quite messed up.
 * Support some way to cache build dependencies between builds for the same package (commit after run? commit after build-dep?)
 * Option for creating a Dockerfile with build dependencies for a package, that can be used for
   repeatable builds and/or caching.
