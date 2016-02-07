@@ -60,7 +60,7 @@ class Docker(object):
 
     def do_run(self):
         """Launch command in docker container and get its stdout as result"""
-        return self._run()
+        return self._run().strip()
 
     def _run(self, fds={"stdout":PIPE, "stderr":PIPE}):
 
@@ -81,7 +81,7 @@ class Docker(object):
         retcode = process.poll()
         if retcode:
             raise SpawnedProcessError(retcode, fullcmd, output=output, error=error)
-        return output.strip()
+        return output
 
     def additional_options(self, *options):
         self._options.extend([pipes.quote(opt) for opt in options])
