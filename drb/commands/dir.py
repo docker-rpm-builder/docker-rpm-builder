@@ -132,11 +132,12 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         .cmd_and_args("./rpmbuild-dir-in-docker.sh")
 
 
-    with UserExceptionTransformer(Exception, "docker run error", append_original_message=True):
+    with UserExceptionTransformer(Exception, "docker run error", append_original_message=True, final_message="\n\nBuild error. See the log above"):
         if bash_on_failure or verbose:
             docker.do_launch_interactively()
         else:
             docker.do_run()
+    #_logger.info("Build completed successfully. Your results are in %s", target_directory)
 
 
 
