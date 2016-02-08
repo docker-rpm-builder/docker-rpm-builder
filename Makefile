@@ -1,4 +1,4 @@
-.PHONY: test integrationtest testexample clean distclean
+.PHONY: test integrationtest testexample clean distclean cleanexample
 
 VIRTUALENV ?= virtualenv-2.7
 SHELL := /bin/bash
@@ -16,12 +16,14 @@ test: devenv
 integrationtest: devenv test
 	devenv/bin/python -m unittest2 discover -p 'integration_test_*' -v
 
-testexample: devenv
-	cd example ; rm -rf out_*
+testexample: devenv cleanexample
 	source devenv/bin/activate ; cd example/from_dir ; docker-rpm-builder dir alanfranz/drb-epel-7-x86-64:latest . ../out_from_dir
 	source devenv/bin/activate ; cd example/from_remote_source ; docker-rpm-builder dir --download-sources alanfranz/drb-epel-7-x86-64:latest . ../out_from_remote_source
 
-clean:
+cleanexample:
+	rm -rf example/out_*
+
+clean: cleanexample
 	rm -rf tmp build dist 
 
 distclean: clean

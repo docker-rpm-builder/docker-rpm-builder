@@ -15,3 +15,4 @@ prodenv
 *.rpm
 *.deb
 packaging/**/.vagrant
+example/out_*
