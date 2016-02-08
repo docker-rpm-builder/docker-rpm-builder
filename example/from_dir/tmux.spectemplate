@@ -20,7 +20,7 @@ as GNU Screen.
 
 %prep
 cp -pr %{_sourcedir}/%{name} .
-%setup -T -D -n ${name}
+%setup -T -D -n %{name}
 
 %build
 %configure
