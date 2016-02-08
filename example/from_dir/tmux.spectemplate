@@ -19,8 +19,8 @@ intended to be a simple, modern, BSD-licensed alternative to programs such
 as GNU Screen.
 
 %prep
-cp -pr %{_sourcedir}/%{name}-%{version} .
-%setup -T -D 
+cp -pr %{_sourcedir}/%{name} .
+%setup -T -D -n ${name}
 
 %build
 %configure
