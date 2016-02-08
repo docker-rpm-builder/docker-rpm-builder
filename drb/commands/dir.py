@@ -137,7 +137,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
             docker.do_launch_interactively()
         else:
             docker.do_run()
-    #_logger.info("Build completed successfully. Your results are in %s", target_directory)
+    _logger.info("Build completed successfully. Your results are in %s", target_directory)
 
 
 
