@@ -16,3 +16,4 @@ prodenv
 *.deb
 packaging/**/.vagrant
 example/out_*
+example/**/*.spec

@@ -18,7 +18,7 @@ integrationtest: devenv test
 
 testexample: devenv cleanexample
 	source devenv/bin/activate ; cd example/from_dir ; ITERATION=11 docker-rpm-builder dir alanfranz/drb-epel-7-x86-64:latest . ../out_from_dir
-	source devenv/bin/activate ; cd example/from_remote_source ; ITERATION=12 docker-rpm-builder dir --download-sources alanfranz/drb-epel-7-x86-64:latest . ../out_from_remote_source
+	source devenv/bin/activate ; cd example/from_remote_source ; make ;  ITERATION=12 docker-rpm-builder dir --download-sources tmux-drbbuild . ../out_from_remote_source
 
 cleanexample:
 	rm -rf example/out_*
