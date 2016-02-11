@@ -43,7 +43,7 @@ def genspec(spectemplate, targetspec, verbose):
 
     rendered_filename = SpecTemplate.from_path(spectemplate).render(os.environ)
     mkdir_p(os.path.dirname(targetspec))
-    if os.path.exists(targetspec) and not cmp(rendered_filename, targetspec):
+    if not os.path.exists(targetspec) or not cmp(rendered_filename, targetspec):
         shutil.copy(rendered_filename, targetspec)
     _logger.info("Spectemplate was rendered successfully. Your compiled spec is in %s", targetspec)
 
