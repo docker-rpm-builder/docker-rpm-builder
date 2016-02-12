@@ -21,7 +21,7 @@ rm -rf out
 
 docker run --env "BUILD_NUMBER=${BUILD_NUMBER:-0}" --env "GIT_COMMIT=${GIT_COMMIT:-asd}" --env-file ../env.list --rm \
 	-v "${PRIVATE_KEY_FILE}":/tmp/private.key:ro -v $(pwd)/build-inside:/build-inside:ro -v ${SRC_DIR}:/source:ro -v $(pwd)/out:/out \
-	-w /build-inside -it ${BUILD_IMAGE} ./build-package
+	-w /build-inside ${BUILD_IMAGE} ./build-package
 
 trap 'vagrant destroy --force ; rm -f public.asc' EXIT
 cp ../public.asc .
