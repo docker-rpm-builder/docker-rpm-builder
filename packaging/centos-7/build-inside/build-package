@@ -9,5 +9,11 @@ ${INSTALL_DIR}/bin/pip install /source
 cd /usr/bin
 ln -s ${INSTALL_DIR}/bin/docker-rpm-builder docker-rpm-builder
 
+gpg --import /tmp/private.key
+[[ $(gpg --list-secret-keys) =~ uid(.*) ]]
+KEYNAME="${BASH_REMATCH[1]}"
+[ -n "${KEYNAME}" ] || { echo "could not find key for signing purpose"; exit 1; }
+echo -e "%_gpg_name ${KEYNAME}\n%_signature gpg\n" > ${HOME}/.rpmmacros
+
 cd /out
-fpm -t rpm -s dir -n docker-rpm-builder --version ${VERSION} --iteration ${BUILD_NUMBER} --description "docker-rpm-builder ${GIT_COMMIT}" --depends "docker-engine >= 1.8.0" --depends python --depends wget -C / /opt/docker-rpm-builder /usr/bin/docker-rpm-builder
+echo -e "\n" | setsid fpm -t rpm -s dir -n docker-rpm-builder --rpm-sign --version ${VERSION} --iteration build${BUILD_NUMBER} --description "docker-rpm-builder ${GIT_COMMIT}" --depends "docker-engine >= 1.8.0" --depends python --depends wget -C / /opt/docker-rpm-builder /usr/bin/docker-rpm-builder

@@ -2,6 +2,13 @@
 # enter the directory where the build script is located
 cd "${0%/*}"
 
+# override those when needed. readlink -f doesn't work on osx.
+PUBLIC_KEY_FILE=$(readlink -f "${PUBLIC_KEY_FILE:-../public.asc}")
+PRIVATE_KEY_FILE=$(readlink -f "${PRIVATE_KEY_FILE:-../private.key}")
+
+[ -r "${PUBLIC_KEY_FILE}" ]
+[ -r "${PRIVATE_KEY_FILE}" ]
+
 # some useful variables
 SRC_DIR="$(pwd)/../../"
 CURRENT_DISTRO=$(basename $(pwd))
@@ -12,24 +19,13 @@ docker build --pull -t ${BUILD_IMAGE} build-image
 
 rm -rf out
 
-docker run --env "BUILD_NUMBER=${BUILD_NUMBER:-0}" --env "GIT_COMMIT=${GIT_COMMIT:-asd}" --env-file ../env.list --rm -v $(pwd)/build-inside:/build-inside:ro -v ${SRC_DIR}:/source:ro -v $(pwd)/out:/out -w /build-inside ${BUILD_IMAGE} /build-inside/build-package
+docker run --env "BUILD_NUMBER=${BUILD_NUMBER:-0}" --env "GIT_COMMIT=${GIT_COMMIT:-asd}" --env-file ../env.list --rm \
+	-v "${PRIVATE_KEY_FILE}":/tmp/private.key:ro -v $(pwd)/build-inside:/build-inside:ro -v ${SRC_DIR}:/source:ro -v $(pwd)/out:/out \
+	-w /build-inside -it ${BUILD_IMAGE} ./build-package
 
-trap 'vagrant destroy --force' EXIT
+trap 'vagrant destroy --force ; rm -f public.asc' EXIT
+cp ../public.asc .
 vagrant up
-#vagrant ssh -c 'nohup sudo -b /home/vagrant/sync/test-inside/test > /tmp/test.log 2>&1'
 vagrant ssh -c 'sudo /home/vagrant/sync/test-inside/test'
-
-#while vagrant ssh -c "test ! -r /tmp/test.exit"; 
-#do
-#    sleep 1
-#done
-#
-#vagrant ssh -c "cat /tmp/test.log"
-#
-#TEST_EXIT=$(vagrant ssh -c "cat /tmp/test.exit" | tr -d '[:space:]')
-#if [ "${TEST_EXIT}" -ne 0 ];
-#then
-#    exit ${TEST_EXIT}
-#fi
 
 echo "Test phase succeeded."

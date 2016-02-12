@@ -11,7 +11,7 @@ gpgcheck=1
 gpgkey=https://yum.dockerproject.org/gpg
 EOF
 
-#yum -y install "docker-engine-1.8.3"
+rpm --import /home/vagrant/sync/public.asc
 
 yum -y install /home/vagrant/sync/out/*.rpm
 
