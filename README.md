@@ -7,46 +7,37 @@ See the [News Page](https://github.com/alanfranz/docker-rpm-builder/wiki/News) f
 See also [FPM within Docker](https://github.com/alanfranz/fpm-within-docker) - an alternative way of building RPMs and DEBs
 that could make things even easier for you.
 
-## Preamble
+## For whom is this software designed?
 
-While other deployment systems are at rage today, software delivery via RPM is still pretty widespread; its integration with the distributions' own tools makes it a good choice in many environments.
+If you already know a bit about RPM packaging, and you're quite confident reading or writing a specfile, either because you need to (e.g. you've got a package that needs very fine tuning) or
+because you must (e.g. you need your package to work in existing distributions' workflows where a .src.rpm and a specfile are required).
 
-But RPM building can be painful, especially when native code is involved; building through [rpmbuild](http://www.rpm.org/max-rpm-snapshot/ch-rpm-b-command.html) requires the proper dependencies to be setup on the very same distribution that should be targeted, and making sure that the build system is "clean" - i.e. that no hidden dependency exists, is complex.
+If you just need to package your software in an RPM and don't care too much about conventions, fine tuning, ecc, take a look at [FPM within Docker](https://github.com/alanfranz/fpm-within-docker). It'll
+make your life easier without much fuss.
 
-More often than not RPM building from scratch is an iterative and frustrating process, requiring a lot of time to succeed.
+## Why?
 
-Tools have been created to ensure build isolation and repeatability; [mock](https://fedoraproject.org/wiki/Projects/Mock) seems to be the most used, but it comes with its own set of problems - it's slow, since it relies on chroots that get created and untarred every time; it's hard to debug when problems happen and why, since there's a lot of code being employed at all time, and seeing what's happening "inside the build" requires manually re-executing a lot commands.
+If you think using plain [rpmbuild](http://www.rpm.org/max-rpm-snapshot/ch-rpm-b-command.html) is painful because it requires you to setup a server/vm with the same OS as the build target
+and then transfer your development code, and you don't like [mock](https://fedoraproject.org/wiki/Projects/Mock) because a) it's a complex piece of software that makes debugging failed builds a bit hard,
+b) sometimes produces errors which are not so easy to understand without digging into its source code, and c) is very hard to run on non-RHEL/Centos/Fedora host distros, then you're in the right place.
 
-And, last but not least, mock doesn't reliably work on non-RPM based distribution, making it difficult to create the initial RPM on the developer's machine if an RPM-based distro is not employed.
-
-RPM by itself is not very suited to a continuous integration environment, requiring a .src.rpm to be created before the binary RPM can be generated; this is often unnecessary in today's environments where the source tracking occurs on VCS systems, and again, slows the whole process down.
+Basically, docker-rpm-builder is an ecosystem comprising a way to run rpmbuild inside docker-based containers. Both the tool and a basic set of target build images is included.
 
 ## Key features
 
-**docker-rpm-builder** works on any host distributions that supports [docker](https://www.docker.com/), and is currently tested to build 64 bit Centos 5, 6 and 7 RPM packages, as well as Fedora 20, 21, 22, and rawhide.
-
-It's designed to be a very **small and hackable wrapper** to help in rpm building, and lets you build binary RPMs on the fly, **without generating an intermediate source rpm** - which is required by tools like *mock* and it's a bit of an unnecessary byproduct nowadays, since most source tracking is done in a revision control system. Docker capabilities are leveraged to make the build **fast**; copy is limited, and bind-mount between host and container is privileged whenever it's possible.
-
-It leverages the standard RPM creation system - it's **not** a different build system like [fpm](https://github.com/jordansissel/fpm), which has its own options and wraps different distributions' build tools.
-
-It **improves** the standard RPM creation system by letting builds happen straight from a source directory - and by **adding a templating layer** over the .spec files which lets variables to be easily injected - this is especially useful in a continuous integration environment, where a build number and/or a reference VCS commit can be integrated.
-
-It's highly **debuggable** - with the proper option set, whenever a build failure occurs, an interactive shell is spawned in the very context of the build.
-
-It's **fast** (benchmarks are going to happen soon, I'm trying to perform some reproducible tests right now and I plan to add them to the repo) - by leveraging Docker capabilities there's very little copy happening between builds; such minimal IO speeds things up. But the real performance improvement
-comes from the ease of use from any host system, from the interactive shell spawning and from the great hackability to suit your build needs.
-
-The root filesystem is *fully writable* - this is very handy if you've got an application that in some way hardcodes paths when installed,
-and you get errors because paths like "/tmp/buildroot-something" found in files. Just install it in the place it's meant to be installed and
-move it to ```${RPM_BUILD_ROOT}``` afterwards.
-
-Builds done in such fashion are **highly reproducible** - if your build image already contains all the build dependencies, and you disable docker network,
-the same build input will always yield the same output. This does not mean that files would be 100% identical, there may be build-time changes
-depending e.g. on current time - but no external influence is possible (assuming that you're always using the same host kernel).
+* Works on any host distribution that supports docker.
+* It's very small and hackable. Take a look at the source code: making modifications is trivial.
+* Can build straight from the source directory **without an intermediate .src.rpm**
+* It supports a basic templating system for specfiles, which is especially useful in CI contexts.
+* It lets you spawn an interactive shell if the build fails, **in the very place where it fails**
+* If you use a precise build image and hold all build dependencies within, your builds will be highly reproducible.
+* Cache build dependencies; don't re-download unless your spec changes.
+* The root filesystem is fully writable, letting you install to the 'real' target directory and moving to $RPM_BUILD_ROOT at the end of the build - that's very useful for compiled software that doesn't
+  support PREFIX and after-install relocation properly. Such writes are not persisted within the build image,
 
 ## Limitations
 
-* Currently limited to x86_64 for both host and target. That's a docker limitation which is unlikely to go away soon. 32 bit images for Docker do exist, but they're considered unsupported by this tool.
+* Currently limited to x86_64 for both host and target. That's a docker limitation which is unlikely to go away soon. 32 bit container images for Docker do exist, but they're considered unsupported by this tool.
 
 ## Required knowledge
 
@@ -58,12 +49,12 @@ At the dawn of this tool, I tried to make it work with any version of *docker* t
 
 So, **docker >= 1.8** is currently a prerequisite. If you're using the prebuilt RPMs or DEBs, they expect the **docker-engine** package from yum.dockerproject.org or apt.dockerproject.org to be available; just follow the [official install instructions](https://docs.docker.com/engine/installation/).
 
+This tool is designed to use a docker-engine on the very same machine where it's running, not a remote docker daemon. On OSX, it uses docker-machine, but make sure all the files
+you're using reside in ```/Users```.
+
 Python 2.7, bash, and wget should be installed on your system as well. If you're using a packaged version, the package will take care of that.
 
 See the [docker configuration](#docker-configuration) section for details on some post-install actions for docker.
-
-This tool is designed to use a docker-engine on the very same machine where it's running. On OSX, it uses docker-machine, but make sure all the files
-you're using reside in ```/Users```.
 
 ## Installation
 
@@ -137,7 +128,7 @@ for Fedora 24. Around September 2016, any support for Fedora 23 will be dropped.
 
 ### Debian Jessie
 
-There're repositories for those distributions; you'll need to enable the official docker package from docker.io [see install docs](https://docs.docker.com/installation/) or docker-rpm-builder will fail to install.
+This is a supported distro; you'll need to enable the official docker package from docker.io [see install docs](https://docs.docker.com/installation/) or docker-rpm-builder will fail to install.
 
 First, you should make sure that you've got my package signing key properly installed and configured for apt:
 ```
@@ -208,7 +199,7 @@ scheduled for April 2016)
 
 ### Other distributions and OSX
 
-* make sure you've got ```python 2.7``` and ```virtualenv``` available on your system. You can pass VIRTUALENV to make to tell him which virtualenv to use.
+* make sure you've got ```python 2.7``` and ```virtualenv``` available on your system. You can pass the VIRTUALENV variable to make to tell him which virtualenv to use.
 * clone this repository
 * run ```make```
 * ```devenv/bin/docker-rpm-builder``` will contain the docker-rpm-builder executable.
@@ -281,6 +272,8 @@ To see everything.
 
 URL-based source/patch downloading, shell spawning on build failure, signing, and always updating the remote images are all supported scenarios.
 
+See [example/from_dir]() for a full example of building with a spectemplate from a directory.
+
 ## Spectemplates
 
 The spectemplate approach prevents you from editing the .spec file (or creating a new one) for each build; inside your .spectemplate, just define
@@ -290,9 +283,20 @@ substitution tags, which are names between @s, e.g.
 @BUILD_NUMBER@
 ```
 
-If there's an environment variable called BUILD_NUMBER when you build your project, such variable will be substituted straight into your spec. This is especially useful in an CI server which builds your packages. Consider the .spectemplate for this very project, [docker-rpm-builder.spectemplate](docker-rpm-builder.spectemplate) , and you can see the @BUILD_NUMBER@ and @GIT_COMMIT@ substitution variables at work; those are set by the [Jenkins](http://jenkins-ci.org/) build system.
+If there's an environment variable called BUILD_NUMBER when you build your project, such variable will be substituted straight into your spec. This is especially useful in an CI server which builds your packages. See the [examples](#examples) section as well.
 
 Please note: you can't have both a .spec and a .spectemplate in your source directory. That will cause an error.
+
+Spectemplates are automatically compiled when using the **dir** command, but can be manually generated with the **genspec** command (see below).
+
+## Generating a specfile and caching build dependencies
+
+Take a look at [example/from_remote_source]() - the whole idea is:
+
+* create a Dockerfile with your build image. It should inherit from your build platform, add the .spec from your project, and call **yum-builddep** on it.
+* In the main directory, create a Makefile (or a shell script) which creates the .spec from the spectemplate and then builds the docker image. **in this phase, you should complete your spectemplate variables with static values which are not taken from your  build environment**, because they're used for caching: genspec won't overwrite the generated .spec if it's identical to the existing one, and docker won't build again an image if the input and the Dockerfile are identical; hence, the build-image will be rebuilt **only if you change your spectemplate**.
+* Once you've built the build-image, use it with *docker dir* - this time let the build system set the environment variables!
+* If your BuildRequires depends on template variables, this method won't work.
 
 ## Rebuilding a source RPM
 
