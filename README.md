@@ -325,47 +325,6 @@ thing to do is probably add an entry to *BuildRequires* in the spec file.
 
 There are some prebuilt configurations for Centos+EPEL and Fedora at [https://github.com/alanfranz/docker-rpm-builder-configurations](https://github.com/alanfranz/docker-rpm-builder-configurations); those are available on [my docker hub page](https://hub.docker.com/u/alanfranz/) as well, so they can be used immediately out of the box.
 
-## Speedup your build: image reuse
-
-The impact of this change can be great if you're building a small package with a lot of frequency.
-
-In such situation, the dependency download time can just waste any speed that you could gain by using this tool.
-
-So what?
-
-Well, just use an image which pre-caches your build dependencies!
-
-create a directory like *build-image* in your project directory;
-let's suppose your project needs openssl and openssl-devel to build
-on Centos 6.
-
-Enter something like this in your newly created *Dockerfile*:
-
-```
-FROM alanfranz/drb-epel-6-x86-64:latest
-MAINTAINER myself myself@example.com
-RUN yum install openssl openssl-devel
-```
-
-in your makefile/buildscript/whatever, do something like:
-
-```
-pushd build-image
-docker build -t myprojectbuildimage .
-popd
-
-docker-rpm-builder dir myprojectbuildimage . rpm_output
-```
-
-docker is smart enough to *not* rebuild an image which is unchanged since last build,
-hence executing the docker build multiple times will take no time at all unless
-you change your Dockerfile.
-
-And since you've already added all build prerequisites, no download will happen.
-
-In the future I may think about adding an option to docker-rpm-builder to help creating
-such images without actually needing a Dockerfile on a source repo.
-
 ## Gotchas
 * if you're used to mock, the build system is a bit different, mocks seems to employ different defaults and has different macros, sometimes a build working with mock may fail with docker-rpm-builder. I'm investigating the issue. It's quite uncommon BTW.
 * dns default to public ones, will add an option for private ones. Right now you can just pass arbitrary docker options, so pass --dns and/or set your internal
@@ -381,10 +340,8 @@ To all the people who gave me feedback or contributed to this project, in no spe
 * Pavel Borzenkov
 
 ## TODOS and ideas
-* Support some way to cache build dependencies between builds for the same package (commit after run? commit after build-dep?)
-* Option for creating a Dockerfile with build dependencies for a package, that can be used for
-  repeatable builds and/or caching.
 * Remove wget dependency
+* Option to prevent container removal after build.
 
 ## Disclaimer
 
