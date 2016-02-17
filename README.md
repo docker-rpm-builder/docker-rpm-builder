@@ -272,7 +272,7 @@ To see everything.
 
 URL-based source/patch downloading, shell spawning on build failure, signing, and always updating the remote images are all supported scenarios.
 
-See [example/from_dir]() for a full example of building with a spectemplate from a directory.
+See [example/from_dir](example/from_dir) for a full example of building with a spectemplate from a directory.
 
 ## Spectemplates
 
@@ -291,7 +291,7 @@ Spectemplates are automatically compiled when using the **dir** command, but can
 
 ## Generating a specfile and caching build dependencies
 
-Take a look at [example/from_remote_source]() - the whole idea is:
+Take a look at [example/from_remote_source](example/from_remote_source) - the whole idea is:
 
 * create a Dockerfile with your build image. It should inherit from your build platform, add the .spec from your project, and call **yum-builddep** on it.
 * In the main directory, create a Makefile (or a shell script) which creates the .spec from the spectemplate and then builds the docker image. **in this phase, you should complete your spectemplate variables with static values which are not taken from your  build environment**, because they're used for caching: genspec won't overwrite the generated .spec if it's identical to the existing one, and docker won't build again an image if the input and the Dockerfile are identical; hence, the build-image will be rebuilt **only if you change your spectemplate**.
