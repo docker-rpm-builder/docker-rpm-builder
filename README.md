@@ -293,10 +293,10 @@ Spectemplates are automatically compiled when using the **dir** command, but can
 
 Take a look at [example/from_remote_source](example/from_remote_source) - the whole idea is:
 
-* create a Dockerfile with your build image. It should inherit from your build platform, add the .spec from your project, and call **yum-builddep** on it.
-* In the main directory, create a Makefile (or a shell script) which creates the .spec from the spectemplate and then builds the docker image. **in this phase, you should complete your spectemplate variables with static values which are not taken from your  build environment**, because they're used for caching: genspec won't overwrite the generated .spec if it's identical to the existing one, and docker won't build again an image if the input and the Dockerfile are identical; hence, the build-image will be rebuilt **only if you change your spectemplate**.
-* Once you've built the build-image, use it with *docker dir* - this time let the build system set the environment variables!
-* If your BuildRequires depends on template variables, this method won't work.
+* create a [Dockerfile](example/from_remote_source/build-image/Dockerfile) with your build image. It should inherit from your build platform, add the .spec you're generating in the step below, and call **yum-builddep** on it.
+* In the main directory, create a [Makefile](example/from_remote_source/Makefile) (or a shell script) which creates the .spec from the spectemplate into the build-image directory and then builds the docker image. **In this phase, you should complete your spectemplate variables with static values which are not taken from your  build environment**, because they're used for caching: the *genspec* command won't overwrite the generated .spec if it's identical to the existing one, and docker won't build again an image if the input files and the Dockerfile are identical; hence, the build-image will be rebuilt **only if you change your spectemplate or you modify your Dockerfile**.
+* Once you've built the build-image, use it with the *dir* command (or even the *srcrpm* command if you prefer, but in such case you can skip the templating-related part altogether) - this time let the build system set the environment variables!
+* If your BuildRequires depends on template variables, you shouldn't use this method.
 
 ## Rebuilding a source RPM
 
