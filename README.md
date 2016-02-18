@@ -289,7 +289,7 @@ Please note: you can't have both a .spec and a .spectemplate in your source dire
 
 Spectemplates are automatically compiled when using the **dir** command, but can be manually generated with the **genspec** command (see below).
 
-## Generating a specfile and caching build dependencies
+## Manually generating specfile to enable caching of build dependencies
 
 Take a look at [example/from_remote_source](example/from_remote_source) - the whole idea is:
 
