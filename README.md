@@ -197,11 +197,11 @@ and I'll probably choose to support older LTSes for more time than "standard" re
 scheduled for April 2016)
 
 
-### Other distributions and OSX
+### Other distributions and OSX - installiing straight from source
 
-* pick the v1 branch, which is where I merge stable releases.
 * make sure you've got ```python 2.7``` and ```virtualenv``` available on your system. You can pass the VIRTUALENV variable to make to tell him which virtualenv to use.
-* clone this repository
+* make sure you've got ```wget```.
+* clone this repository. Pick the ```v1``` branch, which is where I keep stable releases.
 * run ```make```
 * ```devenv/bin/docker-rpm-builder``` will contain the docker-rpm-builder executable.
 * Now check [prerequisites](#prerequisites) and [docker configuration](#docker-configuration)
