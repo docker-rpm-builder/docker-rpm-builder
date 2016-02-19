@@ -5,9 +5,7 @@ SHELL := /bin/bash
 
 devenv: setup.py Makefile
 	test -r devenv || $(VIRTUALENV) devenv
-	devenv/bin/pip install --editable . --upgrade
-	devenv/bin/pip install wheel
-	devenv/bin/pip install bpython
+	source devenv/bin/activate ; pip install --editable . --upgrade ; pip install wheel ; pip install bpython
 	touch devenv
 
 test: devenv
