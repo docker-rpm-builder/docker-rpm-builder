@@ -10,6 +10,7 @@ from drb.commands.dir import dir
 from drb.docker import Docker
 
 REFERENCE_IMAGE = os.environ.get("REFERENCE_IMAGE") or "alanfranz/drb-epel-7-x86-64:latest"
+REFERENCE_IMAGE_ARCH = "x86_64" if not "i386" in REFERENCE_IMAGE else "i386"
 
 class TestDirCommand(TestCase):
     def setUp(self):
@@ -35,14 +36,14 @@ class TestDirCommand(TestCase):
             f.write(TMUX_SPEC)
 
         self.runner.invoke( dir, [REFERENCE_IMAGE, self.src.path, self.rpm.path, "--download-sources"],  catch_exceptions=False)
-        self.assertEquals(2, len(os.listdir(os.path.join(self.rpm.path, "x86_64"))))
+        self.assertEquals(2, len(os.listdir(os.path.join(self.rpm.path, REFERENCE_IMAGE_ARCH))))
 
     def test_dir_command_produces_binary_rpm_and_debuginfo_packages_if_valid_spectemplate_passed_and_downloadsources_enabled(self):
         with open(os.path.join(self.src.path, "tmux.spectemplate"), "wb") as f:
             f.write(TMUX_SPECTEMPLATE)
 
         self.runner.invoke( dir, [REFERENCE_IMAGE, self.src.path, self.rpm.path, "--download-sources"],  catch_exceptions=False)
-        self.assertEquals(2, len(os.listdir(os.path.join(self.rpm.path, "x86_64"))))
+        self.assertEquals(2, len(os.listdir(os.path.join(self.rpm.path, REFERENCE_IMAGE_ARCH))))
 
     def test_dir_command_produces_signed_binary_rpm_if_signing_requested(self):
         with open(os.path.join(self.src.path, "tmux.spec"), "wb") as f:
@@ -54,7 +55,7 @@ class TestDirCommand(TestCase):
 
         self.runner.invoke(dir, [REFERENCE_IMAGE, self.src.path, self.rpm.path, "--download-sources", "--sign-with", os.path.join(self.src.path, "sign.gpg"), "--verbose" ],  catch_exceptions=False)
 
-        out = Docker().rm().bindmount_dir(self.rpm.path, "/rpm").workdir("/rpm/x86_64").image(REFERENCE_IMAGE).\
+        out = Docker().rm().bindmount_dir(self.rpm.path, "/rpm").workdir("/rpm/%s" % REFERENCE_IMAGE_ARCH).image(REFERENCE_IMAGE).\
             cmd_and_args("/bin/bash", "-c", "rpm --import ../sign.pub && rpm -K *.rpm").do_run()
         self.assertTrue("pgp" in out)
         self.assertTrue("OK" in out)
@@ -68,7 +69,7 @@ class TestDirCommand(TestCase):
                                  "--target-ownership", "{0}:{1}".format(os.getuid(), 1234)],
                            catch_exceptions=False)
 
-        basedir = os.path.join(self.rpm.path, "x86_64")
+        basedir = os.path.join(self.rpm.path, REFERENCE_IMAGE_ARCH)
         for filename in os.listdir(basedir):
             sr = os.stat(os.path.join(basedir, filename))
             self.assertEquals(os.getuid(), sr.st_uid)

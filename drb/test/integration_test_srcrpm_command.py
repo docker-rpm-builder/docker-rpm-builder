@@ -10,6 +10,7 @@ from drb.commands.srcrpm import srcrpm
 from drb.docker import Docker
 
 REFERENCE_IMAGE = os.environ.get("REFERENCE_IMAGE") or "alanfranz/drb-epel-7-x86-64:latest"
+REFERENCE_IMAGE_ARCH = "x86_64" if not "i386" in REFERENCE_IMAGE else "i386"
 
 class TestSrcRpmCommand(TestCase):
     def setUp(self):
@@ -26,8 +27,8 @@ class TestSrcRpmCommand(TestCase):
         with open(os.path.join(self.src.path, "tmux.src.rpm"), "wb") as f:
             f.write(base64.decodestring(TMUX_143_SRC_RPM_B64))
 
-        self.runner.invoke(srcrpm, [REFERENCE_IMAGE, os.path.join(self.src.path, "tmux.src.rpm"), self.rpm.path],  catch_exceptions=False)
-        self.assertEquals(2, len(os.listdir(os.path.join(self.rpm.path, "x86_64"))))
+        self.runner.invoke(srcrpm, ["--verbose", REFERENCE_IMAGE, os.path.join(self.src.path, "tmux.src.rpm"), self.rpm.path],  catch_exceptions=False)
+        self.assertEquals(2, len(os.listdir(os.path.join(self.rpm.path, REFERENCE_IMAGE_ARCH))))
 
     def test_srcrpm_signed_packages_can_be_verified(self):
         with open(os.path.join(self.src.path, "tmux.src.rpm"), "wb") as f:
@@ -37,9 +38,9 @@ class TestSrcRpmCommand(TestCase):
         with open(os.path.join(self.rpm.path, "sign.pub"), "wb") as f:
             f.write(SIGN_PUB)
 
-        self.runner.invoke(srcrpm, [REFERENCE_IMAGE, os.path.join(self.src.path, "tmux.src.rpm"), self.rpm.path,
+        self.runner.invoke(srcrpm, ["--verbose", REFERENCE_IMAGE, os.path.join(self.src.path, "tmux.src.rpm"), self.rpm.path,
                                     "--sign-with", os.path.join(self.src.path, "sign.gpg")],  catch_exceptions=False)
-        out = Docker().rm().bindmount_dir(self.rpm.path, "/rpm").workdir("/rpm/x86_64").image(REFERENCE_IMAGE).\
+        out = Docker().rm().bindmount_dir(self.rpm.path, "/rpm").workdir("/rpm/%s" % REFERENCE_IMAGE_ARCH).image(REFERENCE_IMAGE).\
             cmd_and_args("/bin/bash", "-c", "rpm --import ../sign.pub && rpm -K *.rpm").do_run()
         self.assertTrue("pgp" in out)
         self.assertTrue("OK" in out)
@@ -49,11 +50,11 @@ class TestSrcRpmCommand(TestCase):
         with open(os.path.join(self.src.path, "tmux.src.rpm"), "wb") as f:
             f.write(base64.decodestring(TMUX_143_SRC_RPM_B64))
 
-        self.runner.invoke(srcrpm, [REFERENCE_IMAGE, os.path.join(self.src.path, "tmux.src.rpm"), self.rpm.path,
+        self.runner.invoke(srcrpm, ["--verbose", REFERENCE_IMAGE, os.path.join(self.src.path, "tmux.src.rpm"), self.rpm.path,
                                  "--target-ownership", "{0}:{1}".format(os.getuid(), 1234)],
                            catch_exceptions=False)
 
-        basedir = os.path.join(self.rpm.path, "x86_64")
+        basedir = os.path.join(self.rpm.path, REFERENCE_IMAGE_ARCH)
         for filename in os.listdir(basedir):
             sr = os.stat(os.path.join(basedir, filename))
             self.assertEquals(os.getuid(), sr.st_uid)
