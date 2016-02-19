@@ -199,6 +199,7 @@ scheduled for April 2016)
 
 ### Other distributions and OSX
 
+* pick the v1 branch, which is where I merge stable releases.
 * make sure you've got ```python 2.7``` and ```virtualenv``` available on your system. You can pass the VIRTUALENV variable to make to tell him which virtualenv to use.
 * clone this repository
 * run ```make```
