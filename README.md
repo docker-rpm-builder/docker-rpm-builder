@@ -17,9 +17,19 @@ make your life easier without much fuss.
 
 ## Why?
 
-If you think using plain [rpmbuild](http://www.rpm.org/max-rpm-snapshot/ch-rpm-b-command.html) is painful because it requires you to setup a server/vm with the same OS as the build target
-and then transfer your development code, and you don't like [mock](https://fedoraproject.org/wiki/Projects/Mock) because a) it's a complex piece of software that makes debugging failed builds a bit hard,
-b) sometimes produces errors which are not so easy to understand without digging into its source code, and c) is very hard to run on non-RHEL/Centos/Fedora host distros, then you're in the right place.
+If you think that: using plain
+* [rpmbuild](http://www.rpm.org/max-rpm-snapshot/ch-rpm-b-command.html) is
+painful because it requires you to setup a server/vm with the same OS as the
+build target and then transfer your development code, then reset the build environment to prevent leftovers to alter your future builds, and/or
+* you think
+[mock](https://fedoraproject.org/wiki/Projects/Mock) could be better because a) it's a complex
+piece of software that makes debugging failed builds a bit hard, b) sometimes
+produces errors which are not so easy to understand without digging into its
+source code, and c) is very hard to run on non-RHEL/Centos/Fedora host distros, and/or
+* you think that hosted build systems like [copr](https://copr.fedorainfracloud.org/) or [OBS](http://openbuildservice.org/) are an hassle
+ because you can't try the builds on your own machine, and this makes the packaging process painfully slow,
+
+then you're in the right place.
 
 Basically, docker-rpm-builder is an ecosystem comprising a way to run rpmbuild inside docker-based containers. Both the tool and a basic set of target build images is included.
 
@@ -41,7 +51,7 @@ Basically, docker-rpm-builder is an ecosystem comprising a way to run rpmbuild i
 
 ## Required knowledge
 
-You should have a vague idea of what [docker](https://www.docker.com) is and you should already know how to build an RPM - see to [Maximum RPM](http://www.rpm.org/max-rpm/) and other documentation from Fedora [HowTO](https://fedoraproject.org/wiki/How_to_create_an_RPM_package) [RPM Guide](http://docs.fedoraproject.org/en-US/Fedora_Draft_Documentation/0.1/html/RPM_Guide/).
+You should have a vague idea of what [docker](https://www.docker.com) is and you should already know how to build an RPM - see to [Maximum RPM](http://www.rpm.org/max-rpm/) and other documentation from Fedora [HowTO](https://fedoraproject.org/wiki/How_to_create_an_RPM_package) / [RPM Guide](http://docs.fedoraproject.org/en-US/Fedora_Draft_Documentation/0.1/html/RPM_Guide/).
 
 ## Prerequisites
 
