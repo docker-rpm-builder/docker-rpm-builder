@@ -216,7 +216,7 @@ scheduled for April 2016)
 * make sure you've got ```python 2.7``` and ```virtualenv``` available on your system.
 * make sure you've got ```wget```.
 * clone this repository. Pick the ```v1``` branch, which is where I keep stable releases.
-* run ```make```.  You can pass the VIRTUALENV variable to tell make which virtualenv executable to use (e.g make VIRTUALENV='virtualenv -p /usr/bin/python2.7')
+* run ```make```.  You can pass the VIRTUALENV variable to tell make which virtualenv executable to use (e.g ```make VIRTUALENV='virtualenv -p /usr/bin/python2.7'```)
 * ```devenv/bin/docker-rpm-builder``` will contain the docker-rpm-builder executable.
 * Run the integrated test suite; see next section.
 
