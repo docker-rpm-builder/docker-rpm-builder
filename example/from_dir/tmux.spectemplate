@@ -31,6 +31,7 @@ rm -rf %{buildroot}
 make install DESTDIR=%{buildroot} INSTALLBIN="install -p -m 755" INSTALLMAN="install -p -m 644"
 
 %post
+echo $(env)
 if [ ! -f %{_sysconfdir}/shells ] ; then
     echo "%{_bindir}/tmux" > %{_sysconfdir}/shells
 else

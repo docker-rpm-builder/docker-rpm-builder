@@ -17,16 +17,15 @@ make your life easier without much fuss.
 
 ## Why?
 
-If you think that: using plain
-* [rpmbuild](http://www.rpm.org/max-rpm-snapshot/ch-rpm-b-command.html) is
+If you think that: 
+* using plain [rpmbuild](http://www.rpm.org/max-rpm-snapshot/ch-rpm-b-command.html) is
 painful because it requires you to setup a server/vm with the same OS as the
 build target and then transfer your development code, then reset the build environment to prevent leftovers to alter your future builds, and/or
-* you think
-[mock](https://fedoraproject.org/wiki/Projects/Mock) could be better because a) it's a complex
+* [mock](https://fedoraproject.org/wiki/Projects/Mock) could be better because a) it's a complex
 piece of software that makes debugging failed builds a bit hard, b) sometimes
 produces errors which are not so easy to understand without digging into its
 source code, and c) is very hard to run on non-RHEL/Centos/Fedora host distros, and/or
-* you think that hosted build systems like [copr](https://copr.fedorainfracloud.org/) or [OBS](http://openbuildservice.org/) are an hassle
+* hosted build systems like [copr](https://copr.fedorainfracloud.org/) or [OBS](http://openbuildservice.org/) are an hassle
  because you can't try the builds on your own machine, and this makes the packaging process painfully slow,
 
 then you're in the right place.
