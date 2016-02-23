@@ -47,14 +47,28 @@ You should have a vague idea of what [docker](https://www.docker.com) is and you
 
 At the dawn of this tool, I tried to make it work with any version of *docker* that would come from the distributions' repository or from official repository. This proved to be quite troublesome, and the docker environment is advancing rapidly; it makes no sense to use or support older versions of *docker*.
 
-So, **docker >= 1.8** is currently a prerequisite. If you're using the prebuilt RPMs or DEBs, they expect the **docker-engine** package from yum.dockerproject.org or apt.dockerproject.org to be available; just follow the [official install instructions](https://docs.docker.com/engine/installation/).
+So, **docker >= 1.10** is currently a prerequisite. If you're using the prebuilt RPMs or DEBs, they expect the **docker-engine** package from yum.dockerproject.org or apt.dockerproject.org to be available; just follow the [official install instructions](https://docs.docker.com/engine/installation/).
 
 This tool is designed to use a docker-engine on the very same machine where it's running, not a remote docker daemon. On OSX, it uses docker-machine, but make sure all the files
 you're using reside in ```/Users```.
 
 Python 2.7, bash, and wget should be installed on your system as well. If you're using a packaged version, the package will take care of that.
 
-See the [docker configuration](#docker-configuration) section for details on some post-install actions for docker.
+See the section below for details on some post-install actions for docker.
+
+### Docker configuration
+
+If docker is already up and running on your system, you probably need to do absolutely nothing else.
+
+Otherwise, if it's your first time with docker, here's a checklist:
+
+* Verify the *docker* service is running
+* Verify the *docker* group exists and your user belongs to it. It is advised **not to run docker-rpm-builder as root**. The docker package on some recent Fedoras seems to add a *dockerroot* group instead - **it won't do!**
+* If you had to add the group, verify you've restarted the *docker* service after such addition
+* Verify you've logged out+in after adding your user to the group
+* Verify selinux is disabled. There seems to be work going on to let docker work along selinux, but I could not succeed at using bindmounts as long as selinux is active.
+* Verify your disk has enough free space
+
 
 ## Installation
 
@@ -85,7 +99,7 @@ docker-rpm-builder already depends on the proper docker package for each distrib
 yum install docker-rpm-builder
 ```
 
-And you're done; skip to the [docker configuration](#docker-configuration) section.
+And you're done; if you haven't already done so, check the [docker configuration](#docker-configuration) section, then [launch the test suite](#test-everything-works)
 
 #### Support plan
 
@@ -114,7 +128,7 @@ docker-rpm-builder already depends on the proper docker package for each distrib
 yum install docker-rpm-builder
 ```
 
-And you're done; skip to the [docker configuration](#docker-configuration) section.
+And you're done; if you haven't already done so, check the [docker configuration](#docker-configuration) section, then [launch the test suite](#test-everything-works)
 
 #### Support plan
 
@@ -123,7 +137,6 @@ I'll try supporting the new release as well as the old one for a couple of month
 
 Example (January 2016). There's a package for Fedora 23. Fedora 24 is planned for June 2016. Once it's out, I'll create a new package
 for Fedora 24. Around September 2016, any support for Fedora 23 will be dropped.
-
 
 
 ### Debian Jessie
@@ -148,7 +161,7 @@ apt-get update
 apt-get -y install docker-rpm-builder
 ```
 
-Enjoy!
+And you're done; if you haven't already done so, check the [docker configuration](#docker-configuration) section, then [launch the test suite](#test-everything-works)
 
 #### Support plan
 
@@ -186,7 +199,7 @@ apt-get update
 apt-get -y install docker-rpm-builder
 ```
 
-Enjoy!
+And you're done; if you haven't already done so, check the [docker configuration](#docker-configuration) section, then [launch the test suite](#test-everything-works)
 
 #### Support plan
 
@@ -199,26 +212,13 @@ scheduled for April 2016)
 
 ### Other distributions and OSX - installiing straight from source
 
-* make sure you've got ```python 2.7``` and ```virtualenv``` available on your system. You can pass the VIRTUALENV variable to make to tell him which virtualenv to use.
+* Check the [prerequisites](#prerequisites) and the [docker configuration](#docker-configuration) sections.
+* make sure you've got ```python 2.7``` and ```virtualenv``` available on your system.
 * make sure you've got ```wget```.
 * clone this repository. Pick the ```v1``` branch, which is where I keep stable releases.
-* run ```make```
+* run ```make```.  You can pass the VIRTUALENV variable to tell make which virtualenv executable to use (e.g make VIRTUALENV='virtualenv -p /usr/bin/python2.7')
 * ```devenv/bin/docker-rpm-builder``` will contain the docker-rpm-builder executable.
-* Now check [prerequisites](#prerequisites) and [docker configuration](#docker-configuration)
-* Run the integrated test suite
-
-## Docker configuration
-
-If docker is already up and running on your system, you probably need to do absolutely nothing else.
-
-Otherwise, if it's your first time with docker, here's a checklist:
-
-* Verify the *docker* service is running
-* Verify the *docker* group exists and your user belongs to it. It is advised **not to run docker-rpm-builder as root**. The docker package on some recent Fedoras seems to add a *dockerroot* group instead - **it won't do!**
-* If you had to add the group, verify you've restarted the *docker* service after such addition
-* Verify you've logged out+in after adding your user to the group
-* Verify selinux is disabled. There seems to be work going on to let docker work along selinux, but I could not succeed at using bindmounts as long as selinux is active.
-* Verify your disk has enough free space
+* Run the integrated test suite; see next section.
 
 ## Test everything works!
 
@@ -236,7 +236,7 @@ If you want to be extra-sure everything is fine, run:
 docker-rpm-builder selftest --full
 ```
 
-It will take a really long time to run, especially the first time.
+It will take a really long time to run, especially on your first time.
 
 ## Usage
 
