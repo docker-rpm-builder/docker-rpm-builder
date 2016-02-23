@@ -210,7 +210,7 @@ and I'll probably choose to support older LTSes for more time than "standard" re
 scheduled for April 2016)
 
 
-### Other distributions and OSX - installiing straight from source
+### Other distributions and OSX - installing straight from source
 
 * Check the [prerequisites](#prerequisites) and the [docker configuration](#docker-configuration) sections.
 * make sure you've got ```python 2.7``` and ```virtualenv``` available on your system.
