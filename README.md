@@ -85,8 +85,6 @@ Otherwise, if it's your first time with docker, here's a checklist:
 
 CentOS 6 / RHEL 6 support for docker-rpm-builder has been discontinued along docker's own support. I'm sorry. If you really need to use such distros, you can try the source install described below, along with docker 1.7.
 
-There's an RPM repository for those distributions - such packages are built via docker-rpm-builder itself. Just use this yum repository:
-
 **/etc/yum.repos.d/docker-rpm-builder-v1.repo**
 ```
 [docker-rpm-builder-v1]
@@ -97,12 +95,11 @@ gpgcheck=1
 enabled=1
 gpgkey=https://www.franzoni.eu/keys/D1270819.txt
 ```
-
 Such repo should work properly for Centos, RHEL and Oracle Linux. Scientific Linux insists, AFAIK, un using sub-releases on $releasever, you should substitute your major to $releasever in the above URL if you're using SL.
 
-Please refer to docker's own installation instructions for [CentOS](https://docs.docker.com/installation/centos/) and [RHEL](https://docs.docker.com/installation/rhel/) for details. You'll probably need to enable [EPEL](https://fedoraproject.org/wiki/EPEL) or distro-specific extras repositories for the install to succeed.
+**docker-rpm-builder** depends on the official **docker-engine** package from docker.io - make sure its repository is available - see [install docs for CentOS](https://docs.docker.com/installation/linux/centos) or [install docs for RHEL](https://docs.docker.com/installation/linux/rhel).
 
-docker-rpm-builder already depends on the proper docker package for each distribution; once your repos are in place, just
+Now, just:
 
 ```
 yum install docker-rpm-builder
@@ -115,6 +112,7 @@ And you're done; if you haven't already done so, check the [docker configuration
 I plan to support the latest CentOS/RHEL stable.
 
 ### Fedora 23
+
 
 Use this yum repository:
 
@@ -129,12 +127,10 @@ enabled=1
 gpgkey=https://www.franzoni.eu/keys/D1270819.txt
 ```
 
-Please refer to docker installation instructions for [Fedora](https://docs.docker.com/installation/fedora/) for details.
-
-docker-rpm-builder already depends on the proper docker package for each distribution; once your repos are in place, just
+**docker-rpm-builder** depends on the official **docker-engine** package from docker.io - make sure its repository is available - [see install docs](https://docs.docker.com/engine/installation/linux/fedora/).
 
 ```
-yum install docker-rpm-builder
+dnf install docker-rpm-builder
 ```
 
 And you're done; if you haven't already done so, check the [docker configuration](#docker-configuration) section, then [launch the test suite](#test-everything-works)
@@ -150,8 +146,6 @@ for Fedora 24. Around September 2016, any support for Fedora 23 will be dropped.
 
 ### Debian Jessie
 
-This is a supported distro; you'll need to enable the official docker package from docker.io [see install docs](https://docs.docker.com/installation/) or docker-rpm-builder will fail to install.
-
 First, you should make sure that you've got my package signing key properly installed and configured for apt:
 ```
 curl https://www.franzoni.eu/keys/D1270819.txt | sudo apt-key add -
@@ -162,6 +156,8 @@ Then, pick the repo for your distribution - see below - and save it as **/etc/ap
 ```
 deb http://www.a9f.eu/apt/docker-rpm-builder-v1/debian jessie main
 ```
+
+**docker-rpm-builder** depends on the official **docker.engine** package from docker.io [see install docs](https://docs.docker.com/installation/linux/debian) as well.
 
 Now you're ready to
 
@@ -180,7 +176,7 @@ I'll support the oldstable for a few months before dropping it.
 
 ### Ubuntu
 
-There're repositories for those distributions; you'll need to enable the official docker package from docker.io [see install docs](https://docs.docker.com/installation/) or docker-rpm-builder will fail to install.
+There're repositories for various Ubuntu versions.
 
 First, you should make sure that you've got my package signing key properly installed and configured for apt:
 ```
@@ -200,6 +196,8 @@ deb http://www.a9f.eu/apt/docker-rpm-builder-v1/ubuntu trusty main
 ```
 deb http://www.a9f.eu/apt/docker-rpm-builder-v1/ubuntu wily main
 ```
+
+**docker-rpm-builder** depends on the official **docker.engine** package from docker.io [see install docs](https://docs.docker.com/installation/linux/ubuntu) as well.
 
 Now you're ready to
 
@@ -256,13 +254,13 @@ You should have a source directory that contains:
 * any file that is set as **SourceX** and **PatchX** in the spec file (
 if any of your SourceX or PatchX files are URLs, you can use the --download-sources option if the files are not already there.)
 
-Then, you should pass a source directory, which will be bind-mounted straight to %{_sourcedir} inside the build container (e.g. /root/rpmbuild/SOURCES on RHEL7 ). You can access such directory straight from your specfile. **The source directory is mounted read-only** to prevent accidental modifications during the build phase.
+Then, you should pass a source directory, which will be bind-mounted straight to ```%{_sourcedir}``` inside the build container (e.g. /root/rpmbuild/SOURCES on RHEL7 ). You can access such directory straight from your specfile. **The source directory is mounted read-only** to prevent accidental modifications during the build phase.
 
 If you pass --download-sources the URL sources will be downloaded in such directory, so be sure to set the proper ignores for it in your revision control system.
 
 Of course, you should tell the tool which build image you'd like to use; that's the image where the build will happen. I've baked some [prebuilt images](#prebuilt-images), but you should feel free to create your own, since that's the purpose of this tool.
 
-And you should tell the tool which target directory you'd like to use for rpm output; this directory will be bound straight to %{_rpmdir} inside the build container, so mind that if your build process does something strange with it, files can be deleted. If the target directory doesn't exist it will be created.
+And you should tell the tool which target directory you'd like to use for rpm output; this directory will be bound straight to ```%{_rpmdir}``` inside the build container, so mind that if your build process does something strange with it, files can be deleted. If the target directory doesn't exist it will be created.
 
 ### Example
 
