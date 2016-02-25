@@ -21,13 +21,25 @@ class SpawnedProcessError(Exception):
     def __str__(self):
         return "Command '%s' returned non-zero exit status %d:\n%s\n%s\n" % (self.cmd, self.returncode, self.output, self.error)
 
+def _ordered_unique(input_iterable):
+    """returns an iterable which returns ordered, unique elements from input iterable.
+    uses a set internally, so it can be quite slow for large inputs.
+    """
+    s = set()
+    for item in input_iterable:
+        if item not in s:
+            s.add(item)
+            yield item
+    s.clear()
+
+
 class Docker(object):
     def __init__(self,  docker_exec=which("docker")):
-        # WARNING: whatever is set here as a variable will
+        # WARNING: whatever is set here as an instance variable will
         # be then passed to a shell,
         # and MUST be already quoted when set.
         self._docker_exec = pipes.quote(docker_exec)
-        self._options = []
+        self._options = ["--tty"]
         self._image = None
         self._cmd_and_args = None
         self._logger = getLogger(self.__class__.__name__)
@@ -69,7 +81,7 @@ class Docker(object):
 
         fullcmd = "{docker_exec} run {options} {image} {cmd_and_args}".format(
             docker_exec=self._docker_exec,
-            options=" ".join(self._options),
+            options=" ".join(_ordered_unique(self._options)),
             image=self._image,
             cmd_and_args=" ".join(self._cmd_and_args)
         )
@@ -107,7 +119,7 @@ class Docker(object):
         return self
 
     def interactive_and_tty(self):
-        self._options.append("-i -t")
+        self._options.extend(["--interactive", "--tty"])
         return self
 
     def bindmount_dir(self, host_dir, guest_dir, read_only=True):
