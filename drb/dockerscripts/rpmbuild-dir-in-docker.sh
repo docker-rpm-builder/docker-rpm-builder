@@ -9,6 +9,7 @@ RPMS_DIR=$(rpm --eval %{_rpmdir})
 SRPMS_DIR=$(rpm --eval %{_srcrpmdir})
 SOURCE_DIR=$(rpm --eval %{_sourcedir})
 SPECS_DIR=$(rpm --eval %{_specdir})
+ARCH=$(rpm --eval %{_arch})
 
 function finish {
   chown -R ${CALLING_UID}:${CALLING_GID} ${RPMS_DIR} || /bin/true
@@ -37,7 +38,8 @@ then
     KEYNAME="${BASH_REMATCH[1]}"
     [ -n "${KEYNAME}" ] || { echo "could not find key for signing purpose"; exit 1; }
     echo -e "%_gpg_name ${KEYNAME}\n%_signature gpg" > ${HOME}/.rpmmacros
-    echo -e "\n" | setsid rpmbuild -bb --sign $SPEC ||  { [ "bashonfail" == "${BASH_ON_FAIL}" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || /bin/false ; }
+    rpmbuild -bb $SPEC ||  { [ "bashonfail" == "${BASH_ON_FAIL}" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || /bin/false ; }
+    echo -e "\n" | setsid rpmsign --addsign ${RPMS_DIR}/${ARCH}/*.rpm
 else
     echo "Running without RPM signing"
     rpmbuild -bb $SPEC || { [ "bashonfail" == "${BASH_ON_FAIL}" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || /bin/false ; }
