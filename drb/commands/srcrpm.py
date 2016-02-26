@@ -52,6 +52,12 @@ _HELP = """Builds a binary RPM from .src.rpm file.
     in the output directory. Defaults to current user's uid:gid if not passed. Must be numeric.
     Not supported on OSX.
 
+    --preserve-container: if passed, the build container(s) won't be removed after the build.
+    Still, you've got to dig out its id/name yourself. It's useful for debugging purposes,
+    by the way.
+
+    --verbose: display whatever happens during the build.
+
     Examples:
 
     - in this scenario we use no option of ours but we add an option to be forwarded to docker:
@@ -76,11 +82,14 @@ _logger = logging.getLogger("drb.commands.srcrpm")
 @click.option("--always-pull", is_flag=True, default=False)
 @click.option("--target-ownership", type=click.STRING, default="{0}:{1}".format(os.getuid(), os.getgid()))
 @click.option('--verbose', is_flag=True, default=False)
+@click.option('--preserve-container', is_flag=True, default=False)
 def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_signature, bash_on_failure,
-           sign_with, always_pull, target_ownership, verbose):
+           sign_with, always_pull, target_ownership, verbose, preserve_container):
     configure_root_logger(verbose)
 
-    docker = Docker().rm().image(image)
+    docker = Docker().image(image)
+    if not preserve_container:
+        docker.rm()
 
     if always_pull:
         _logger.info("Now pulling remote image")
