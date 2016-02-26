@@ -334,9 +334,13 @@ thing to do is probably add an entry to *BuildRequires* in the spec file.
 There are some prebuilt configurations for Centos+EPEL and Fedora at [https://github.com/alanfranz/docker-rpm-builder-configurations](https://github.com/alanfranz/docker-rpm-builder-configurations); those are available on [my docker hub page](https://hub.docker.com/u/alanfranz/) as well, so they can be used immediately out of the box.
 
 ## Gotchas
-* if you're used to mock, the build system is a bit different, mocks seems to employ different defaults and has different macros, sometimes a build working with mock may fail with docker-rpm-builder. I'm investigating the issue. It's quite uncommon BTW.
-* dns default to public ones, will add an option for private ones. Right now you can just pass arbitrary docker options, so pass --dns and/or set your internal
-DNS in the docker config file.
+* if you're used to mock, the build system is a bit different, mocks seems to employ different defaults and has different macros, sometimes a build working with mock may fail with docker-rpm-builder. **AFAICU it's one of mock's own strange behaviours;** docker-rpm-builder seems actually more similar to the 'real' rpmbuild.
+* dns defaults to public ones, usually Google ones on docker-engine default options. Since you can just pass arbitrary docker options, pass --dns and/or set your internal
+DNS in the docker config file if you need to access internal repositories.
+
+## Contacts
+
+If there's anything you'd like to discuss, feel free to open an issue or drop me an email at contactme@franzoni.eu .
 
 ## Thanks
 
@@ -349,7 +353,6 @@ To all the people who gave me feedback or contributed to this project, in no spe
 
 ## TODOS and ideas
 * Remove wget dependency
-* Option to prevent container removal after build.
 
 ## Disclaimer
 
