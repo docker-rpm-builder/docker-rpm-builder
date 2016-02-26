@@ -39,7 +39,11 @@ then
     KEYNAME="${BASH_REMATCH[1]}"
     [ -n "${KEYNAME}" ] || { echo "could not find key for signing purpose"; exit 1; }
     echo -e "%_gpg_name ${KEYNAME}\n%_signature gpg" > ${HOME}/.rpmmacros
-    echo -e "\n" | setsid rpmbuild --sign --rebuild ${RPMBUILD_OPTIONS} "${SRPMS_DIR}/${SRCRPM}" ||  { [ "bashonfail" == "${BASH_ON_FAIL}" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || /bin/false ; }
+    rpmbuild_out="$(rpmbuild --rebuild ${RPMBUILD_OPTIONS} "${SRPMS_DIR}/${SRCRPM}" 2>&1)"
+    exitcode="$?"
+    [ "${exitcode}" -ne 0 ] && { [ "bashonfail" == "${BASH_ON_FAIL}" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || { rm -f ${files} ; /bin/false ; } ; }
+    files=$(sed -n -e '/Checking for unpackaged file/,$p' <<< "${rpmbuild_out}" | grep 'Wrote:' | cut -d ':' -f 2)
+    echo -e "\n" | setsid rpmsign --addsign ${files} || { [ "bashonfail" == "${BASH_ON_FAIL}" ] && { echo "Signing failed, spawning a shell" ; /bin/bash ; exit 1; } || { rm -f ${files} ; /bin/false ; } ; }
 else
     rpmbuild --rebuild ${RPMBUILD_OPTIONS} "${SRPMS_DIR}/${SRCRPM}" || { [ "bashonfail" == "$BASH_ON_FAIL" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || /bin/false ; }
 fi
