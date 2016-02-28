@@ -5,7 +5,8 @@ See the [News Page](https://github.com/alanfranz/docker-rpm-builder/wiki/News) f
 See also [FPM within Docker](https://github.com/alanfranz/fpm-within-docker) - an alternative way of building RPMs and DEBs
 that could make things even easier for you.
 
-# Table of Contents
+Table of Contents
+=================
 
   * [News](#news)
   * [Table of Contents](#table-of-contents)
@@ -28,18 +29,19 @@ that could make things even easier for you.
       * [Other distributions and OSX \- installing straight from source](#other-distributions-and-osx---installing-straight-from-source)
     * [Test everything works\!](#test-everything-works)
     * [Usage](#usage)
-    * [Building a binary RPM straight from a directory](#building-a-binary-rpm-straight-from-a-directory)
-      * [Example](#example)
-    * [Spectemplates](#spectemplates)
-    * [Manually generating specfile to enable caching of build dependencies](#manually-generating-specfile-to-enable-caching-of-build-dependencies)
-    * [Rebuilding a source RPM](#rebuilding-a-source-rpm)
-    * [Build images](#build-images)
-      * [Prebuilt images](#prebuilt-images)
+      * [Building a binary RPM straight from a directory](#building-a-binary-rpm-straight-from-a-directory)
+        * [Example](#example)
+      * [Spectemplates](#spectemplates)
+      * [Manually generating specfile to enable caching of build dependencies](#manually-generating-specfile-to-enable-caching-of-build-dependencies)
+      * [Rebuilding a source RPM](#rebuilding-a-source-rpm)
+      * [Build images](#build-images)
+        * [Prebuilt images](#prebuilt-images)
     * [Gotchas](#gotchas)
     * [Contacts](#contacts)
     * [Thanks](#thanks)
     * [TODOS and ideas](#todos-and-ideas)
     * [Disclaimer](#disclaimer)
+
 
 ## For whom is this software designed?
 
@@ -283,7 +285,7 @@ It will take a really long time to run, especially on your first time.
 
 ## Usage
 
-## Building a binary RPM straight from a directory
+### Building a binary RPM straight from a directory
 
 You should have a source directory that contains:
 * either a .spec file or a [.spectemplate](#spectemplates) file
@@ -298,7 +300,7 @@ Of course, you should tell the tool which build image you'd like to use; that's 
 
 And you should tell the tool which target directory you'd like to use for rpm output; this directory will be bound straight to ```%{_rpmdir}``` inside the build container, so mind that if your build process does something strange with it, files can be deleted. If the target directory doesn't exist it will be created.
 
-### Example
+#### Example
 
 ```
 docker-rpm-builder dir --download-sources alanfranz/drb-epel-5-x86-64:latest . /tmp/rpms
@@ -318,7 +320,7 @@ URL-based source/patch downloading, shell spawning on build failure, signing, an
 
 See [example/from_dir](example/from_dir) for a full example of building with a spectemplate from a directory.
 
-## Spectemplates
+### Spectemplates
 
 The spectemplate approach prevents you from editing the .spec file (or creating a new one) for each build; inside your .spectemplate, just define
 substitution tags, which are names between @s, e.g.
@@ -333,7 +335,7 @@ Please note: you can't have both a .spec and a .spectemplate in your source dire
 
 Spectemplates are automatically compiled when using the **dir** command, but can be manually generated with the **genspec** command (see below).
 
-## Manually generating specfile to enable caching of build dependencies
+### Manually generating specfile to enable caching of build dependencies
 
 Take a look at [example/from_remote_source](example/from_remote_source) - the whole idea is:
 
@@ -342,7 +344,7 @@ Take a look at [example/from_remote_source](example/from_remote_source) - the wh
 * Once you've built the build-image, use it with the *dir* command (or even the *srcrpm* command if you prefer, but in such case you can skip the templating-related part altogether) - this time let the build system set the environment variables!
 * If your BuildRequires depends on template variables, you shouldn't use this method.
 
-## Rebuilding a source RPM
+### Rebuilding a source RPM
 
 Rebuilding a .src.rpm file is supported as well. Just check the command:
 
@@ -352,7 +354,7 @@ docker-rpm-builder srcrpm --help
 
 Verification of the .src.rpm signature, signing, spawning a shell on failure and always updating the build image are all supported scenarios.
 
-## Build images
+### Build images
 
 Build images are nothing esoteric. They're just plain OS images with a set of packages, settings and maybe some macros which are needed to perform a build and/or to sign packages. See the [next section](#prebuilt-images) for some examples.
 
@@ -365,7 +367,7 @@ In order to use an image for building an RPM:
 - any other build dependencies should be there, but if your package doesn't build because it's missing something else then the proper
 thing to do is probably add an entry to *BuildRequires* in the spec file.
 
-### Prebuilt images
+#### Prebuilt images
 
 There are some prebuilt configurations for Centos+EPEL and Fedora at [https://github.com/alanfranz/docker-rpm-builder-configurations](https://github.com/alanfranz/docker-rpm-builder-configurations); those are available on [my docker hub page](https://hub.docker.com/u/alanfranz/) as well, so they can be used immediately out of the box.
 
