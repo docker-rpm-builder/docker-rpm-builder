@@ -7,8 +7,8 @@ that could make things even easier for you.
 
 # Table of Contents
 
-  * [Fast native RPM building from any distro, for any distro, via docker\.](#fast-native-rpm-building-from-any-distro-for-any-distro-via-docker)
-    * [News](#news)
+  * [News](#news)
+  * [Table of Contents](#table-of-contents)
     * [For whom is this software designed?](#for-whom-is-this-software-designed)
     * [Why?](#why)
     * [Key features](#key-features)
@@ -23,7 +23,7 @@ that could make things even easier for you.
         * [Support plan](#support-plan-1)
       * [Debian Jessie](#debian-jessie)
         * [Support plan](#support-plan-2)
-      * [Ubuntu](#ubuntu)
+      * [Ubuntu (multiple releases)](#ubuntu-multiple-releases)
         * [Support plan](#support-plan-3)
       * [Other distributions and OSX \- installing straight from source](#other-distributions-and-osx---installing-straight-from-source)
     * [Test everything works\!](#test-everything-works)
