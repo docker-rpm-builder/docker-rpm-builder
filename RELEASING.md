@@ -1,0 +1,4 @@
+- promote v1dev build on CI system
+- add tag for promoted checkout
+- merge tag to v1
+- on v1dev, pull up packaging/env.list VERSION
