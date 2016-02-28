@@ -97,6 +97,8 @@ you're using reside in ```/Users```.
 
 Python 2.7, bash, and wget should be installed on your system as well. If you're using a packaged version, the package will take care of that.
 
+Please note: ```docker``` must run on the host system; it is irrelevant whether the target distribution would be able to run docker - in fact you can build Centos/RHEL 5 and 6 packages perfectly.
+
 See the section below for details on some post-install actions for docker.
 
 ### Docker configuration
@@ -208,7 +210,7 @@ I plan to support the latest stable Debian release. When a new release comes out
 I'll support the oldstable for a few months before dropping it.
 
 
-### Ubuntu
+### Ubuntu (multiple releases)
 
 There're repositories for various Ubuntu versions.
 
