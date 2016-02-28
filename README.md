@@ -1,11 +1,45 @@
-# Fast native RPM building from any distro, for any distro, via docker.
-
-## News
+# News
 
 See the [News Page](https://github.com/alanfranz/docker-rpm-builder/wiki/News) for the latest news.
 
 See also [FPM within Docker](https://github.com/alanfranz/fpm-within-docker) - an alternative way of building RPMs and DEBs
 that could make things even easier for you.
+
+# Table of Contents
+
+  * [Fast native RPM building from any distro, for any distro, via docker\.](#fast-native-rpm-building-from-any-distro-for-any-distro-via-docker)
+    * [News](#news)
+    * [For whom is this software designed?](#for-whom-is-this-software-designed)
+    * [Why?](#why)
+    * [Key features](#key-features)
+    * [Limitations](#limitations)
+    * [Required knowledge](#required-knowledge)
+    * [Prerequisites](#prerequisites)
+      * [Docker configuration](#docker-configuration)
+    * [Installation](#installation)
+      * [CentOS 7\.x / RHEL 7\.x](#centos-7x--rhel-7x)
+        * [Support plan](#support-plan)
+      * [Fedora 23](#fedora-23)
+        * [Support plan](#support-plan-1)
+      * [Debian Jessie](#debian-jessie)
+        * [Support plan](#support-plan-2)
+      * [Ubuntu](#ubuntu)
+        * [Support plan](#support-plan-3)
+      * [Other distributions and OSX \- installing straight from source](#other-distributions-and-osx---installing-straight-from-source)
+    * [Test everything works\!](#test-everything-works)
+    * [Usage](#usage)
+    * [Building a binary RPM straight from a directory](#building-a-binary-rpm-straight-from-a-directory)
+      * [Example](#example)
+    * [Spectemplates](#spectemplates)
+    * [Manually generating specfile to enable caching of build dependencies](#manually-generating-specfile-to-enable-caching-of-build-dependencies)
+    * [Rebuilding a source RPM](#rebuilding-a-source-rpm)
+    * [Build images](#build-images)
+      * [Prebuilt images](#prebuilt-images)
+    * [Gotchas](#gotchas)
+    * [Contacts](#contacts)
+    * [Thanks](#thanks)
+    * [TODOS and ideas](#todos-and-ideas)
+    * [Disclaimer](#disclaimer)
 
 ## For whom is this software designed?
 
