@@ -2,6 +2,7 @@
 
 VIRTUALENV ?= virtualenv-2.7
 SHELL := /bin/bash
+DESTDIR = /opt/
 
 devenv: setup.py Makefile
 	test -r devenv || $(VIRTUALENV) devenv
