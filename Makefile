@@ -26,3 +26,5 @@ clean: cleanexample
 
 distclean: clean
 	rm -rf devenv *.egg-info
+install:
+	cp -ar ./devenv/* $(PREFIX)
