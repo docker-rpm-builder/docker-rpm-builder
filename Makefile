@@ -1,4 +1,4 @@
-.PHONY: test integrationtest testexample clean distclean cleanexample
+.PHONY: test integrationtest testexample clean distclean cleanexample install
 
 VIRTUALENV ?= virtualenv-2.7
 SHELL := /bin/bash
@@ -26,5 +26,6 @@ clean: cleanexample
 
 distclean: clean
 	rm -rf devenv *.egg-info
+# PKGBUILD
 install:
 	cp -ar ./devenv/* $(PREFIX)
