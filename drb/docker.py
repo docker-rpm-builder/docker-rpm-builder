@@ -39,7 +39,7 @@ class Docker(object):
         # be then passed to a shell,
         # and MUST be already quoted when set.
         self._docker_exec = pipes.quote(docker_exec)
-        self._options = ["--tty"]
+        self._options = []
         self._image = None
         self._cmd_and_args = None
         self._logger = getLogger(self.__class__.__name__)
