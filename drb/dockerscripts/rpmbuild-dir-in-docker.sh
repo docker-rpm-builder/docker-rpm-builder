@@ -40,7 +40,7 @@ then
     echo -e "%_gpg_name ${KEYNAME}\n%_signature gpg" > ${HOME}/.rpmmacros
 	
 	exitcode=0
-    rpmbuild_out="$(rpmbuild -bb $SPEC 2>&1)" || { exitcode="$?" ; /bin/true ; }
+    rpmbuild_out="$(eval rpmbuild -bb $RPMBUILD_OPTIONS $SPEC 2>&1)" || { exitcode="$?" ; /bin/true ; }
     if [ "${exitcode}" -ne 0 ]; then
 			if [ "bashonfail" == "${BASH_ON_FAIL}" ]; then
 				# if the build is interactive, we can see what's printed in the current log, no need to reprint.
@@ -70,6 +70,6 @@ then
 	fi
 else
     echo "Running without RPM signing"
-    rpmbuild -bb $SPEC || { [ "bashonfail" == "${BASH_ON_FAIL}" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || exit 1 ; }
+    eval rpmbuild -bb $RPMBUILD_OPTIONS $SPEC || { [ "bashonfail" == "${BASH_ON_FAIL}" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || exit 1 ; }
 fi
 echo "Done"
