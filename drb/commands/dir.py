@@ -94,8 +94,9 @@ _logger = logging.getLogger("drb.commands.dir")
 @click.option("--target-ownership", type=click.STRING, default="{0}:{1}".format(os.getuid(), os.getgid()))
 @click.option('--verbose', is_flag=True, default=False)
 @click.option('--preserve-container', is_flag=True, default=False)
+@click.option("--rpmbuild-options", type=click.STRING, default="")
 def dir(image, source_directory, target_directory, additional_docker_options, download_sources,
-        bash_on_failure, sign_with, always_pull, target_ownership, verbose, preserve_container):
+        bash_on_failure, sign_with, always_pull, target_ownership, verbose, preserve_container, rpmbuild_options):
     configure_root_logger(verbose)
 
     docker = Docker().image(image)
@@ -137,7 +138,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     mkdir_p(target_directory)
     docker.additional_options(*additional_docker_options).bindmount_file(specfile, os.path.join(specs_inner_dir, specname)).bindmount_dir(dockerscripts, "/dockerscripts") \
         .bindmount_dir(source_directory, sources_inner_dir).bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
-        .env("CALLING_UID", str(uid)).env("CALLING_GID", str(gid)).env("BASH_ON_FAIL", bashonfail) \
+        .env("CALLING_UID", str(uid)).env("CALLING_GID", str(gid)).env("BASH_ON_FAIL", bashonfail).env("RPMBUILD_OPTIONS", rpmbuild_options) \
         .cmd_and_args("./rpmbuild-dir-in-docker.sh")
 
 

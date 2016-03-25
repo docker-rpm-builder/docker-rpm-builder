@@ -83,8 +83,9 @@ _logger = logging.getLogger("drb.commands.srcrpm")
 @click.option("--target-ownership", type=click.STRING, default="{0}:{1}".format(os.getuid(), os.getgid()))
 @click.option('--verbose', is_flag=True, default=False)
 @click.option('--preserve-container', is_flag=True, default=False)
+@click.option('--rpmbuild-options', type=click.STRING, default="")
 def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_signature, bash_on_failure,
-           sign_with, always_pull, target_ownership, verbose, preserve_container):
+           sign_with, always_pull, target_ownership, verbose, preserve_container, rpmbuild_options):
     configure_root_logger(verbose)
 
     docker = Docker().image(image)
@@ -98,7 +99,8 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
     srpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_srcrpmdir}").do_run()
     rpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_rpmdir}").do_run()
     uid, gid = parse_ownership(target_ownership)
-    rpmbuild_options = "" if verify_signature else "--nosignature"
+    if not verify_signature and "--nosignature" not in rpmbuild_options:
+        rpmbuild_options += " --nosignature"
     dockerscripts = getpath("drb/dockerscripts")
     docker.additional_options(*additional_docker_options)
     if sign_with:
