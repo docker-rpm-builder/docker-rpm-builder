@@ -37,7 +37,7 @@ then
     [[ $(gpg --list-secret-keys) =~ uid(.*) ]]
     KEYNAME="${BASH_REMATCH[1]}"
     [ -n "${KEYNAME}" ] || { echo "could not find key for signing purpose"; exit 1; }
-    echo -e "%_gpg_name ${KEYNAME}\n%_signature gpg" > ${HOME}/.rpmmacros
+    echo -e "%_gpg_name ${KEYNAME}\n%_signature gpg" >> ${HOME}/.rpmmacros
 	
 	exitcode=0
     rpmbuild_out="$(rpmbuild ${RPMBUILD_EXTRA_OPTIONS} -bb $SPEC 2>&1)" || { exitcode="$?" ; /bin/true ; }
