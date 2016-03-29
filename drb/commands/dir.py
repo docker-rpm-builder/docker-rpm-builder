@@ -6,6 +6,7 @@ import logging
 import click
 
 
+from drb.proxy_config import configure_proxies
 from drb.configure_logging import configure_root_logger
 from drb.docker import Docker
 from drb.spectemplate import SpecTemplate
@@ -66,6 +67,8 @@ _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hoo
     Still, you've got to dig out its id/name yourself. It's useful for debugging purposes,
     by the way.
 
+    --no-proxy: Don't copy proxy environment vars into the build environment.
+
     --verbose: display whatever happens during the build.
 
     Examples:
@@ -94,8 +97,10 @@ _logger = logging.getLogger("drb.commands.dir")
 @click.option("--target-ownership", type=click.STRING, default="{0}:{1}".format(os.getuid(), os.getgid()))
 @click.option('--verbose', is_flag=True, default=False)
 @click.option('--preserve-container', is_flag=True, default=False)
+@click.option('--no-proxy', is_flag=True, default=False)
 def dir(image, source_directory, target_directory, additional_docker_options, download_sources,
-        bash_on_failure, sign_with, always_pull, target_ownership, verbose, preserve_container):
+        bash_on_failure, sign_with, always_pull, target_ownership, verbose,
+        preserve_container, no_proxy):
     configure_root_logger(verbose)
 
     docker = Docker().image(image)
@@ -140,6 +145,8 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         .env("CALLING_UID", str(uid)).env("CALLING_GID", str(gid)).env("BASH_ON_FAIL", bashonfail) \
         .cmd_and_args("./rpmbuild-dir-in-docker.sh")
 
+    if not no_proxy:
+        configure_proxies(_logger, docker)
 
     with UserExceptionTransformer(Exception, "docker run error", append_original_message=True, final_message="\n\nBuild error. See the log above"):
         if bash_on_failure or verbose:
