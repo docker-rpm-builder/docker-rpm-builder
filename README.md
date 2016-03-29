@@ -391,6 +391,7 @@ To all the people who gave me feedback or contributed to this project, in no spe
 
 ## TODOS and ideas
 * Remove wget dependency
+* Use something like **overlayfs** inside the container - this would remove the need of copying the sources because the source dir is bind-mounted read-only.
 
 ## Disclaimer
 
