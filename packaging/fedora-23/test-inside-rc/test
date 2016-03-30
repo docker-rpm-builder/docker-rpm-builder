@@ -1,0 +1,22 @@
+#!/bin/bash -ex
+rm -f /tmp/test.exit
+EXIT_CODE=1
+trap 'echo ${EXIT_CODE} > /tmp/test.exit' EXIT
+
+cat > /etc/yum.repos.d/docker.repo <<EOF
+[docker]
+name=docker
+baseurl=https://yum.dockerproject.org/repo/testing/fedora/23/
+gpgcheck=1
+gpgkey=https://yum.dockerproject.org/gpg
+EOF
+
+rpm --import /home/vagrant/sync/public.asc
+yum -y install /home/vagrant/sync/out/*.rpm
+
+usermod -a -G docker vagrant || /bin/true
+service docker start || /bin/true
+
+docker-rpm-builder selftest --full
+EXIT_CODE="$?"
+exit ${EXIT_CODE}

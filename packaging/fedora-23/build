@@ -26,5 +26,9 @@ cp ${PUBLIC_KEY_FILE} ./public.asc
 
 vagrant up
 vagrant ssh -c 'sudo /home/vagrant/sync/test-inside/test'
+vagrant destroy --force
+echo "Test phase succeeded (stable)."
 
-echo "Test phase succeeded."
+vagrant up
+vagrant ssh -c 'sudo /home/vagrant/sync/test-inside-rc/test'
+echo "Test phase succeeded (rc)."
