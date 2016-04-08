@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from unittest2 import TestCase
+from unittest import TestCase
+
 from drb.spectemplate import DoubleDelimiterTemplate, SpecTemplate
 from tempfile import NamedTemporaryFile
 from StringIO import StringIO

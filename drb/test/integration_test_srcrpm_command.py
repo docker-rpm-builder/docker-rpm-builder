@@ -1,5 +1,5 @@
 
-from unittest2 import TestCase, skipIf
+from unittest import TestCase, skipIf
 from click.testing import CliRunner
 import os
 import sys

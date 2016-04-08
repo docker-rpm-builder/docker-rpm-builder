@@ -5,7 +5,7 @@ import os
 import click
 from drb.configure_logging import configure_root_logger
 from drb.path import getpath
-from unittest2 import TestLoader, TextTestRunner, TestSuite
+from unittest import TestLoader, TextTestRunner, TestSuite
 
 _HELP = """
 Perform a selftest.

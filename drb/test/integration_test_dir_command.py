@@ -1,5 +1,5 @@
 from drb.docker import SpawnedProcessError
-from unittest2 import TestCase, skipIf
+from unittest import TestCase, skipIf
 from click.testing import CliRunner
 from click import ClickException
 import os

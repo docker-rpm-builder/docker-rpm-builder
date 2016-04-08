@@ -9,10 +9,10 @@ devenv: setup.py Makefile
 	touch devenv
 
 test: devenv
-	devenv/bin/python -m unittest2 discover -v
+	devenv/bin/python -m unittest discover -v
 
 integrationtest: devenv test
-	devenv/bin/python -m unittest2 discover -p 'integration_test_*' -v
+	devenv/bin/python -m unittest discover -p 'integration_test_*' -v
 
 testexample: devenv cleanexample
 	source devenv/bin/activate ; cd example/from_dir ; ITERATION=11 python $$(which docker-rpm-builder) dir alanfranz/drb-epel-7-x86-64:latest . ../out_from_dir
@@ -23,6 +23,7 @@ cleanexample:
 
 clean: cleanexample
 	rm -rf tmp build dist 
+	find \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 distclean: clean
 	rm -rf devenv *.egg-info

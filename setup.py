@@ -9,7 +9,6 @@ VERSION=environ.get("VERSION") or "0.99.dev0"
 
 install_requires = [
     'Click==6.2',
-    'unittest2 == 0.8.0',
     'setuptools == 12.0.5',
     'tzlocal == 1.2',
     'pytz == 2015.7'
@@ -31,6 +30,7 @@ setup(
     entry_points='''
         [console_scripts]
         docker-rpm-builder=drb.cmdline:cmdline
+        unit=unittest.__main__:main_
     ''',
     license="Apache-2.0",
     include_package_data=True,

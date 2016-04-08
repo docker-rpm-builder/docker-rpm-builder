@@ -1,7 +1,7 @@
 import os
 from drb.docker import Docker
 from drb.path import getpath
-from unittest2 import TestCase
+from unittest import TestCase
 
 
 REFERENCE_IMAGE = os.environ.get("REFERENCE_IMAGE") or "alanfranz/drb-epel-7-x86-64:latest"

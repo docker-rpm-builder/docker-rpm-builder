@@ -3,7 +3,7 @@ import shutil
 
 from drb.path import getpath
 from drb.tempdir import TempDir
-from unittest2 import TestCase
+from unittest import TestCase
 from drb.downloadsources import get_spec_with_resolved_macros, get_source_and_patches_urls, download_files, \
     downloadsources
 from tempfile import NamedTemporaryFile, mkdtemp
