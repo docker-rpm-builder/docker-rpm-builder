@@ -140,6 +140,16 @@ class Docker(object):
         self._options.append(option)
         return self
 
+    def privileged(self):
+        self._options.append("--privileged")
+        return self
+
+    def tmpfs(self, guest_dir):
+        precondition(os.path.isabs(guest_dir), "guest_dir must be absolute")
+        option = "--tmpfs={0}".format(pipes.quote(guest_dir))
+        self._options.append(option)
+        return self
+
     def workdir(self, guest_dir):
         precondition(os.path.isabs(guest_dir), "guest_dir must be absolute")
 
