@@ -84,8 +84,8 @@ class TestDirCommand(TestCase):
             self.assertEquals(os.getuid(), sr.st_uid)
             self.assertEquals(1234, sr.st_gid)
 
-    @skipIf(kernel_doesnt_support_overlayfs(), "Kernel doesn't support overlay")
-    def test_overlayfs_option_makes_internal_source_dir_writable_no_external_modification(self):
+    @skipIf(kernel_doesnt_support_overlay(), "Kernel doesn't support overlay")
+    def test_source_overlay_option_makes_internal_source_dir_writable_no_external_modification(self):
         with open(os.path.join(self.src.path, "tmux.spec"), "wb") as f:
             f.write(OVERLAYFS_TEST_TEMPLATE)
 
