@@ -3,15 +3,15 @@ import os
 import sys
 
 from click.testing import CliRunner
-from click import ClickException
 
 from drb.tempdir import TempDir
 from drb.commands.dir import dir
 from drb.docker import Docker
-from drb.docker import SpawnedProcessError
 
 REFERENCE_IMAGE = os.environ.get("REFERENCE_IMAGE") or "alanfranz/drb-epel-7-x86-64:latest"
 REFERENCE_IMAGE_ARCH = "x86_64" if not "i386" in REFERENCE_IMAGE else "i386"
+
+
 
 class TestDirCommand(TestCase):
     def setUp(self):
