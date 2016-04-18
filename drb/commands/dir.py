@@ -67,10 +67,11 @@ _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hoo
     by the way.
 
     --enable-source-overlay: if passed, the source directory - %{_sourcedir} - inside the
-    build container will be mounted with an overlayfs; that will allow the build directory to
+    build container will be mounted with an overlay; that will allow the build directory to
     be writeable without propagating modifications to the host, so that it's not necessary to
     rsync/copy the source from the host to the container when compiling.
-    WARNING: This runs a PRIVILEGED docker container and requires a 3.18+ kernel.
+    WARNING: This runs a PRIVILEGED docker container and requires a 3.18+ kernel with the overlay
+             kernel module.
 
     --verbose: display whatever happens during the build.
 

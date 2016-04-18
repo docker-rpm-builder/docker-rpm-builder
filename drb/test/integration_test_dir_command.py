@@ -11,17 +11,11 @@ from drb.docker import Docker
 REFERENCE_IMAGE = os.environ.get("REFERENCE_IMAGE") or "alanfranz/drb-epel-7-x86-64:latest"
 REFERENCE_IMAGE_ARCH = "x86_64" if not "i386" in REFERENCE_IMAGE else "i386"
 
-def _does_kernel_support_overlayfs():
-    import platform
-    kernel_version = platform.uname()[2].split("-")[0]
-    # kernel_version will be a string like 3.18.0
-    # this is a very rough check
-    parts = map(int, kernel_version.split("."))
-    major = parts[0]
-    minor = parts[1]
-    if minor >= 18 and major >= 3:
-        return True
-    return False
+def kernel_doesnt_support_overlayfs():
+    docker = Docker().rm().image("alanfranz/drb-epel-7-x86-64:latest")
+    docker.cmd_and_args("mount", "-t", "overlay", "none", "/opt")
+    output = docker.do_run()
+    return "unknown" in output
 
 
 class TestDirCommand(TestCase):
@@ -87,7 +81,7 @@ class TestDirCommand(TestCase):
             self.assertEquals(os.getuid(), sr.st_uid)
             self.assertEquals(1234, sr.st_gid)
 
-    @skipIf(not _does_kernel_support_overlayfs(), "Kernel is too old to support overlayfs")
+    @skipIf(kernel_doesnt_support_overlayfs(), "Kernel doesn't support overlay")
     def test_overlayfs_option_makes_internal_source_dir_writable_no_external_modification(self):
         with open(os.path.join(self.src.path, "tmux.spec"), "wb") as f:
             f.write(OVERLAYFS_TEST_TEMPLATE)
