@@ -14,12 +14,13 @@ rm -rf out
 docker run --env "BUILD_NUMBER=${BUILD_NUMBER:-0}" --env "GIT_COMMIT=${GIT_COMMIT:-asd}" --env-file ../env.list --rm -v $(pwd)/build-inside:/build-inside:ro -v ${SRC_DIR}:/source:ro -v $(pwd)/out:/out -w /build-inside ${BUILD_IMAGE} /build-inside/build-package
 
 trap 'vagrant destroy --force' EXIT
+vagrant box update || true
 vagrant up
 vagrant ssh -c 'sudo /home/vagrant/sync/test-inside/test'
 vagrant destroy --force
 
 echo "${CURRENT_DISTRO} Test phase succeeded (stable)."
-
+vagrant box update || true
 vagrant up
 vagrant ssh -c 'sudo /home/vagrant/sync/test-inside-rc/test'
 
