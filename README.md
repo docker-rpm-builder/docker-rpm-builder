@@ -61,8 +61,7 @@ build target and then transfer your development code, then reset the build envir
 piece of software that makes debugging failed builds a bit hard, b) sometimes
 produces errors which are not so easy to understand without digging into its
 source code, and c) is very hard to run on non-RHEL/Centos/Fedora host distros, and/or
-* hosted build systems like [copr](https://copr.fedorainfracloud.org/) or [OBS](http://openbuildservice.org/) are an hassle
- because you can't try the builds on your own machine, and this makes the packaging process painfully slow,
+* hosted build systems like [copr](https://copr.fedorainfracloud.org/) or [OBS](http://openbuildservice.org/) feel slower or simply too complex for the task at hand
 
 then you're in the right place.
 
