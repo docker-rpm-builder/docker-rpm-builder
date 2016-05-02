@@ -374,6 +374,8 @@ There are some prebuilt configurations for Centos+EPEL and Fedora at [https://gi
 * if you're used to mock, the build system is a bit different, mocks seems to employ different defaults and has different macros, sometimes a build working with mock may fail with docker-rpm-builder. **AFAICU it's one of mock's own strange behaviours;** docker-rpm-builder seems actually more similar to the 'real' rpmbuild.
 * dns defaults to public ones, usually Google ones on docker-engine default options. Since you can just pass arbitrary docker options, pass --dns and/or set your internal
 DNS in the docker config file if you need to access internal repositories.
+* If you're auto-downloading remote files: GitHub hosted files (i.e. releases) throw an HTTP 403 Forbidden when used with the HTTP HEAD method, which in turn is what
+  ```wget --timestamping``` is used. Great for caching, but currently dysfunctional. Use a github archive from a tag (e.g. https://github.com/USER/REPO/archive/COMMIT.tar.gz ) to work around this issue until is fixed.
 
 ## Contacts
 
