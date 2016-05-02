@@ -91,7 +91,7 @@ You should have a vague idea of what [docker](https://www.docker.com) is and you
 
 At the dawn of this tool, I tried to make it work with any version of *docker* that would come from the distributions' repository or from official repository. This proved to be quite troublesome, and the docker environment is advancing rapidly; it makes no sense to use or support older versions of *docker*.
 
-So, **docker >= 1.10** is currently a prerequisite. If you're using the prebuilt RPMs or DEBs, they expect the **docker-engine** package from yum.dockerproject.org or apt.dockerproject.org to be available; just follow the [official install instructions](https://docs.docker.com/engine/installation/).
+So, **docker >= 1.11** is currently a prerequisite. If you're using the prebuilt RPMs or DEBs, they expect the **docker-engine** package from yum.dockerproject.org or apt.dockerproject.org to be available; just follow the [official install instructions](https://docs.docker.com/engine/installation/).
 
 This tool is designed to use a docker-engine on the very same machine where it's running, not a remote docker daemon. On OSX, it uses docker-machine, but make sure all the files
 you're using reside in ```/Users```.
