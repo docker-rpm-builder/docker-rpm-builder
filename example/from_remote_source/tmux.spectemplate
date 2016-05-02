@@ -8,7 +8,7 @@ Group:          Applications/System
 # 3 clause BSD licensed.
 License:        ISC and BSD
 URL:            http://sourceforge.net/projects/tmux
-Source0:	https://github.com/tmux/tmux/releases/download/%{version}/%{name}-%{version}.tar.gz
+Source0;	https://github.com/tmux/%{name}/archive/%{version}.tar.gz
 BuildRequires:  ncurses-devel
 BuildRequires:  libevent-devel
 
