@@ -12,7 +12,7 @@ REFERENCE_IMAGE = os.environ.get("REFERENCE_IMAGE") or "alanfranz/drb-epel-7-x86
 REFERENCE_IMAGE_ARCH = "x86_64" if not "i386" in REFERENCE_IMAGE else "i386"
 
 def kernel_doesnt_support_overlay():
-    docker = Docker().rm().image("alanfranz/drb-epel-7-x86-64:latest")
+    docker = Docker().rm().image("alanfranz/drb-epel-7-x86-64:latest").privileged()
     docker.cmd_and_args("mount", "-t", "overlay", "none", "/opt")
     try:
         output = docker.do_run()
