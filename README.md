@@ -194,7 +194,7 @@ Then, pick the repo for your distribution - see below - and save it as **/etc/ap
 deb http://www.a9f.eu/apt/docker-rpm-builder-v1/debian jessie main
 ```
 
-**docker-rpm-builder** depends on the official **docker.engine** package from docker.io [see install docs](https://docs.docker.com/installation/linux/debian) as well.
+**docker-rpm-builder** depends on the official **docker-engine** package from docker.io [see install docs](https://docs.docker.com/installation/linux/debian) as well.
 
 Now you're ready to
 
@@ -240,7 +240,7 @@ deb http://www.a9f.eu/apt/docker-rpm-builder-v1/ubuntu wily main
 deb http://www.a9f.eu/apt/docker-rpm-builder-v1/ubuntu xenial main
 ```
 
-**docker-rpm-builder** depends on the official **docker.engine** package from docker.io [see install docs](https://docs.docker.com/installation/linux/ubuntu) as well.
+**docker-rpm-builder** depends on the official **docker-engine** package from docker.io [see install docs](https://docs.docker.com/installation/linux/ubuntu) as well.
 
 Now you're ready to
 
