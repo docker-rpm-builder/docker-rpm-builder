@@ -234,6 +234,12 @@ deb http://www.a9f.eu/apt/docker-rpm-builder-v1/ubuntu trusty main
 deb http://www.a9f.eu/apt/docker-rpm-builder-v1/ubuntu wily main
 ```
 
+**Xenial**
+
+```
+deb http://www.a9f.eu/apt/docker-rpm-builder-v1/ubuntu xenial main
+```
+
 **docker-rpm-builder** depends on the official **docker.engine** package from docker.io [see install docs](https://docs.docker.com/installation/linux/ubuntu) as well.
 
 Now you're ready to
