@@ -381,7 +381,7 @@ There are some prebuilt configurations for Centos+EPEL and Fedora at [https://gi
 * dns defaults to public ones, usually Google ones on docker-engine default options. Since you can just pass arbitrary docker options, pass --dns and/or set your internal
 DNS in the docker config file if you need to access internal repositories.
 * If you're auto-downloading remote files: GitHub hosted files (i.e. releases) throw an HTTP 403 Forbidden when used with the HTTP HEAD method, which in turn is what
-  ```wget --timestamping``` is used. Great for caching, but currently dysfunctional. Use a github archive from a tag (e.g. https://github.com/USER/REPO/archive/COMMIT.tar.gz ) to work around this issue until is fixed.
+  ```wget --timestamping``` is used. Great for caching, but currently dysfunctional. Use a github archive from a tag (e.g. https://github.com/USER/REPO/archive/COMMIT.tar.gz ) to work around this issue until is fixed upstream.
 
 ## Contacts
 
@@ -398,7 +398,6 @@ To all the people who gave me feedback or contributed to this project, in no spe
 
 ## TODOS and ideas
 * Remove wget dependency
-* Use something like **overlayfs** inside the container - this would remove the need of copying the sources because the source dir is bind-mounted read-only.
 
 ## Disclaimer
 
