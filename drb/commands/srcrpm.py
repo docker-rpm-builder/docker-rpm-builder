@@ -67,6 +67,12 @@ _HELP = """Builds a binary RPM from .src.rpm file.
     - in this scenario we use a repository:tag as an image, and we ask drb to sign the package
 
     docker-rpm-builder srcrpm alanfranz/drb-epel-6-x86-64:latest mypackage.src.rpm /tmp/rpms --sign-with mykey.pgp
+
+    There's an additional feature which lets you pass further options to the rpmbuild call inside the container (see
+    dockerscripts directory in the source if you want to know more) - if you pass an RPMBUILD_EXTRA_OPTIONS env variable to docker,
+    whatever its content is will be passed straight to rpmbuild. Example invocation:
+
+    docker-rpm-builder srcrpm a682b68bbaba mypackage.src.rpm /tmp/rpms -- --env=RPMBUILD_EXTRA_OPTIONS="--define 'dist something'"
     """
 
 _logger = logging.getLogger("drb.commands.srcrpm")
