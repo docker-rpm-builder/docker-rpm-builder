@@ -15,6 +15,7 @@ from drb.parse_ownership import parse_ownership
 from drb.mkdir_p import mkdir_p
 from drb.functional import one
 from drb.exception_transformer import UserExceptionTransformer
+from drb.tempdir import TempDir
 
 _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hood.
 
@@ -157,7 +158,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         docker.additional_options(*additional_docker_options).bindmount_file(specfile, os.path.join(specs_inner_dir, specname)).bindmount_dir(dockerscripts, "/dockerscripts") \
             .bindmount_dir(source_directory, sources_inner_dir).bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
             .env("ENABLE_SOURCE_OVERLAY", str(int(not enable_source_overlay))).env("CALLING_UID", str(uid)).env("CALLING_GID", str(gid)).env("BASH_ON_FAIL", bashonfail) \
-            .cmd_and_args("./rpmbuild-dir-in-docker.sh").bindmount_dir(tmp.path, "/tmp")
+            .cmd_and_args("./rpmbuild-dir-in-docker.sh").bindmount_dir(tmp.path, "/tmp", False)
 
 
         with UserExceptionTransformer(Exception, "docker run error", append_original_message=True, final_message="\n\nBuild error. See the log above"):

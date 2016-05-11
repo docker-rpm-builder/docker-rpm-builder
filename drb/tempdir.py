@@ -34,7 +34,9 @@ class TempDir(object):
 
     def delete(self):
         if not self._was_deleted:
-            rmtree(self._tempdir, onerror=lambda *args, **kwargs: self._log.critical("Could not completely remove temporary directory %s", self._tempdir))
+            rmtree(self._tempdir, ignore_errors=True)
+            if os.path.exists(self._tempdir):
+                self.log.critical("Could not completely remove temporary dir %s", self._tempdir)    
             self._was_deleted = True
 
 

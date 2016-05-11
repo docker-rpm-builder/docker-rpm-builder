@@ -13,9 +13,8 @@ SPECS_DIR=$(rpm --eval %{_specdir})
 ARCH=$(rpm --eval %{_arch})
 
 function finish {
-  chown -R ${CALLING_UID}:${CALLING_GID} ${RPMS_DIR} || /bin/true
+  chown -R ${CALLING_UID}:${CALLING_GID} ${RPMS_DIR} /tmp || /bin/true
   umount -f "${SOURCE_DIR}" || /bin/true
-
 }
 trap finish EXIT
 
