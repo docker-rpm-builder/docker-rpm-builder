@@ -113,7 +113,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         enable_source_overlay):
     configure_root_logger(verbose)
 
-    docker = Docker().image(image).tmpfs("/tmp")
+    docker = Docker().image(image)
     if not preserve_container:
         docker.rm()
 
@@ -153,18 +153,19 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     _logger.info("Now building project from %s on image %s", source_directory, image)
 
     mkdir_p(target_directory)
-    docker.additional_options(*additional_docker_options).bindmount_file(specfile, os.path.join(specs_inner_dir, specname)).bindmount_dir(dockerscripts, "/dockerscripts") \
-        .bindmount_dir(source_directory, sources_inner_dir).bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
-        .env("ENABLE_SOURCE_OVERLAY", str(int(not enable_source_overlay))).env("CALLING_UID", str(uid)).env("CALLING_GID", str(gid)).env("BASH_ON_FAIL", bashonfail) \
-        .cmd_and_args("./rpmbuild-dir-in-docker.sh")
+    with TempDir.platformwise() as tmp:
+        docker.additional_options(*additional_docker_options).bindmount_file(specfile, os.path.join(specs_inner_dir, specname)).bindmount_dir(dockerscripts, "/dockerscripts") \
+            .bindmount_dir(source_directory, sources_inner_dir).bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
+            .env("ENABLE_SOURCE_OVERLAY", str(int(not enable_source_overlay))).env("CALLING_UID", str(uid)).env("CALLING_GID", str(gid)).env("BASH_ON_FAIL", bashonfail) \
+            .cmd_and_args("./rpmbuild-dir-in-docker.sh").bindmount_dir(tmp.path, "/tmp")
 
 
-    with UserExceptionTransformer(Exception, "docker run error", append_original_message=True, final_message="\n\nBuild error. See the log above"):
-        if bash_on_failure or verbose:
-            docker.do_launch_interactively()
-        else:
-            docker.do_run()
-    _logger.info("Build completed successfully. Your results are in %s", target_directory)
+        with UserExceptionTransformer(Exception, "docker run error", append_original_message=True, final_message="\n\nBuild error. See the log above"):
+            if bash_on_failure or verbose:
+                docker.do_launch_interactively()
+            else:
+                docker.do_run()
+        _logger.info("Build completed successfully. Your results are in %s", target_directory)
 
 
 
