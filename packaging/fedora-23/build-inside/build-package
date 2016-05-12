@@ -16,4 +16,4 @@ KEYNAME="${BASH_REMATCH[1]}"
 echo -e "%_gpg_name ${KEYNAME}\n%_signature gpg\n" > ${HOME}/.rpmmacros
 
 cd /out
-echo -e "\n" | setsid fpm -t rpm -s dir -n docker-rpm-builder --rpm-sign --version ${VERSION} --iteration build${BUILD_NUMBER} --description "docker-rpm-builder ${GIT_COMMIT}" --depends "docker-engine >= 1.11.0" --depends python --depends wget -C / /opt/docker-rpm-builder /usr/bin/docker-rpm-builder
+echo -e "\n" | setsid fpm -t rpm -s dir -n docker-rpm-builder --rpm-sign --version ${VERSION} --iteration "build${BUILD_NUMBER}.fc23" --description "docker-rpm-builder ${GIT_COMMIT}" --depends "docker-engine >= 1.11.0" --depends python --depends wget -C / /opt/docker-rpm-builder /usr/bin/docker-rpm-builder
