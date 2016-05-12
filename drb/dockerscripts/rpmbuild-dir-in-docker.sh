@@ -37,6 +37,12 @@ for uid in $(stat -c '%u' ${SOURCE_DIR}/*); do
     useradd -u $uid "user$uid" >/dev/null 2>&1 || /bin/true
 done
 
+if [ -r "/rpmmacros" ]
+then
+    cp /rpmmacros ${HOME}/.rpmmacros
+    echo -e "\n" >> ${HOME}/.rpmmacros
+fi
+
 if [ -r "/private.key" ]
 then
     echo "Running with RPM signing"

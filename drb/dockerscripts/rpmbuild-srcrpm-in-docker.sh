@@ -31,6 +31,12 @@ done
 # if the signature check fails it will fail later.
 yum-builddep -y --nogpgcheck "${SRPMS_DIR}/${SRCRPM}"
 
+if [ -r "/rpmmacros" ]
+then
+    cp /rpmmacros ${HOME}/.rpmmacros
+    echo -e "\n" >> ${HOME}/.rpmmacros
+fi
+
 if [ -r "/private.key" ]
 then
     echo "Running with RPM signing"

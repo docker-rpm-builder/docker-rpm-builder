@@ -86,11 +86,11 @@ _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hoo
 
     docker-rpm-builder dir alanfranz/drb-epel-6-x86-64:latest /home/user/sourcedir/myproject /tmp/rpms --download-sources
 
-    There's an additional feature which lets you pass further options to the rpmbuild call inside the container (see
-    dockerscripts directory in the source if you want to know more) - if you pass an RPMBUILD_EXTRA_OPTIONS env variable to docker,
-    whatever its content is will be passed straight to rpmbuild. Example invocation:
+    There's an additional feature which lets you pass further macros to the rpmbuild call inside the container (see
+    dockerscripts directory in the source if you want to know more) - if bind a /rpmmacros file inside the container,
+    it will be copied where it's meant to be used:
 
-    docker-rpm-builder dir a682b68bbaba . /tmp/rpms -- --env=RPMBUILD_EXTRA_OPTIONS="--define 'dist something'"
+    docker-rpm-builder dir a682b68bbaba . /tmp/rpms -- --volume=/home/user/my.macros:/rpmmacros:ro
 
     """
 
