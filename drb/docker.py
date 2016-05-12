@@ -96,7 +96,7 @@ class Docker(object):
         return output
 
     def additional_options(self, *options):
-        self._options.extend(options)
+        self._options.extend([pipes.quote(opt) for opt in options])
         return self
 
     def env(self, key, value):
