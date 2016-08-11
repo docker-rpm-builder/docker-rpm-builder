@@ -20,7 +20,7 @@ Table of Contents
     * [Installation](#installation)
       * [CentOS 7\.x / RHEL 7\.x](#centos-7x--rhel-7x)
         * [Support plan](#support-plan)
-      * [Fedora 23](#fedora-23)
+      * [Fedora](#fedora)
         * [Support plan](#support-plan-1)
       * [Debian Jessie](#debian-jessie)
         * [Support plan](#support-plan-2)
@@ -148,8 +148,7 @@ And you're done; if you haven't already done so, check the [docker configuration
 
 I plan to support the latest CentOS/RHEL stable.
 
-### Fedora 23
-
+### Fedora
 
 Use this yum repository:
 
@@ -174,11 +173,7 @@ And you're done; if you haven't already done so, check the [docker configuration
 
 #### Support plan
 
-I'll probably always support the latest released Fedora distribution. When a new Fedora is released,
-I'll try supporting the new release as well as the old one for a couple of months, then drop the old one.
-
-Example (January 2016). There's a package for Fedora 23. Fedora 24 is planned for June 2016. Once it's out, I'll create a new package
-for Fedora 24. Around September 2016, any support for Fedora 23 will be dropped.
+I plan to support the latest two Fedora releases,unless something bad happens (i.e. the official docker-package is not released anymore for the older fedora), so currently fc23 and fc24 are supported.
 
 
 ### Debian Jessie
