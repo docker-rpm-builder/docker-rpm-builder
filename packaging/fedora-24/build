@@ -29,6 +29,6 @@ vagrant ssh -c 'sudo /home/vagrant/sync/test-inside/test'
 vagrant destroy --force
 echo "Test phase succeeded (stable)."
 
-#vagrant up
-#vagrant ssh -c 'sudo /home/vagrant/sync/test-inside-rc/test'
-#echo "Test phase succeeded (rc)."
+vagrant up
+vagrant ssh -c 'sudo /home/vagrant/sync/test-inside-rc/test'
+echo "Test phase succeeded (rc)."
