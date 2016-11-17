@@ -254,6 +254,20 @@ and I'll probably choose to support older LTSes for more time than "standard" re
 (e.g. I don't plan dropping Ubuntu 14.04 support for the whole 2016, even though 16.04 is
 scheduled for April 2016)
 
+### Arch Linux
+
+There is a package for Arch Linux in the AUR. To install it, simply use an AUR helper like yaourt (see also https://wiki.archlinux.org/index.php/AUR_helpers for a list of other AUR helpers). For installing via yaourt, just do as normal user (you should have sudo installed and configured to be able to call pacman):
+
+```
+yaourt --noconfirm docker-rpm-builder
+```
+
+And you're done; if you haven't already done so, check the [docker configuration](#docker-configuration) section, then [launch the test suite](#test-everything-works)
+
+#### Support plan
+
+I only support installing packages with yaourt (and with makepkg directly). If it won't install with your AUR helper, try makepkg first before filing a bug request.
+
 
 ### Other distributions and OSX - installing straight from source
 
