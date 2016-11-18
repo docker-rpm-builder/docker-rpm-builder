@@ -110,9 +110,10 @@ _logger = logging.getLogger("drb.commands.dir")
 @click.option('--verbose', is_flag=True, default=False)
 @click.option('--preserve-container', is_flag=True, default=False)
 @click.option('--enable-source-overlay', is_flag=True, default=False)
+@click.option('--srpm-target-dir', type=click.Path(exists=True,file_okay=False, resolve_path=True), default=None)
 def dir(image, source_directory, target_directory, additional_docker_options, download_sources,
         bash_on_failure, sign_with, always_pull, target_ownership, verbose, preserve_container,
-        enable_source_overlay):
+        enable_source_overlay, srpm_target_dir):
     configure_root_logger(verbose)
 
     docker = Docker().image(image)
@@ -147,6 +148,11 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     dockerscripts = getpath("drb/dockerscripts")
     if sign_with:
         docker.bindmount_file(sign_with, "/private.key")
+    # Map the SRPMs destination directory if needed.
+    if srpm_target_dir:
+        srpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_srcrpmdir}").do_run()
+        docker.bindmount_dir(srpm_target_dir, srpms_inner_dir, read_only=False)
+        mkdir_p(srpm_target_dir)
     bashonfail = ""
     if bash_on_failure:
         bashonfail = "bashonfail"
