@@ -23,8 +23,6 @@ docker run --env "BUILD_NUMBER=${BUILD_NUMBER:-0}" --env "GIT_COMMIT=${GIT_COMMI
 	-w /build-inside ${BUILD_IMAGE} ./build-package
 
 
-exit 0
-
 trap 'vagrant destroy --force ; rm -f public.asc' EXIT
 cp ${PUBLIC_KEY_FILE} ./public.asc
 vagrant up
