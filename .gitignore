@@ -17,3 +17,4 @@ prodenv
 packaging/**/.vagrant
 example/out_*
 example/**/*.spec
+*cloudimg-console.log
