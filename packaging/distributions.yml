@@ -1,0 +1,7 @@
+distro:
+    - ubuntu-trusty
+    - ubuntu-xenial
+    - debian-jessie
+    - centos-7
+    - fedora-23
+    - fedora-24
