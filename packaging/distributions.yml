@@ -1,9 +1,8 @@
 distro:
     - ubuntu-xenial
     - centos-7
-#    - ubuntu-trusty
-#    - ubuntu-yakkety
-#    - debian-jessie
-#    - centos-7
-#    - fedora-23
-#    - fedora-24
+    - ubuntu-trusty
+    - ubuntu-yakkety
+    - debian-jessie
+    - fedora-23
+    - fedora-24

@@ -13,8 +13,6 @@ rm -rf out
 
 docker run --env "BUILD_NUMBER=${BUILD_NUMBER:-0}" --env "GIT_COMMIT=${GIT_COMMIT:-asd}" --env-file ../env.list --rm -v $(pwd)/build-inside:/build-inside:ro -v ${SRC_DIR}:/source:ro -v $(pwd)/out:/out -w /build-inside ${BUILD_IMAGE} /build-inside/build-package
 
-exit 0
-
 trap 'vagrant destroy --force' EXIT
 vagrant up
 echo "***** ${CURRENT_DISTRO} Starting test phase  (stable)."
