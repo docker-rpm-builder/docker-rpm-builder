@@ -1,5 +1,6 @@
 distro:
     - ubuntu-xenial
+    - centos-7
 #    - ubuntu-trusty
 #    - ubuntu-yakkety
 #    - debian-jessie
