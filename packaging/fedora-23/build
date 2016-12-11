@@ -2,9 +2,11 @@
 # enter the directory where the build script is located
 cd "${0%/*}"
 
+. ../realpath-lib
+
 # override those when needed. readlink -f doesn't work on osx.
-PUBLIC_KEY_FILE=$(readlink -f "${PUBLIC_KEY_FILE:-../public.asc}")
-PRIVATE_KEY_FILE=$(readlink -f "${PRIVATE_KEY_FILE:-../private.key}")
+PUBLIC_KEY_FILE=$(get_realpath "${PUBLIC_KEY_FILE:-../public.asc}")
+PRIVATE_KEY_FILE=$(get_realpath "${PRIVATE_KEY_FILE:-../private.key}")
 
 [ -r "${PUBLIC_KEY_FILE}" ]
 [ -r "${PRIVATE_KEY_FILE}" ]
