@@ -1,6 +1,10 @@
 # News
 
-See the [News Page](https://github.com/alanfranz/docker-rpm-builder/wiki/News) for the latest news.
+**IMPORTANT:** I'm about to migrate all the rpm/deb repositories to bintray. Check out this page, the next release will be
+on bintray only; using a9f.eu will result in some HTTP Error (I haven't chosen which one yet). I don't know whether I'm
+able to send a redirect, because the bintray repo will require a different public key for verification.
+
+See the [News Page](NEWS.md) for all the latest news.
 
 See also [FPM within Docker](https://github.com/alanfranz/fpm-within-docker) - an alternative way of building RPMs and DEBs
 that could make things even easier for you.
