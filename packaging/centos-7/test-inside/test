@@ -15,7 +15,6 @@ rpm --import /home/vagrant/sync/public.asc
 
 yum -y install /home/vagrant/sync/out/*.rpm
 
-usermod -a -G docker vagrant || /bin/true
 service docker start || /bin/true
 
 docker-rpm-builder selftest --full
