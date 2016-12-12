@@ -79,8 +79,8 @@ class TestMacroResolving(TestCase):
 
     def test_download_files(self):
         with TempDir.platformwise() as tmpdir:
-            download_files(["http://mirror.centos.org/centos/7/os/x86_64/Packages/ElectricFence-2.2.2-39.el7.i686.rpm",
-                        "http://mirror.centos.org/centos/7/os/x86_64/Packages/GeoIP-devel-1.5.0-9.el7.x86_64.rpm"],
+            download_files(["http://vault.centos.org/centos/7.0.1406/os/x86_64/Packages/ElectricFence-2.2.2-39.el7.i686.rpm",
+                        "http://vault.centos.org/centos/7.0.1406/os/x86_64/Packages/GeoIP-devel-1.5.0-9.el7.x86_64.rpm"],
                        tmpdir.path)
             self.assertTrue(os.path.exists(os.path.join(tmpdir.path, "ElectricFence-2.2.2-39.el7.i686.rpm")))
             self.assertTrue(os.path.exists(os.path.join(tmpdir.path, "GeoIP-devel-1.5.0-9.el7.x86_64.rpm")))
