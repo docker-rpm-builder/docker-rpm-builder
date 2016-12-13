@@ -411,6 +411,9 @@ To all the people who gave me feedback or contributed to this project, in no spe
 
 ## TODOS and ideas
 * Remove wget dependency
+* Create a .src.rpm and then build a binary rpm from it on the fly (see #35)
+* Speed up via something like [nosync](https://github.com/rpm-software-management/mock/wiki#nosync)
+* Speed up by allowing to mount a yum cache directory
 
 ## Disclaimer
 
