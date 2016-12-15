@@ -72,7 +72,7 @@ _HELP = """Builds a binary RPM from .src.rpm file.
     dockerscripts directory in the source if you want to know more) - if bind a /rpmmacros file inside the container,
     it will be copied where it's meant to be used:
 
-    docker-rpm-builder dir a682b68bbaba . /tmp/rpms -- --volume=/home/user/my.macros:/rpmmacros:ro
+    docker-rpm-builder dir a682b68bbaba . /tmp/rpms -- --volume=/home/user/my.macros:/rpmmacros:ro,Z
     """
 
 _logger = logging.getLogger("drb.commands.srcrpm")
