@@ -12,7 +12,7 @@ gpgkey=https://yum.dockerproject.org/gpg
 EOF
 
 rpm --import /home/vagrant/sync/public.asc
-yum -y install /home/vagrant/sync/out/*.rpm
+yum -y install docker-engine /home/vagrant/sync/out/*.rpm
 
 service docker start || /bin/true
 

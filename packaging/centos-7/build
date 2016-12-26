@@ -2,9 +2,11 @@
 # enter the directory where the build script is located
 cd "${0%/*}"
 
+. ../realpath-lib
+
 # override those when needed. readlink -f doesn't work on osx.
-PUBLIC_KEY_FILE=$(readlink -f "${PUBLIC_KEY_FILE:-../public.asc}")
-PRIVATE_KEY_FILE=$(readlink -f "${PRIVATE_KEY_FILE:-../private.key}")
+PUBLIC_KEY_FILE=$(get_realpath "${PUBLIC_KEY_FILE:-../public.asc}")
+PRIVATE_KEY_FILE=$(get_realpath "${PRIVATE_KEY_FILE:-../private.key}")
 
 [ -r "${PUBLIC_KEY_FILE}" ]
 [ -r "${PRIVATE_KEY_FILE}" ]
@@ -17,6 +19,7 @@ BUILD_IMAGE="docker-rpm-builder-${CURRENT_DISTRO}-build"
 docker build --pull -t ${BUILD_IMAGE} build-image
 
 rm -rf out
+mkdir out
 
 docker run --env "BUILD_NUMBER=${BUILD_NUMBER:-0}" --env "GIT_COMMIT=${GIT_COMMIT:-asd}" --env-file ../env.list --rm \
 	-v "${PRIVATE_KEY_FILE}":/tmp/private.key:ro -v $(pwd)/build-inside:/build-inside:ro -v ${SRC_DIR}:/source:ro -v $(pwd)/out:/out \
