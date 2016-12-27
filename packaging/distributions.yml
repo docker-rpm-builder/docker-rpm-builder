@@ -4,5 +4,5 @@ distro:
     - ubuntu-trusty
     - ubuntu-yakkety
     - debian-jessie
-    - fedora-23
+    - fedora-25
     - fedora-24
