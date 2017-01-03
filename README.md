@@ -127,15 +127,13 @@ CentOS 6 / RHEL 6 support for docker-rpm-builder has been discontinued along doc
 ```
 [docker-rpm-builder-v1]
 name=docker-rpm-builder-v1
-baseurl=http://www.a9f.eu/yum/docker-rpm-builder-v1/centos/$releasever/$basearch
+baseurl=https://dl.bintray.com/alanfranz/drb-v1-centos-7
 repo_gpgcheck=1
 gpgcheck=1
 enabled=1
 gpgkey=https://www.franzoni.eu/keys/D1270819.txt
+       https://www.franzoni.eu/keys/D401AB61.txt
 ```
-Such repo should work properly for Centos, RHEL and Oracle Linux. Scientific Linux insists, AFAIK, un using sub-releases on $releasever, you should substitute your major to $releasever in the above URL if you're using SL.
-
-**docker-rpm-builder** depends on the official **docker-engine** package from docker.io - make sure its repository is available - see [install docs for CentOS](https://docs.docker.com/installation/linux/centos) or [install docs for RHEL](https://docs.docker.com/installation/linux/rhel).
 
 Now, just:
 
@@ -157,14 +155,13 @@ Use this yum repository:
 ```
 [docker-rpm-builder-v1]
 name=docker-rpm-builder-v1
-baseurl=http://www.a9f.eu/yum/docker-rpm-builder-v1/fedora/$releasever/$basearch
+baseurl=https://dl.bintray.com/alanfranz/drb-v1-fedora-$releasever
 repo_gpgcheck=1
 gpgcheck=1
 enabled=1
 gpgkey=https://www.franzoni.eu/keys/D1270819.txt
+       https://www.franzoni.eu/keys/D401AB61.txt
 ```
-
-**docker-rpm-builder** depends on the official **docker-engine** package from docker.io - make sure its repository is available - [see install docs](https://docs.docker.com/engine/installation/linux/fedora/).
 
 ```
 dnf install docker-rpm-builder
@@ -258,7 +255,7 @@ scheduled for April 2016)
 
 ### Arch Linux
 
-There is a package for Arch Linux in the AUR. To install it, simply use an AUR helper like yaourt (see also https://wiki.archlinux.org/index.php/AUR_helpers for a list of other AUR helpers). For installing via yaourt, just do as normal user (you should have sudo installed and configured to be able to call pacman):
+There is a third-party maintained package for Arch Linux in the AUR. To install it, simply use an AUR helper like yaourt (see also https://wiki.archlinux.org/index.php/AUR_helpers for a list of other AUR helpers). For installing via yaourt, just do as normal user (you should have sudo installed and configured to be able to call pacman):
 
 ```
 yaourt --noconfirm docker-rpm-builder
