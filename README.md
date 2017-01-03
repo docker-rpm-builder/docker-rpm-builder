@@ -1,4 +1,4 @@
-# News
+## News
 
 **IMPORTANT:** I'm about to migrate all the rpm/deb repositories to bintray. Check out this page, the next release will be
 on bintray only; using a9f.eu will result in some HTTP Error (I haven't chosen which one yet). I don't know whether I'm
@@ -9,43 +9,43 @@ See the [News Page](NEWS.md) for all the latest news.
 See also [FPM within Docker](https://github.com/alanfranz/fpm-within-docker) - an alternative way of building RPMs and DEBs
 that could make things even easier for you.
 
-Table of Contents
-=================
+## Table of Contents
 
-  * [News](#news)
-  * [Table of Contents](#table-of-contents)
-    * [For whom is this software designed?](#for-whom-is-this-software-designed)
-    * [Why?](#why)
-    * [Key features](#key-features)
-    * [Limitations](#limitations)
-    * [Required knowledge](#required-knowledge)
-    * [Prerequisites](#prerequisites)
-      * [Docker configuration](#docker-configuration)
-    * [Installation](#installation)
-      * [CentOS 7\.x / RHEL 7\.x](#centos-7x--rhel-7x)
-        * [Support plan](#support-plan)
-      * [Fedora](#fedora)
-        * [Support plan](#support-plan-1)
-      * [Debian Jessie](#debian-jessie)
-        * [Support plan](#support-plan-2)
-      * [Ubuntu (multiple releases)](#ubuntu-multiple-releases)
-        * [Support plan](#support-plan-3)
-      * [Other distributions and OSX \- installing straight from source](#other-distributions-and-osx---installing-straight-from-source)
-    * [Test everything works\!](#test-everything-works)
-    * [Usage](#usage)
-      * [Building a binary RPM straight from a directory](#building-a-binary-rpm-straight-from-a-directory)
-        * [Example](#example)
-      * [Spectemplates](#spectemplates)
-      * [Manually generating specfile to enable caching of build dependencies](#manually-generating-specfile-to-enable-caching-of-build-dependencies)
-      * [Rebuilding a source RPM](#rebuilding-a-source-rpm)
-      * [Build images](#build-images)
-        * [Prebuilt images](#prebuilt-images)
-    * [Gotchas](#gotchas)
-    * [Contacts](#contacts)
-    * [Thanks](#thanks)
-    * [TODOS and ideas](#todos-and-ideas)
-    * [Disclaimer](#disclaimer)
-
+ * [News](#news)
+ * [Table of Contents](#table-of-contents)
+ * [For whom is this software designed?](#for-whom-is-this-software-designed)
+ * [Why?](#why)
+ * [Key features](#key-features)
+ * [Limitations](#limitations)
+ * [Required knowledge](#required-knowledge)
+ * [Prerequisites](#prerequisites)
+   * [Docker configuration](#docker-configuration)
+ * [Installation](#installation)
+   * [CentOS 7\.x / RHEL 7\.x](#centos-7x--rhel-7x)
+     * [Support plan](#support-plan)
+   * [Fedora](#fedora)
+     * [Support plan](#support-plan-1)
+   * [Debian Jessie](#debian-jessie)
+     * [Support plan](#support-plan-2)
+   * [Ubuntu (multiple releases)](#ubuntu-multiple-releases)
+     * [Support plan](#support-plan-3)
+   * [Arch Linux](#arch-linux)
+     * [Support plan](#support-plan-4)
+   * [Other distributions and OSX \- installing straight from source](#other-distributions-and-osx---installing-straight-from-source)
+ * [Test everything works\!](#test-everything-works)
+ * [Usage](#usage)
+   * [Building a binary RPM straight from a directory](#building-a-binary-rpm-straight-from-a-directory)
+     * [Example](#example)
+   * [Spectemplates](#spectemplates)
+   * [Manually generating specfile to enable caching of build dependencies](#manually-generating-specfile-to-enable-caching-of-build-dependencies)
+   * [Rebuilding a source RPM](#rebuilding-a-source-rpm)
+   * [Build images](#build-images)
+     * [Prebuilt images](#prebuilt-images)
+ * [Gotchas](#gotchas)
+ * [Contacts](#contacts)
+ * [Thanks](#thanks)
+ * [TODOS and ideas](#todos-and-ideas)
+ * [Disclaimer](#disclaimer)
 
 ## For whom is this software designed?
 
