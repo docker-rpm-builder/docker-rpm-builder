@@ -1,8 +1,8 @@
 ## News
 
-**IMPORTANT:** I'm about to migrate all the rpm/deb repositories to bintray. Check out this page, the next release will be
-on bintray only; using a9f.eu will result in some HTTP Error (I haven't chosen which one yet). I don't know whether I'm
-able to send a redirect, because the bintray repo will require a different public key for verification.
+**IMPORTANT:** The prepackages repos have changed! Check the new URLs down there!
+**IMPORTANT:** since 1.33, *docker-rpm-builder* won't force a dependency on a specific docker package, you must install
+a docker distributions yourself.
 
 See the [News Page](NEWS.md) for all the latest news.
 
@@ -91,36 +91,33 @@ Basically, docker-rpm-builder is an ecosystem comprising a way to run rpmbuild i
 
 You should have a vague idea of what [docker](https://www.docker.com) is and you should already know how to build an RPM - see to [Maximum RPM](http://www.rpm.org/max-rpm/) and other documentation from Fedora [HowTO](https://fedoraproject.org/wiki/How_to_create_an_RPM_package) / [RPM Guide](http://docs.fedoraproject.org/en-US/Fedora_Draft_Documentation/0.1/html/RPM_Guide/).
 
-## Prerequisites
+## Installation
 
-At the dawn of this tool, I tried to make it work with any version of *docker* that would come from the distributions' repository or from official repository. This proved to be quite troublesome, and the docker environment is advancing rapidly; it makes no sense to use or support older versions of *docker*.
+### Prerequisites
 
-So, **docker >= 1.11** is currently a prerequisite. If you're using the prebuilt RPMs or DEBs, they expect the **docker-engine** package from yum.dockerproject.org or apt.dockerproject.org to be available; just follow the [official install instructions](https://docs.docker.com/engine/installation/).
+**IMPORTANT:** A Docker distribution is required in order to use this tool. I recommend using the latest stable *docker-engine* RPM or DEB, use prebuilt packages package from yum.dockerproject.org or apt.dockerproject.org; just follow the [official install instructions](https://docs.docker.com/engine/installation/).
 
-This tool is designed to use a docker-engine on the very same machine where it's running, not a remote docker daemon. On OSX, it uses docker-machine, but make sure all the files
-you're using reside in ```/Users```.
+At the dawn of this tool, I tried to make it work with any version of *docker* that would come from the distributions' repository or from official repository. This proved to be quite troublesome, but at the same time, different distributions are repackaging the docker CLI and daemon in different ways, and users have different priorities. So, **since version 1.33 docker-rpm-builder no longer forces a dependency on any docker package on your system.** Feel free to use whatever docker version you like; just be aware that I usually test *docker-rpm-builder* using the official *docker-engine* packages.
 
 Python 2.7, bash, and wget should be installed on your system as well. If you're using a packaged version, the package will take care of that.
 
-Please note: ```docker``` must run on the host system; it is irrelevant whether the target distribution would be able to run docker - in fact you can build Centos/RHEL 5 and 6 packages perfectly.
+Please note: ```docker``` runs on the host system; it is irrelevant whether the target distribution would be able to run docker - in fact you can build Centos/RHEL 5 and 6 packages perfectly.
 
 See the section below for details on some post-install actions for docker.
 
-### Docker configuration
+#### Docker configuration
 
 If docker is already up and running on your system, you probably need to do absolutely nothing else.
 
 Otherwise, if it's your first time with docker, here's a checklist:
 
+* Verify you've installed a docker distribution
 * Verify the *docker* service is running
 * Verify the *docker* group exists and your user belongs to it. It is advised **not to run docker-rpm-builder as root**. The docker package on some recent Fedoras seems to add a *dockerroot* group instead - **it won't do!**
 * If you had to add the group, verify you've restarted the *docker* service after such addition
 * Verify you've logged out+in after adding your user to the group
 * Verify selinux is disabled. There seems to be work going on to let docker work along selinux, but I could not succeed at using bindmounts as long as selinux is active.
 * Verify your disk has enough free space
-
-
-## Installation
 
 ### CentOS 7.x / RHEL 7.x
 
@@ -177,7 +174,7 @@ And you're done; if you haven't already done so, check the [docker configuration
 
 #### Support plan
 
-I plan to support the latest two Fedora releases,unless something bad happens (i.e. the official docker-package is not released anymore for the older fedora), so currently fc23 and fc24 are supported.
+I plan to support the latest two Fedora releases,unless something bad happens (i.e. the official docker-package is not released anymore for the older fedora), so currently fc24 and fc25 are supported.
 
 
 ### Debian Jessie
