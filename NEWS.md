@@ -1,7 +1,9 @@
-## 03 Jan 2017: docker-rpm-builder v1.33
+## 04 Jan 2017: docker-rpm-builder v1.34
 - Don't enforce a dep on a specific docker distribution
 - Drop support for ubuntu wily
 - Add support for fc25 and ubuntu yakkety
+
+## 03 Jan 2017: docker-rpm-builder v1.33 (failed release - skip)
 
 ## 01 Dec 2016: public repositories are moving!
 I'm going to move my public RPM and DEB repositories to bintray; if you encounter a 404, 410 or other error when trying to update docker-rpm-builder in the upcoming weeks, get back to my homepage and check the new url.
