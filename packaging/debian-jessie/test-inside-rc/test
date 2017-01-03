@@ -11,6 +11,7 @@ EXIT_CODE=1
 trap 'echo ${EXIT_CODE} > /tmp/test.exit' EXIT
 curl https://apt.dockerproject.org/gpg | apt-key add -
 apt-get update
+apt-get -y install docker-engine
 
 dpkg -i /home/vagrant/sync/out/*.deb || /bin/true
 apt-get -f -y install

@@ -10,4 +10,4 @@ cd /usr/bin
 ln -s ${INSTALL_DIR}/bin/docker-rpm-builder docker-rpm-builder
 
 cd /out
-fpm -t deb -s dir -n docker-rpm-builder --version ${VERSION} --iteration "build${BUILD_NUMBER}-trusty" --description "docker-rpm-builder ${GIT_COMMIT}" --depends "docker-engine (>= 1.11.0) | docker.io (>= 1.11.0)" --depends python --depends wget -C / /opt/docker-rpm-builder /usr/bin/docker-rpm-builder
+fpm -t deb -s dir -n docker-rpm-builder --version ${VERSION} --iteration "build${BUILD_NUMBER}-trusty" --description "docker-rpm-builder ${GIT_COMMIT}"  --depends python --depends wget -C / /opt/docker-rpm-builder /usr/bin/docker-rpm-builder

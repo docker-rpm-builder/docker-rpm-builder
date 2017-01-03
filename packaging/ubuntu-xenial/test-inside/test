@@ -10,6 +10,7 @@ trap 'echo ${EXIT_CODE} > /tmp/test.exit' EXIT
 curl https://apt.dockerproject.org/gpg | apt-key add -
 # don't crash if update fails, let the install phase to fail if it's a real issue.
 apt-get update || /bin/true
+apt-get -y install docker-engine
 dpkg -i /home/vagrant/sync/out/*.deb || /bin/true
 apt-get -f -y install
 
