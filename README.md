@@ -183,6 +183,7 @@ First, you should make sure that you've got my package signing key properly inst
 ```
 curl https://www.franzoni.eu/keys/D1270819.txt | sudo apt-key add -
 ```
+And you should make sure the ```apt-transport-https``` package is installed.
 
 Then, pick the repo for your distribution - see below - and save it as **/etc/apt/sources.list.d/docker-rpm-builder.list**
 
@@ -215,6 +216,8 @@ First, you should make sure that you've got my package signing key properly inst
 ```
 curl https://www.franzoni.eu/keys/D1270819.txt | sudo apt-key add -
 ```
+
+And you should make sure the ```apt-transport-https``` package is installed.
 
 Then, pick the repo for your distribution - see below - and save it as **/etc/apt/sources.list.d/docker-rpm-builder.list**
 
