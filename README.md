@@ -179,19 +179,19 @@ I plan to support the latest two Fedora releases,unless something bad happens (i
 
 ### Debian Jessie
 
-First, you should make sure that you've got my package signing key properly installed and configured for apt:
+First, you should make sure that Bintray's package signing key properly installed and configured for apt:
+
 ```
-curl https://www.franzoni.eu/keys/D1270819.txt | sudo apt-key add -
+curl https://www.franzoni.eu/keys/D401AB61.txt | sudo apt-key add -
 ```
+
 And you should make sure the ```apt-transport-https``` package is installed.
 
 Then, pick the repo for your distribution - see below - and save it as **/etc/apt/sources.list.d/docker-rpm-builder.list**
 
 ```
-deb http://www.a9f.eu/apt/docker-rpm-builder-v1/debian jessie main
+deb https://dl.bintray.com/alanfranz/drb-v1-debian-jessie jessie main
 ```
-
-**docker-rpm-builder** depends on the official **docker-engine** package from docker.io [see install docs](https://docs.docker.com/installation/linux/debian) as well.
 
 Now you're ready to
 
@@ -212,9 +212,9 @@ I'll support the oldstable for a few months before dropping it.
 
 There're repositories for various Ubuntu versions.
 
-First, you should make sure that you've got my package signing key properly installed and configured for apt:
+First, you should make sure that you've got Bintray's package signing key properly installed and configured for apt:
 ```
-curl https://www.franzoni.eu/keys/D1270819.txt | sudo apt-key add -
+curl https://www.franzoni.eu/keys/D401AB61.txt | sudo apt-key add -
 ```
 
 And you should make sure the ```apt-transport-https``` package is installed.
@@ -224,22 +224,20 @@ Then, pick the repo for your distribution - see below - and save it as **/etc/ap
 **Trusty**
 
 ```
-deb http://www.a9f.eu/apt/docker-rpm-builder-v1/ubuntu trusty main
-```
-
-**Wily**
-
-```
-deb http://www.a9f.eu/apt/docker-rpm-builder-v1/ubuntu wily main
+deb https://dl.bintray.com/alanfranz/drb-v1-ubuntu-trusty trusty main
 ```
 
 **Xenial**
 
 ```
-deb http://www.a9f.eu/apt/docker-rpm-builder-v1/ubuntu xenial main
+deb https://dl.bintray.com/alanfranz/drb-v1-ubuntu-xenial xenial main
 ```
 
-**docker-rpm-builder** depends on the official **docker-engine** package from docker.io [see install docs](https://docs.docker.com/installation/linux/ubuntu) as well.
+**Yakkety**
+
+```
+deb https://dl.bintray.com/alanfranz/drb-v1-ubuntu-yakkety yakkety main
+```
 
 Now you're ready to
 
