@@ -6,7 +6,7 @@ trap 'echo ${EXIT_CODE} > /tmp/test.exit' EXIT
 cat > /etc/yum.repos.d/docker.repo <<EOF
 [docker]
 name=docker
-baseurl=https://yum.dockerproject.org/repo/main/fedora/24/
+baseurl=https://yum.dockerproject.org/repo/main/fedora/25/
 gpgcheck=1
 gpgkey=https://yum.dockerproject.org/gpg
 EOF
