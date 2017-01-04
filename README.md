@@ -3,7 +3,7 @@
 **IMPORTANT:** The APT and YUM repos have changed! Check the new URLs down there!
 
 **IMPORTANT:** since 1.33, *docker-rpm-builder* won't force a dependency on a specific docker package, you must install
-a docker distributions yourself.
+a docker distribution yourself - see [prerequisites](#prerequisites).
 
 See the [News Page](NEWS.md) for all the latest news.
 
@@ -112,7 +112,7 @@ If docker is already up and running on your system, you probably need to do abso
 
 Otherwise, if it's your first time with docker, here's a checklist:
 
-* Verify you've installed a docker distribution
+* Verify you've installed a docker distribution - see [prerequisites](#prerequisites).
 * Verify the *docker* service is running
 * Verify the *docker* group exists and your user belongs to it. It is advised **not to run docker-rpm-builder as root**. The docker package on some recent Fedoras seems to add a *dockerroot* group instead - **it won't do!**
 * If you had to add the group, verify you've restarted the *docker* service after such addition
