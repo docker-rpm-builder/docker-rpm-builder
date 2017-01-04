@@ -1,6 +1,7 @@
 ## News
 
-**IMPORTANT:** The prepackages repos have changed! Check the new URLs down there!
+**IMPORTANT:** The APT and YUM repos have changed! Check the new URLs down there!
+
 **IMPORTANT:** since 1.33, *docker-rpm-builder* won't force a dependency on a specific docker package, you must install
 a docker distributions yourself.
 
