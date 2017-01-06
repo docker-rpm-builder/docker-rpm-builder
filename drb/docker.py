@@ -127,7 +127,7 @@ class Docker(object):
         precondition(os.path.isdir(host_dir), "host_dir must be a directory")
         precondition(os.path.isabs(guest_dir), "guest_dir must be absolute")
 
-        option = "--volume={0}:{1}{2}".format(pipes.quote(os.path.abspath(host_dir)), pipes.quote(guest_dir), ("", ":ro")[read_only])
+        option = "--volume={0}:{1}:Z{2}".format(pipes.quote(os.path.abspath(host_dir)), pipes.quote(guest_dir), ("", ",ro")[read_only])
         self._options.append(option)
         return self
 
@@ -136,7 +136,7 @@ class Docker(object):
         precondition(os.path.isfile(host_file), "host_file must be a file")
         precondition(os.path.isabs(guest_file), "guest_file must be absolute")
 
-        option = "--volume={0}:{1}{2}".format(pipes.quote(os.path.abspath(host_file)), pipes.quote(guest_file), ("", ":ro")[read_only])
+        option = "--volume={0}:{1}:Z{2}".format(pipes.quote(os.path.abspath(host_file)), pipes.quote(guest_file), ("", ",ro")[read_only])
         self._options.append(option)
         return self
 

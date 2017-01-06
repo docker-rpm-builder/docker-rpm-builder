@@ -419,6 +419,7 @@ To all the people who gave me feedback or contributed to this project, in no spe
 * Tobias Widén
 * Romain P
 * Pavel Borzenkov
+* Peter Williams
 
 ## TODOS and ideas
 * Remove wget dependency
