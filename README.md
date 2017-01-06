@@ -368,6 +368,21 @@ docker-rpm-builder srcrpm --help
 
 Verification of the .src.rpm signature, signing, spawning a shell on failure and always updating the build image are all supported scenarios.
 
+### Chainbuild: build both a source and a binary rpm
+
+I recommend you start building your package with the *dir* option, then switch to this command
+for production builds where you'd like to produce a source rpm (for future reference) as well 
+as a binary, in a single shot.
+
+```
+docker-rpm-builder chainbuild --help
+```
+
+Options and flags are very similar to the dir command.
+ 
+For documentation, see the help included in the source: [chainbuild.py](drb/commands/chainbuild.py) 
+
+
 ### Build images
 
 Build images are nothing esoteric. They're just plain OS images with a set of packages, settings and maybe some macros which are needed to perform a build and/or to sign packages. See the [next section](#prebuilt-images) for some examples.

@@ -130,3 +130,4 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
                 docker.do_launch_interactively()
             else:
                 docker.do_run()
+            _logger.info("Build completed successfully. Your results are in %s", target_directory)
