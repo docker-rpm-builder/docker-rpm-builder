@@ -1,6 +1,8 @@
-## 06 Jan 2017: docker-rpm-builder v1.35 and v1.36
-- New **chainbuild** command that allows the user to build a .src.rpm, then build a binary rpm from that.
+## 07 Jan 2017: docker-rpm-builder v1.36
 - SELinux context support; makes it possible to use docker-rpm-builder even when SELinux is enabled.
+
+## 06 Jan 2017: docker-rpm-builder v1.35 
+- New **chainbuild** command that allows the user to build a .src.rpm, then build a binary rpm from that.
 
 ## 04 Jan 2017: docker-rpm-builder v1.34
 - Don't enforce a dep on a specific docker distribution
