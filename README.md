@@ -117,7 +117,7 @@ Otherwise, if it's your first time with docker, here's a checklist:
 * Verify the *docker* group exists and your user belongs to it. It is advised **not to run docker-rpm-builder as root**. The docker package on some recent Fedoras seems to add a *dockerroot* group instead - **it won't do!**
 * If you had to add the group, verify you've restarted the *docker* service after such addition
 * Verify you've logged out+in after adding your user to the group
-* Verify selinux is disabled. There seems to be work going on to let docker work along selinux, but I could not succeed at using bindmounts as long as selinux is active.
+* If you get strange errors, try checking whether SELinux is enabled, and try disabling it to see if the situation changes. As of 1.36, docker-rpm-builder should be compatible with SELinux, but it wasn't thoroughly tested.
 * Verify your disk has enough free space
 
 ### CentOS 7.x / RHEL 7.x
