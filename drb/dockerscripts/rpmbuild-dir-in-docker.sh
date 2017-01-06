@@ -83,6 +83,6 @@ then
 	fi
 else
     echo "Running without RPM signing"
-    rpmbuild ${RPMBUILD_EXTRA_OPTIONS} -ba $SPEC || { [ "bashonfail" == "${BASH_ON_FAIL}" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || exit 1 ; }
+    rpmbuild ${RPMBUILD_EXTRA_OPTIONS} -bb $SPEC || { [ "bashonfail" == "${BASH_ON_FAIL}" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || exit 1 ; }
 fi
 echo "Done"
