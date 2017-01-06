@@ -109,10 +109,6 @@ def chainbuild(ctx, image, source_directory, target_directory, additional_docker
         bash_on_failure, sign_with, always_pull, target_ownership, verbose, preserve_container):
     configure_root_logger(verbose)
 
-    print "assasas"
-    print ctx
-    print image
-
     docker = Docker().image(image)
     if not preserve_container:
         docker.rm()
