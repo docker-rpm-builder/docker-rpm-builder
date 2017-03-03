@@ -76,18 +76,18 @@ _HELP = """Builds a source AND binary RPM from a directory. Uses `docker run` un
 
     - in this scenario we use no option of ours but we add an option to be forwarded to docker:
 
-    docker-rpm-builder dir a682b68bbaba . /tmp/rpms -- --dns=192.168.1.1
+    docker-rpm-builder chainbuild a682b68bbaba . /tmp/rpms -- --dns=192.168.1.1
 
     - in this scenario we use a repository:tag as an image, and we ask drb to download the sources from the internet for us:
 
-    docker-rpm-builder dir alanfranz/drb-epel-6-x86-64:latest /home/user/sourcedir/myproject /tmp/rpms --download-sources
+    docker-rpm-builder chainbuild alanfranz/drb-epel-6-x86-64:latest /home/user/sourcedir/myproject /tmp/rpms --download-sources
 
     There's an additional feature which lets you pass further macros to the rpmbuild call inside the container (see
     dockerscripts directory in the source if you want to know more) - if you bind a /rpmmacros file inside the container,
     its content will be copied where it's meant to be used (i.e. ${HOME}/.rpmmacros). Please remember you should use an
     absolute path for the host macros file:
 
-    docker-rpm-builder dir a682b68bbaba . /tmp/rpms -- --volume=/home/user/my.macros:/rpmmacros:ro,Z
+    docker-rpm-builder chainbuild a682b68bbaba . /tmp/rpms -- --volume=/home/user/my.macros:/rpmmacros:ro,Z
 
     """
 
