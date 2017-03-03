@@ -28,7 +28,7 @@ class TestChainbuildCommand(TestCase):
         with open(os.path.join(self.src.path, "tmux.spec"), "wb") as f:
             f.write(TMUX_SPEC)
 
-        self.runner.invoke(chainbuild, [REFERENCE_IMAGE, self.src.path, self.rpm.path],  catch_exceptions=False)
+        self.runner.invoke(chainbuild, [REFERENCE_IMAGE, self.src.path, self.rpm.path, "--download-sources"],  catch_exceptions=False)
         self.assertEquals(2, len(os.listdir(os.path.join(self.rpm.path, REFERENCE_IMAGE_ARCH))))
         self.assertEquals(1, len(glob.glob1(self.rpm.path, "*.src.rpm")))
 
