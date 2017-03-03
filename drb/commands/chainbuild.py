@@ -98,6 +98,7 @@ _logger = logging.getLogger("drb.commands.dir")
 @click.argument("source_directory", type=click.Path(exists=True, file_okay=False, resolve_path=True))
 @click.argument("target_directory", type=click.Path(file_okay=False, resolve_path=True))
 @click.argument("additional_docker_options", type=click.STRING, nargs=-1)
+@click.option("--download-sources", is_flag=True, default=False)
 @click.option("--bash-on-failure", is_flag=True, default=False)
 @click.option("--sign-with", nargs=1, type=click.Path(exists=True, dir_okay=False, resolve_path=True), default=None)
 @click.option("--always-pull", is_flag=True, default=False)
@@ -105,7 +106,7 @@ _logger = logging.getLogger("drb.commands.dir")
 @click.option('--verbose', is_flag=True, default=False)
 @click.option('--preserve-container', is_flag=True, default=False)
 @click.pass_context
-def chainbuild(ctx, image, source_directory, target_directory, additional_docker_options,
+def chainbuild(ctx, image, source_directory, target_directory, additional_docker_options, download_sources,
         bash_on_failure, sign_with, always_pull, target_ownership, verbose, preserve_container):
     configure_root_logger(verbose)
 
@@ -126,9 +127,10 @@ def chainbuild(ctx, image, source_directory, target_directory, additional_docker
         specfile = rendered_filename
     specname = os.path.splitext(os.path.basename(specfile))[0] + ".spec"
 
-    _logger.info("Now downloading sources")
-    with UserExceptionTransformer(Exception, "it was impossible to download at least one source file", append_original_message=True):
-        downloadsources(source_directory, specfile, image)
+    if download_sources:
+        _logger.info("Now downloading sources")
+        with UserExceptionTransformer(Exception, "it was impossible to download at least one source file", append_original_message=True):
+            downloadsources(source_directory, specfile, image)
 
     srpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_srcrpmdir}").do_run()
     sources_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_sourcedir}").do_run()
