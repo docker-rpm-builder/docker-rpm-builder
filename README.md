@@ -420,6 +420,7 @@ To all the people who gave me feedback or contributed to this project, in no spe
 * Romain P
 * Pavel Borzenkov
 * Peter Williams
+* Marco Nenciarini
 
 ## TODOS and ideas
 * Remove wget dependency
