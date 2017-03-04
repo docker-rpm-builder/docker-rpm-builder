@@ -1,3 +1,6 @@
+## 04 Mar 2017: docker-rpm-builder v1.37
+- Fix hardcoded --download-sources option in chainbuild. The option must be enabled manually.
+
 ## 07 Jan 2017: docker-rpm-builder v1.36
 - SELinux context support; makes it possible to use docker-rpm-builder even when SELinux is enabled.
 
