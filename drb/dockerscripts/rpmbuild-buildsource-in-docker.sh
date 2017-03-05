@@ -64,7 +64,7 @@ then
 		exit ${exitcode}
 	fi
     
-	files="$(sed -n -e '/Checking for unpackaged file/,$p' <<< "${rpmbuild_out}" | grep 'Wrote:' | cut -d ':' -f 2)"
+	files="$(echo  "${rpmbuild_out}" | grep 'Wrote:' | cut -d ':' -f 2)"
 	
 	exitcode=0
     echo -e "\n" | setsid rpmsign --addsign ${files} || { exitcode="$?" ; /bin/true ; }
