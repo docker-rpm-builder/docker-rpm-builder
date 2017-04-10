@@ -1,5 +1,6 @@
-## next release:
+## 10 Apr 2017: docker-rpm-builder v1.38
 - Remove overlayfs support, it's too unreliable  (depends on kernel version, underlying fs type, etc)
+- Fix chainbuild RPM signing
 
 ## 04 Mar 2017: docker-rpm-builder v1.37
 - Fix hardcoded --download-sources option in chainbuild. The option must be enabled manually.
