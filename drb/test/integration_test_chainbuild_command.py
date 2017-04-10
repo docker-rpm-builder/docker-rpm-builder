@@ -32,6 +32,21 @@ class TestChainbuildCommand(TestCase):
         self.assertEquals(2, len(os.listdir(os.path.join(self.rpm.path, REFERENCE_IMAGE_ARCH))))
         self.assertEquals(1, len(glob.glob1(self.rpm.path, "*.src.rpm")))
 
+    def test_chainbuild_command_produces_signed_binary_rpm_if_signing_requested(self):
+        with open(os.path.join(self.src.path, "tmux.spec"), "wb") as f:
+            f.write(TMUX_SPEC)
+        with open(os.path.join(self.src.path, "sign.gpg"), "wb") as f:
+            f.write(SIGN_PRIV)
+        with open(os.path.join(self.rpm.path, "sign.pub"), "wb") as f:
+            f.write(SIGN_PUB)
+
+        self.runner.invoke(chainbuild, [REFERENCE_IMAGE, self.src.path, self.rpm.path, "--download-sources", "--sign-with", os.path.join(self.src.path, "sign.gpg"), "--verbose" ],  catch_exceptions=False)
+
+        out = Docker().rm().bindmount_dir(self.rpm.path, "/rpm").workdir("/rpm/%s" % REFERENCE_IMAGE_ARCH).image(REFERENCE_IMAGE).\
+            cmd_and_args("/bin/bash", "-c", "rpm --import ../sign.pub && rpm -K *.rpm").do_run()
+        self.assertTrue("pgp" in out)
+        self.assertTrue("OK" in out)
+
 
 OVERLAYFS_TEST_TEMPLATE = """
 Name:           tmux
