@@ -67,13 +67,6 @@ _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hoo
     Still, you've got to dig out its id/name yourself. It's useful for debugging purposes,
     by the way.
 
-    --enable-source-overlay: if passed, the source directory - %{_sourcedir} - inside the
-    build container will be mounted with an overlay; that will allow the build directory to
-    be writeable without propagating modifications to the host, so that it's not necessary to
-    rsync/copy the source from the host to the container when compiling.
-    WARNING: This runs a PRIVILEGED docker container and requires a 3.18+ kernel with the overlay
-             kernel module.
-
     --verbose: display whatever happens during the build.
 
     Examples:
@@ -120,7 +113,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         docker.rm()
 
     if enable_source_overlay:
-        docker.privileged()
+        _logger.warning("Overlayfs support was disabled because it was found to be unreliable. Running without it.")
 
     if always_pull:
         _logger.info("Now pulling remote image")
@@ -158,7 +151,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     with TempDir.platformwise() as tmp:
         docker.additional_options(*additional_docker_options).bindmount_file(specfile, os.path.join(specs_inner_dir, specname)).bindmount_dir(dockerscripts, "/dockerscripts") \
             .bindmount_dir(source_directory, sources_inner_dir).bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
-            .env("ENABLE_SOURCE_OVERLAY", str(int(not enable_source_overlay))).env("CALLING_UID", str(uid)).env("CALLING_GID", str(gid)).env("BASH_ON_FAIL", bashonfail) \
+            .env("CALLING_UID", str(uid)).env("CALLING_GID", str(gid)).env("BASH_ON_FAIL", bashonfail) \
             .cmd_and_args("./rpmbuild-dir-in-docker.sh").bindmount_dir(tmp.path, "/tmp", False)
 
 

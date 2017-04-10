@@ -4,7 +4,7 @@ set -ex
 [ -z "${CALLING_UID}" ] && { echo "Missing CALLING_UID"; /bin/false; }
 [ -z "${CALLING_GID}" ] && { echo "Missing CALLING_GID"; /bin/false; }
 [ -z "${BASH_ON_FAIL}" ] && { echo "Missing BASH_ON_FAIL. Won't drop into interactive shell if errors are found"; }
-[ 0 -eq "${ENABLE_SOURCE_OVERLAY}" ] && { echo "Source overlay enabled"; }
+[ 0 -eq "${ENABLE_SOURCE_OVERLAY}" ] && { echo "Should never happen"; exit 1; }
 
 RPMS_DIR=$(rpm --eval %{_rpmdir})
 SRPMS_DIR=$(rpm --eval %{_srcrpmdir})
@@ -17,11 +17,6 @@ function finish {
   umount -f "${SOURCE_DIR}" || /bin/true
 }
 trap finish EXIT
-
-if [ 0 -eq "${ENABLE_SOURCE_OVERLAY}" ]; then
-    mkdir -p /tmp/upperdir /tmp/workdir
-    mount -t overlay overlay -olowerdir="${SOURCE_DIR}",upperdir=/tmp/upperdir,workdir=/tmp/workdir "${SOURCE_DIR}"
-fi
 
 echo "starting $0"
 SPEC=$(ls ${SPECS_DIR}/*.spec | head -n 1)
