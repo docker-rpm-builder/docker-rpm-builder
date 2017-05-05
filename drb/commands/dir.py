@@ -136,6 +136,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     rpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_rpmdir}").do_run()
     sources_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_sourcedir}").do_run()
     specs_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_specdir}").do_run()
+    sources_dir = source_directory + "/../SOURCES"
     uid, gid = parse_ownership(target_ownership)
     dockerscripts = getpath("drb/dockerscripts")
     if sign_with:
@@ -150,7 +151,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     mkdir_p(target_directory)
     with TempDir.platformwise() as tmp:
         docker.additional_options(*additional_docker_options).bindmount_file(specfile, os.path.join(specs_inner_dir, specname)).bindmount_dir(dockerscripts, "/dockerscripts") \
-            .bindmount_dir(source_directory, sources_inner_dir).bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
+            .bindmount_dir(sources_directory, sources_inner_dir).bindmount_dir(target_directory, rpms_inner_dir, read_only=False).workdir("/dockerscripts") \
             .env("CALLING_UID", str(uid)).env("CALLING_GID", str(gid)).env("BASH_ON_FAIL", bashonfail) \
             .cmd_and_args("./rpmbuild-dir-in-docker.sh").bindmount_dir(tmp.path, "/tmp", False)
 
