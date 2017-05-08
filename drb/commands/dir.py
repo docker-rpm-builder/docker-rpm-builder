@@ -103,9 +103,11 @@ _logger = logging.getLogger("drb.commands.dir")
 @click.option('--verbose', is_flag=True, default=False)
 @click.option('--preserve-container', is_flag=True, default=False)
 @click.option('--enable-source-overlay', is_flag=True, default=False)
+@click.option('--specfile-dir', nargs=1, type=click.Path(exists=True, dir_okay=True, resolve_path=True), default=None)
+
 def dir(image, source_directory, target_directory, additional_docker_options, download_sources,
         bash_on_failure, sign_with, always_pull, target_ownership, verbose, preserve_container,
-        enable_source_overlay):
+        enable_source_overlay, specfile_dir):
     configure_root_logger(verbose)
 
     docker = Docker().image(image)
@@ -115,13 +117,18 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
     if enable_source_overlay:
         _logger.warning("Overlayfs support was disabled because it was found to be unreliable. Running without it.")
 
+    specfile_location = source_directory
+    if specfile_dir:
+       specfile_location = os.path.basename(specfile_dir)
+       _logger.info("Specfile directory %s", specfile_location)
+
     if always_pull:
         _logger.info("Now pulling remote image")
         docker.do_pull(ignore_errors=True)
 
     with UserExceptionTransformer(Exception, "There must be exactly one spec or spectemplate in source directory."):
-        specfile = one([os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spectemplate")] + \
-                [os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spec")])
+        specfile = one([os.path.join(specfile_location, fn) for fn in glob.glob1(specfile_location, "*.spectemplate")] + \
+                [os.path.join(specfile_location, fn) for fn in glob.glob1(specfile_location, "*.spec")])
 
     if os.path.splitext(specfile)[1] == ".spectemplate":
         rendered_filename = SpecTemplate.from_path(specfile).render(os.environ)
@@ -161,6 +168,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
             else:
                 docker.do_run()
         _logger.info("Build completed successfully. Your results are in %s", target_directory)
+
 
 
 
