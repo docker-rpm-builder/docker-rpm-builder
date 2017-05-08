@@ -69,6 +69,9 @@ _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hoo
 
     --verbose: display whatever happens during the build.
 
+    --specfile-dir: if passed, the specfile will be searched in the specified directory rather than
+    in the sources directory.
+
     Examples:
 
     - in this scenario we use no option of ours but we add an option to be forwarded to docker:
@@ -119,7 +122,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
 
     specfile_location = source_directory
     if specfile_dir:
-       specfile_location = os.path.basename(specfile_dir)
+       specfile_location = os.path.dirname(specfile_dir)
        _logger.info("Specfile directory %s", specfile_location)
 
     if always_pull:
