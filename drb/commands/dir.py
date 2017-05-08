@@ -122,8 +122,12 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
 
     specfile_location = source_directory
     if specfile_dir:
-       specfile_location = os.path.dirname(specfile_dir)
-       _logger.info("Specfile directory %s", specfile_location)
+        if os.path.isdir(specfile_dir):
+            specfile_location = os.path.realpath(specfile_dir)
+        else:
+            specfile_location = os.path.dirname(specfile_dir)
+        _logger.info("Specfile directory %s", specfile_location)
+
 
     if always_pull:
         _logger.info("Now pulling remote image")
