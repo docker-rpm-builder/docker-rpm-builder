@@ -105,9 +105,10 @@ _logger = logging.getLogger("drb.commands.dir")
 @click.option("--target-ownership", type=click.STRING, default="{0}:{1}".format(os.getuid(), os.getgid()))
 @click.option('--verbose', is_flag=True, default=False)
 @click.option('--preserve-container', is_flag=True, default=False)
+@click.option('--spec-directory-override', type=click.Path(exists=True, file_okay=False, resolve_path=True), default=None)
 @click.pass_context
 def chainbuild(ctx, image, source_directory, target_directory, additional_docker_options, download_sources,
-        bash_on_failure, sign_with, always_pull, target_ownership, verbose, preserve_container):
+        bash_on_failure, sign_with, always_pull, target_ownership, verbose, preserve_container, spec_directory_override):
     configure_root_logger(verbose)
 
     docker = Docker().image(image)
@@ -118,9 +119,10 @@ def chainbuild(ctx, image, source_directory, target_directory, additional_docker
         _logger.info("Now pulling remote image")
         docker.do_pull(ignore_errors=True)
 
+    spec_host_dir = spec_directory_override if (spec_directory_override is not None) else source_directory
     with UserExceptionTransformer(Exception, "There must be exactly one spec or spectemplate in source directory."):
-        specfile = one([os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spectemplate")] + \
-                [os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spec")])
+        specfile = one([os.path.join(spec_host_dir, fn) for fn in glob.glob1(spec_host_dir, "*.spectemplate")] + \
+                [os.path.join(spec_host_dir, fn) for fn in glob.glob1(spec_host_dir, "*.spec")])
 
     if os.path.splitext(specfile)[1] == ".spectemplate":
         rendered_filename = SpecTemplate.from_path(specfile).render(os.environ)
