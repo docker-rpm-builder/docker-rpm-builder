@@ -21,6 +21,8 @@ from drb.tempdir import TempDir
 from drb.commands.srcrpm import srcrpm
 
 _HELP = """Builds a source AND binary RPM from a directory. Uses `docker run` under the hood.
+    WARNING: this command is somewhat experimental and not as well supported as `dir`
+    and `srcrpm`.
 
     IMAGE should be a docker image id or a repository:tag,
     e.g something like a682b68bbaba or alanfranz/drb-epel-6-x86-64:latest ;
