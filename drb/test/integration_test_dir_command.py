@@ -25,12 +25,14 @@ def kernel_doesnt_support_overlay():
 class TestDirCommand(TestCase):
     def setUp(self):
         self.runner = CliRunner()
+        self.specs = TempDir.platformwise() # used in just one test, but it's useful to have this here.
         self.src = TempDir.platformwise()
         self.rpm = TempDir.platformwise()
 
     def tearDown(self):
         self.src.delete()
         self.rpm.delete()
+        self.specs.delete()
 
     def test_dir_command_fails_if_sources_unavailable_and_downloadsources_not_enabled(self):
         with open(os.path.join(self.src.path, "tmux.spec"), "wb") as f:
@@ -45,6 +47,13 @@ class TestDirCommand(TestCase):
             f.write(TMUX_SPEC)
 
         self.runner.invoke( dir, [REFERENCE_IMAGE, self.src.path, self.rpm.path, "--download-sources"],  catch_exceptions=False)
+        self.assertEquals(2, len(os.listdir(os.path.join(self.rpm.path, REFERENCE_IMAGE_ARCH))))
+
+    def test_dir_command_produces_binary_rpm_and_debuginfo_packages_if_valid_spec_passed_in_override_directory_and_downloadsources_enabled(self):
+        with open(os.path.join(self.specs.path, "tmux.spec"), "wb") as f:
+            f.write(TMUX_SPEC)
+
+        self.runner.invoke( dir, [REFERENCE_IMAGE, self.src.path, self.rpm.path, "--download-sources", "--spec-directory-override", self.specs.path],  catch_exceptions=False)
         self.assertEquals(2, len(os.listdir(os.path.join(self.rpm.path, REFERENCE_IMAGE_ARCH))))
 
     def test_dir_command_produces_binary_rpm_and_debuginfo_packages_if_valid_spectemplate_passed_and_downloadsources_enabled(self):

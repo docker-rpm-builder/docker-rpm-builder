@@ -66,6 +66,9 @@ _HELP = """Builds a binary RPM from a directory. Uses `docker run` under the hoo
     --preserve-container: if passed, the build container(s) won't be removed after the build.
     Still, you've got to dig out its id/name yourself. It's useful for debugging purposes,
     by the way.
+    
+    --spec-directory-override <PATH>: if passed, the spec or spectemplate won't be looked for within SOURCE_DIRECTORY,
+    but will be looked for in PATH, which should be a directory.
 
     --verbose: display whatever happens during the build.
 
@@ -103,9 +106,10 @@ _logger = logging.getLogger("drb.commands.dir")
 @click.option('--verbose', is_flag=True, default=False)
 @click.option('--preserve-container', is_flag=True, default=False)
 @click.option('--enable-source-overlay', is_flag=True, default=False)
+@click.option('--spec-directory-override', type=click.Path(exists=True, file_okay=False, resolve_path=True), default=None)
 def dir(image, source_directory, target_directory, additional_docker_options, download_sources,
         bash_on_failure, sign_with, always_pull, target_ownership, verbose, preserve_container,
-        enable_source_overlay):
+        enable_source_overlay, spec_directory_override):
     configure_root_logger(verbose)
 
     docker = Docker().image(image)
@@ -119,9 +123,11 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         _logger.info("Now pulling remote image")
         docker.do_pull(ignore_errors=True)
 
+    spec_host_dir = spec_directory_override if (spec_directory_override is not None) else source_directory
+
     with UserExceptionTransformer(Exception, "There must be exactly one spec or spectemplate in source directory."):
-        specfile = one([os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spectemplate")] + \
-                [os.path.join(source_directory, fn) for fn in glob.glob1(source_directory, "*.spec")])
+        specfile = one([os.path.join(spec_host_dir, fn) for fn in glob.glob1(spec_host_dir, "*.spectemplate")] + \
+                [os.path.join(spec_host_dir, fn) for fn in glob.glob1(spec_host_dir, "*.spec")])
 
     if os.path.splitext(specfile)[1] == ".spectemplate":
         rendered_filename = SpecTemplate.from_path(specfile).render(os.environ)
