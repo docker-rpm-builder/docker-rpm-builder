@@ -11,17 +11,6 @@ from drb.docker import Docker, SpawnedProcessError
 REFERENCE_IMAGE = os.environ.get("REFERENCE_IMAGE") or "alanfranz/drb-epel-7-x86-64:latest"
 REFERENCE_IMAGE_ARCH = "x86_64" if not "i386" in REFERENCE_IMAGE else "i386"
 
-def kernel_doesnt_support_overlay():
-    docker = Docker().rm().image("alanfranz/drb-epel-7-x86-64:latest").privileged()
-    docker.cmd_and_args("mount", "-t", "overlay", "none", "/opt")
-    try:
-        output = docker.do_run()
-    except SpawnedProcessError, e:
-        print e.error, e.output
-        return "unknown" in e.error or "unknown" in e.output
-    raise AssertionError("this should never happen")
-
-
 class TestDirCommand(TestCase):
     def setUp(self):
         self.runner = CliRunner()

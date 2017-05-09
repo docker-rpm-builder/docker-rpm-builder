@@ -105,7 +105,7 @@ _logger = logging.getLogger("drb.commands.dir")
 @click.option("--target-ownership", type=click.STRING, default="{0}:{1}".format(os.getuid(), os.getgid()))
 @click.option('--verbose', is_flag=True, default=False)
 @click.option('--preserve-container', is_flag=True, default=False)
-@click.option('--enable-source-overlay', is_flag=True, default=False)
+@click.option('--enable-source-overlay', is_flag=True, default=False, help="DISABLED. Won't work even though it gets requested.")
 @click.option('--spec-directory-override', type=click.Path(exists=True, file_okay=False, resolve_path=True), default=None)
 def dir(image, source_directory, target_directory, additional_docker_options, download_sources,
         bash_on_failure, sign_with, always_pull, target_ownership, verbose, preserve_container,
