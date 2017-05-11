@@ -3,16 +3,14 @@ rm -f /tmp/test.exit
 EXIT_CODE=1
 trap 'echo ${EXIT_CODE} > /tmp/test.exit' EXIT
 
-cat > /etc/yum.repos.d/docker.repo <<EOF
-[docker]
-name=docker
-baseurl=https://yum.dockerproject.org/repo/main/fedora/24/
-gpgcheck=1
-gpgkey=https://yum.dockerproject.org/gpg
-EOF
+dnf -y install dnf-plugins-core
+
+sudo dnf config-manager \
+    --add-repo \
+    https://download.docker.com/linux/fedora/docker-ce.repo
 
 rpm --import /home/vagrant/sync/public.asc
-yum -y install docker-engine /home/vagrant/sync/out/*.rpm
+dnf -y install docker-ce /home/vagrant/sync/out/*.rpm
 
 service docker start || /bin/true
 
