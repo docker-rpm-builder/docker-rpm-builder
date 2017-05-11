@@ -3,17 +3,15 @@ rm -f /tmp/test.exit
 EXIT_CODE=1
 trap 'echo ${EXIT_CODE} > /tmp/test.exit' EXIT
 
-cat > /etc/yum.repos.d/docker.repo <<EOF
-[docker]
-name=docker
-baseurl=https://yum.dockerproject.org/repo/main/centos/7/
-gpgcheck=1
-gpgkey=https://yum.dockerproject.org/gpg
-EOF
-
 rpm --import /home/vagrant/sync/public.asc
 
-yum -y install docker-engine /home/vagrant/sync/out/*.rpm
+yum -y install yum-utils
+
+yum-config-manager \
+    --add-repo \
+    https://download.docker.com/linux/centos/docker-ce.repo
+
+yum -y install docker-ce /home/vagrant/sync/out/*.rpm
 
 service docker start || /bin/true
 
