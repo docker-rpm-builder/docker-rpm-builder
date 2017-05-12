@@ -96,9 +96,9 @@ You should have a vague idea of what [docker](https://www.docker.com) is and you
 
 ### Prerequisites
 
-**IMPORTANT:** A Docker distribution is required in order to use this tool. I recommend using the latest stable *docker-engine* RPM or DEB, use prebuilt packages package from yum.dockerproject.org or apt.dockerproject.org; just follow the [official install instructions](https://docs.docker.com/engine/installation/).
+**IMPORTANT:** A Docker distribution is required in order to use this tool. I recommend using the latest stable *docker-ce* RPM or DEB, use prebuilt packages package from yum.dockerproject.org or apt.dockerproject.org; just follow the [official install instructions](https://docs.docker.com/engine/installation/).
 
-At the dawn of this tool, I tried to make it work with any version of *docker* that would come from the distributions' repository or from official repository. This proved to be quite troublesome, but at the same time, different distributions are repackaging the docker CLI and daemon in different ways, and users have different priorities. So, **since version 1.33 docker-rpm-builder no longer forces a dependency on any docker package on your system.** Feel free to use whatever docker version you like; just be aware that I usually test *docker-rpm-builder* using the official *docker-engine* packages.
+At the dawn of this tool, I tried to make it work with any version of *docker* that would come from the distributions' repository or from official repository. This proved to be quite troublesome, but at the same time, different distributions are repackaging the docker CLI and daemon in different ways, and users have different priorities. So, **since version 1.33 docker-rpm-builder no longer forces a dependency on any docker package on your system.** Feel free to use whatever docker version you like; just be aware that I usually test *docker-rpm-builder* using the official *docker-ce* packages.
 
 Python 2.7, bash, and wget should be installed on your system as well. If you're using a packaged version, the package will take care of that.
 
@@ -402,7 +402,7 @@ There are some prebuilt configurations for Centos+EPEL and Fedora at [https://gi
 
 ## Gotchas
 * if you're used to mock, the build system is a bit different, mocks seems to employ different defaults and has different macros, sometimes a build working with mock may fail with docker-rpm-builder. **AFAICU it's one of mock's own strange behaviours;** docker-rpm-builder seems actually more similar to the 'real' rpmbuild.
-* dns defaults to public ones, usually Google ones on docker-engine default options. Since you can just pass arbitrary docker options, pass --dns and/or set your internal
+* dns defaults to public ones, usually Google ones on docker-ce default options. Since you can just pass arbitrary docker options, pass --dns and/or set your internal
 DNS in the docker config file if you need to access internal repositories.
 * If you're auto-downloading remote files: GitHub hosted files (i.e. releases) throw an HTTP 403 Forbidden when used with the HTTP HEAD method, which in turn is what
   ```wget --timestamping``` is used. Great for caching, but currently dysfunctional. Use a github archive from a tag (e.g. https://github.com/USER/REPO/archive/COMMIT.tar.gz ) to work around this issue until is fixed upstream.
