@@ -1,3 +1,8 @@
+## 12 May 2017: docker-rpm-builder v1.39
+- Support overriding the directory where the spec/spectemplate is located
+- Support parallel builds when SELinux is enabled (use `z` mount option instead of `Z` for docker volumes)
+- Test using the official Docker CE from download.docker.com repo instead of apt.dockerproject.org
+
 ## 10 Apr 2017: docker-rpm-builder v1.38
 - Remove overlayfs support, it's too unreliable  (depends on kernel version, underlying fs type, etc)
 - Fix chainbuild RPM signing
