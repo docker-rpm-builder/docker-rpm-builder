@@ -1,6 +1,6 @@
 ## News
 
-**IMPORTANT:** Docker has changed the distribution repos (both APT and YUM) for its packages. See the updated instructions and repos at docs.docker.com. The new free packages is called **docker-ce**.
+**IMPORTANT:** Docker has changed the distribution repos (both APT and YUM) for its packages. See the updated instructions and repos at docs.docker.com. The new free package is called **docker-ce**.
 
 **IMPORTANT:** The APT and YUM repos have changed! Check the new URLs down there!
 
