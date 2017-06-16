@@ -432,4 +432,4 @@ To all the people who gave me feedback or contributed to this project, in no spe
 
 ## Disclaimer
 
-This project is not affiliated, sponsorend or endorsed by neither Fedora, RedHat or Docker Inc.
+This project is not affiliated, sponsored or endorsed by neither Fedora, RedHat or Docker Inc.
