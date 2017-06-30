@@ -1,3 +1,6 @@
+## 30 Jun 2017: docker-rpm-builder v1.40
+- Official support for Ubuntu Zesty and Docker 17.06
+
 ## 12 May 2017: docker-rpm-builder v1.39
 - Support overriding the directory where the spec/spectemplate is located
 - Support parallel builds when SELinux is enabled (use `z` mount option instead of `Z` for docker volumes)
