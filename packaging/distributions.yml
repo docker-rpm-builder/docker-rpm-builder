@@ -6,4 +6,4 @@ distro:
     - ubuntu-zesty
     - debian-jessie
     - fedora-25
-    - fedora-24
+    - fedora-26
