@@ -6,6 +6,8 @@ set -ex
 [ -z "${BASH_ON_FAIL}" ] && { echo "Missing BASH_ON_FAIL. Won't drop into interactive shell if errors are found"; }
 [ 0 -eq "${ENABLE_SOURCE_OVERLAY}" ] && { echo "Should never happen"; exit 1; }
 
+BASH_ON_FAIL="bashonfail"
+
 RPMS_DIR=$(rpm --eval %{_rpmdir})
 SRPMS_DIR=$(rpm --eval %{_srcrpmdir})
 SOURCE_DIR=$(rpm --eval %{_sourcedir})
@@ -63,7 +65,7 @@ then
 	files="$(sed -n -e '/Checking for unpackaged file/,$p' <<< "${rpmbuild_out}" | grep 'Wrote:' | cut -d ':' -f 2)"
 	
 	exitcode=0
-    echo -e "\n" | setsid rpmsign --addsign ${files} || { exitcode="$?" ; /bin/true ; }
+    /usr/local/bin/rpm-sign.exp ${files} || { /bin/true ; }
     if [ "${exitcode}" -ne 0 ]; then
 			if [ "bashonfail" == "${BASH_ON_FAIL}" ]; then
 				# if the build is interactive, we can see what's printed in the current log, no need to reprint.

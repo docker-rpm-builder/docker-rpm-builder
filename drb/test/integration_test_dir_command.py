@@ -11,7 +11,7 @@ from drb.docker import Docker, SpawnedProcessError
 REFERENCE_IMAGE = os.environ.get("REFERENCE_IMAGE") or "alanfranz/drb-epel-7-x86-64:latest"
 REFERENCE_IMAGE_ARCH = "x86_64" if not "i386" in REFERENCE_IMAGE else "i386"
 
-class TestDirCommand(TestCase):
+class test_dir_command_produces_signed_binary_rpm_if_signing_requested(TestCase):
     def setUp(self):
         self.runner = CliRunner()
         self.specs = TempDir.platformwise() # used in just one test, but it's useful to have this here.

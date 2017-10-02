@@ -67,7 +67,7 @@ then
 	files="$(grep 'Wrote:' <<< "${rpmbuild_out}" | cut -d ':' -f 2)"
 	
 	exitcode=0
-    echo -e "\n" | setsid rpmsign --addsign ${files} || { exitcode="$?" ; /bin/true ; }
+    /usr/local/bin/rpm-sign.exp ${files} || { exitcode="$?" ; /bin/true ; }
     if [ "${exitcode}" -ne 0 ]; then
 			if [ "bashonfail" == "${BASH_ON_FAIL}" ]; then
 				# if the build is interactive, we can see what's printed in the current log, no need to reprint.
