@@ -12,6 +12,13 @@ See the [News Page](NEWS.md) for all the latest news.
 See also [FPM within Docker](https://github.com/alanfranz/fpm-within-docker) - an alternative way of building RPMs and DEBs
 that could make things even easier for you.
 
+## Donate!
+
+```docker-rpm-builder``` is got a number of faithful users and followers; now you can donate to the project,
+not in the form of money (maybe I'll start accepting some BTC in the near future, but not right now) but in the
+form of goods; if you find this project useful and you'd like to reward me for my work, you can 
+[buy me something from my Amazon wish list](http://amzn.eu/98Ey0a8).
+
 ## Table of Contents
 
  * [News](#news)
