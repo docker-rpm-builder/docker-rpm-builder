@@ -156,3 +156,8 @@ class Docker(object):
         option = "--workdir={0}".format(pipes.quote(guest_dir))
         self._options.append(option)
         return self
+
+    def init(self):
+        self._options.append("--init")
+        return self
+
