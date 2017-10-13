@@ -67,13 +67,14 @@ then
 	files="$(grep 'Wrote:' <<< "${rpmbuild_out}" | cut -d ':' -f 2)"
 	
 	exitcode=0
-    echo -e "\n" | setsid rpmsign --addsign ${files} || { exitcode="$?" ; /bin/true ; }
+    echo -e "\n" | setsid rpmsign --addsign ${files} || /bin/true
+    rpm -K ${files} || { echo "Signing failed." ; exitcode=1; }
     if [ "${exitcode}" -ne 0 ]; then
 			if [ "bashonfail" == "${BASH_ON_FAIL}" ]; then
 				# if the build is interactive, we can see what's printed in the current log, no need to reprint.
 				echo "Signing failed, spawning a shell. The build will terminate after such shell is closed."
 				/bin/bash
-			else 
+			else
 				echo -e "${rpmbuild_out}\n\nrpmsign command failed."
 			fi
 		# don't accidentally retain unsigned files
