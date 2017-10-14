@@ -4,7 +4,7 @@ set -ex
 [ -z "${CALLING_UID}" ] && { echo "Missing CALLING_UID"; /bin/false; }
 [ -z "${CALLING_GID}" ] && { echo "Missing CALLING_GID"; /bin/false; }
 [ -z "${BASH_ON_FAIL}" ] && { echo "Missing BASH_ON_FAIL. Won't drop into interactive shell if errors are found"; }
-[ 0 -eq "${ENABLE_SOURCE_OVERLAY}" ] && { echo "Should never happen"; exit 1; }
+
 
 RPMS_DIR=$(rpm --eval %{_rpmdir})
 SRPMS_DIR=$(rpm --eval %{_srcrpmdir})
@@ -46,6 +46,8 @@ then
     KEYNAME="${BASH_REMATCH[1]}"
     [ -n "${KEYNAME}" ] || { echo "could not find key for signing purpose"; exit 1; }
     echo -e "%_gpg_name ${KEYNAME}\n%_signature gpg" >> ${HOME}/.rpmmacros
+    gpg --armor --export ${KEYNAME} > /tmp/public.gpg
+    rpm --import /tmp/public.gpg
 	
 	exitcode=0
     rpmbuild_out="$(rpmbuild ${RPMBUILD_EXTRA_OPTIONS} -bb $SPEC 2>&1)" || { exitcode="$?" ; /bin/true ; }
@@ -64,14 +66,15 @@ then
 	
 	exitcode=0
     echo -e "\n" | setsid rpmsign --addsign ${files} ||  /bin/true
-    rpm -K ${files} || { echo "Signing failed." ; exitcode=1; }
+    rpm -K ${files} || { echo "Signing failed." ; exitcode=1 ; }
+    echo "my exitocode ${exitcode}"
     if [ "${exitcode}" -ne 0 ]; then
 			if [ "bashonfail" == "${BASH_ON_FAIL}" ]; then
 				# if the build is interactive, we can see what's printed in the current log, no need to reprint.
 				echo "Signing failed, spawning a shell. The build will terminate after such shell is closed."
 				/bin/bash
 			else
-				echo -e "${rpmbuild_out}\n\nrpmsign command failed."
+				echo -e "${rpmbuild_out}\n\nrpmsign command failed. FOREVER AND EVER"
 			fi
 		# don't accidentally retain unsigned files
 		rm -f ${files}
