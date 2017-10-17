@@ -4,7 +4,7 @@ set -ex
 EXIT_STATUS="FAIL"
 
 function log {
-    echo "[$(date --rfc-3339=seconds)]: $*"
+    echo -e "[$(date --rfc-3339=seconds)]: $*"
 }
 
 function finish {
@@ -66,7 +66,7 @@ then
 				log "Build failed, spawning a shell. The build will terminate after such shell is closed."
 				/bin/bash
 			else 
-				log -e "${rpmbuild_out}\n\nrpmbuild command failed."
+				log "rpmbuild command failed:output is: -->\n${rpmbuild_out}\nrpmbuild command output end\n\n."
 			fi
 		exit ${exitcode}
 	fi
@@ -74,15 +74,15 @@ then
 	files="$(sed -n -e '/Checking for unpackaged file/,$p' <<< "${rpmbuild_out}" | grep 'Wrote:' | cut -d ':' -f 2)"
 	
 	exitcode=0
-    echo -e "\n" | setsid rpmsign --addsign "${files}" ||  /bin/true
-    rpm -K "${files}" || { log "Signing failed." ; exitcode=1 ; }
+    echo -e "\n" | setsid rpmsign --addsign ${files} ||  /bin/true
+    rpm -K ${files} || { log "Signing failed." ; exitcode=1 ; }
     if [ "${exitcode}" -ne 0 ]; then
 			if [ "bashonfail" == "${BASH_ON_FAIL}" ]; then
 				# if the build is interactive, we can see what's printed in the current log, no need to reprint.
 				log "Signing failed, spawning a shell. The build will terminate after such shell is closed."
 				/bin/bash
 			else
-				log -e "${rpmbuild_out}\n\nrpmsign command failed. FOREVER AND EVER"
+				log "rpmsign command failed:output is: -->\n${rpmbuild_out}\nrpmsign command output end\n\n."
 			fi
 		# don't accidentally retain unsigned files
 		rm -f "${files}"

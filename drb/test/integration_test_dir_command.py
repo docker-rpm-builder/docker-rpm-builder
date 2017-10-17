@@ -64,8 +64,8 @@ class TestDirCommand(TestCase):
 
         out = Docker().rm().bindmount_dir(self.rpm.path, "/rpm").workdir("/rpm/%s" % REFERENCE_IMAGE_ARCH).image(REFERENCE_IMAGE).\
             cmd_and_args("/bin/bash", "-c", "rpm --import ../sign.pub && rpm -K *.rpm").do_run()
-        self.assertTrue("pgp" in out)
-        self.assertTrue("OK" in out)
+        self.assertTrue("pgp" in out, out)
+        self.assertTrue("OK" in out, out)
 
     @skipIf(sys.platform == "darwin", "Has no effect on OSX/Kitematic/boot2docker")
     def test_created_binaries_have_proper_ownership(self):
