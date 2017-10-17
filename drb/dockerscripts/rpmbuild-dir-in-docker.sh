@@ -59,7 +59,7 @@ then
     rpm --import /tmp/public.gpg
 	
 	exitcode=0
-    rpmbuild_out="$(rpmbuild "${RPMBUILD_EXTRA_OPTIONS}" -bb "$SPEC" 2>&1)" || { exitcode="$?" ; /bin/true ; }
+    rpmbuild_out="$(rpmbuild ${RPMBUILD_EXTRA_OPTIONS} -bb "$SPEC" 2>&1)" || { exitcode="$?" ; /bin/true ; }
     if [ "${exitcode}" -ne 0 ]; then
 			if [ "bashonfail" == "${BASH_ON_FAIL}" ]; then
 				# if the build is interactive, we can see what's printed in the current log, no need to reprint.
@@ -90,7 +90,7 @@ then
 	fi
 else
     log "Running without RPM signing"
-    rpmbuild "${RPMBUILD_EXTRA_OPTIONS}" -bb "$SPEC" || { [ "bashonfail" == "${BASH_ON_FAIL}" ] && { log "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || exit 1 ; }
+    rpmbuild ${RPMBUILD_EXTRA_OPTIONS} -bb "$SPEC" || { [ "bashonfail" == "${BASH_ON_FAIL}" ] && { log "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || exit 1 ; }
 fi
 
 EXIT_STATUS="SUCCESS"
