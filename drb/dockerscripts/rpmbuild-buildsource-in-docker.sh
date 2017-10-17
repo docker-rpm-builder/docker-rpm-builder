@@ -1,10 +1,25 @@
 #!/bin/bash
 set -ex
 
-[ -z "${CALLING_UID}" ] && { echo "Missing CALLING_UID"; /bin/false; }
-[ -z "${CALLING_GID}" ] && { echo "Missing CALLING_GID"; /bin/false; }
-[ -z "${BASH_ON_FAIL}" ] && { echo "Missing BASH_ON_FAIL. Won't drop into interactive shell if errors are found"; }
-[ 0 -eq "${ENABLE_SOURCE_OVERLAY}" ] && { echo "Source overlay enabled"; }
+EXIT_STATUS="FAIL"
+
+function log {
+    echo "[$(date --rfc-3339=seconds)]: $*"
+}
+
+function finish {
+  chown -R ${CALLING_UID}:${CALLING_GID} ${RPMS_DIR} /tmp || /bin/true
+  umount -f "${SOURCE_DIR}" || /bin/true
+  log "${0}: exiting. Outcome: ${EXIT_STATUS}"
+}
+trap finish EXIT
+
+log "${0}: starting"
+
+[ -z "${CALLING_UID}" ] && { log "Missing CALLING_UID"; /bin/false; }
+[ -z "${CALLING_GID}" ] && { log "Missing CALLING_GID"; /bin/false; }
+[ -z "${BASH_ON_FAIL}" ] && { log "Missing BASH_ON_FAIL. Won't drop into interactive shell if errors are found"; }
+[ -n "${ENABLE_SOURCE_OVERLAY}" ] && { log "Source overlay is unsupported"; /bin/false; }
 
 RPMS_DIR=$(rpm --eval %{_rpmdir})
 SRPMS_DIR=$(rpm --eval %{_srcrpmdir})
@@ -12,18 +27,6 @@ SOURCE_DIR=$(rpm --eval %{_sourcedir})
 SPECS_DIR=$(rpm --eval %{_specdir})
 ARCH=$(rpm --eval %{_arch})
 
-function finish {
-  chown -R ${CALLING_UID}:${CALLING_GID} ${RPMS_DIR} /tmp || /bin/true
-  umount -f "${SOURCE_DIR}" || /bin/true
-}
-trap finish EXIT
-
-if [ 0 -eq "${ENABLE_SOURCE_OVERLAY}" ]; then
-    mkdir -p /tmp/upperdir /tmp/workdir
-    mount -t overlay overlay -olowerdir="${SOURCE_DIR}",upperdir=/tmp/upperdir,workdir=/tmp/workdir "${SOURCE_DIR}"
-fi
-
-echo "starting $0"
 SPEC=$(ls ${SPECS_DIR}/*.spec | head -n 1)
 
 #rpmbuild complains if it can't find a proper user for uid/gid of the source files;
@@ -44,12 +47,12 @@ fi
 
 if [ -r "/private.key" ]
 then
-    echo "Running with RPM signing"
+    log "Running with RPM signing"
     GPGBIN="$(command -v gpg || command -v gpg2)"
     ${GPGBIN} --import /private.key
     [[ $(${GPGBIN} --list-secret-keys) =~ uid(.*) ]]
     KEYNAME="${BASH_REMATCH[1]}"
-    [ -n "${KEYNAME}" ] || { echo "could not find key for signing purpose"; exit 1; }
+    [ -n "${KEYNAME}" ] || { log "could not find key for signing purpose"; exit 1; }
     echo -e "%_gpg_name ${KEYNAME}\n%_signature gpg" >> ${HOME}/.rpmmacros
     ${GPGBIN} --armor --export ${KEYNAME} > /tmp/public.gpg
     rpm --import /tmp/public.gpg
@@ -59,10 +62,10 @@ then
     if [ "${exitcode}" -ne 0 ]; then
 			if [ "bashonfail" == "${BASH_ON_FAIL}" ]; then
 				# if the build is interactive, we can see what's printed in the current log, no need to reprint.
-				echo "Build failed, spawning a shell. The build will terminate after such shell is closed."
+				log "Build failed, spawning a shell. The build will terminate after such shell is closed."
 				/bin/bash
 			else 
-				echo -e "${rpmbuild_out}\n\nrpmbuild command failed."
+				log -e "${rpmbuild_out}\n\nrpmbuild command failed."
 			fi
 		exit ${exitcode}
 	fi
@@ -71,21 +74,22 @@ then
 	
 	exitcode=0
     echo -e "\n" | setsid rpmsign --addsign ${files} || /bin/true
-    rpm -K ${files} || { echo "Signing failed." ; exitcode=1; }
+    rpm -K ${files} || { log "Signing failed." ; exitcode=1; }
     if [ "${exitcode}" -ne 0 ]; then
 			if [ "bashonfail" == "${BASH_ON_FAIL}" ]; then
 				# if the build is interactive, we can see what's printed in the current log, no need to reprint.
-				echo "Signing failed, spawning a shell. The build will terminate after such shell is closed."
+				log "Signing failed, spawning a shell. The build will terminate after such shell is closed."
 				/bin/bash
 			else
-				echo -e "${rpmbuild_out}\n\nrpmsign command failed."
+				log -e "${rpmbuild_out}\n\nrpmsign command failed."
 			fi
 		# don't accidentally retain unsigned files
 		rm -f ${files}
 		exit ${exitcode}
 	fi
 else
-    echo "Running without RPM signing"
-    rpmbuild ${RPMBUILD_EXTRA_OPTIONS} -bs $SPEC || { [ "bashonfail" == "${BASH_ON_FAIL}" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || exit 1 ; }
+    log "Running without RPM signing"
+    rpmbuild ${RPMBUILD_EXTRA_OPTIONS} -bs $SPEC || { [ "bashonfail" == "${BASH_ON_FAIL}" ] && { log "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || exit 1 ; }
 fi
-echo "Done"
+
+EXIT_STATUS="SUCCESS"
