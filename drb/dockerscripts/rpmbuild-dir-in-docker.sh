@@ -75,7 +75,7 @@ then
 	
 	exitcode=0
     echo -e "\n" | setsid rpmsign --addsign ${files} ||  /bin/true
-    rpm -K ${files} || { log "Signing failed." ; exitcode=1 ; }
+    rpm -K ${files} | grep -e "pgp" -e "OK" || { log "Signing failed." ; exitcode=1 ; }
     if [ "${exitcode}" -ne 0 ]; then
 			if [ "bashonfail" == "${BASH_ON_FAIL}" ]; then
 				# if the build is interactive, we can see what's printed in the current log, no need to reprint.
