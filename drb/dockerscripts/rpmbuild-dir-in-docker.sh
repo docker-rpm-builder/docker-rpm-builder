@@ -6,7 +6,7 @@ CURRENT_SCRIPT="$(pwd)/$(basename $0)"
 
 . /dockerscripts/functions
 
-log "$(pwd)/${0}: starting"
+log "Starting"
 
 verify_environment_prereq
 set_variables_from_environment
@@ -14,7 +14,7 @@ set_variables_from_environment
 function finish {
   chown -R "${CALLING_UID}":"${CALLING_GID}" "${RPMS_DIR}" /tmp || /bin/true
   umount -f "${SOURCE_DIR}" || /bin/true
-  log "$(pwd)/${0}: exiting. Outcome: ${EXIT_STATUS}"
+  log "Finished. Outcome: ${EXIT_STATUS}"
 }
 trap finish EXIT
 
