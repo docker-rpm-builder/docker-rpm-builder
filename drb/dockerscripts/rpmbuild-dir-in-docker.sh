@@ -27,7 +27,7 @@ SOURCE_DIR="$(rpm --eval %\{_sourcedir\})"
 SPECS_DIR="$(rpm --eval %\{_specdir\})"
 ARCH="$(rpm --eval %\{_arch\})"
 
-SPEC="$(ls "${SPECS_DIR}/*.spec" | head -n 1)"
+SPEC="$(ls "${SPECS_DIR}"/*.spec | head -n 1)"
 /dockerscripts/rpm-setup-deps.sh
 
 #rpmbuild complains if it can't find a proper user for uid/gid of the source files;

@@ -14,7 +14,7 @@ trap finish EXIT
 
 log "${0}: starting"
 SPECS_DIR="$(rpm --eval %\{_specdir\})"
-SPEC="$(ls "${SPECS_DIR}/*.spec" | head -n 1)"
+SPEC="$(ls "${SPECS_DIR}"/*.spec | head -n 1)"
 yum-builddep -y --nogpgcheck "${SPEC}"
 
 EXIT_STATUS="SUCCESS"
