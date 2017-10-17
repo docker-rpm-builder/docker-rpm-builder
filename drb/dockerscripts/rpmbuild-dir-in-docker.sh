@@ -32,7 +32,8 @@ log "spec is ${SPEC}"
 if [ -r "/private.key" ]
 then
     setup_rpm_signing_system
-	
+
+	log "rpmbuild now starting"
 	exitcode=0
     rpmbuild_out="$(rpmbuild ${RPMBUILD_EXTRA_OPTIONS} -bb "$SPEC" 2>&1)" || { exitcode="$?" ; /bin/true ; }
     if [ "${exitcode}" -ne 0 ]; then
@@ -45,11 +46,14 @@ then
 			fi
 		exit ${exitcode}
 	fi
+	log "rpmbuild succeeded"
 
 	sign_rpmbuild_output_files
 else
     log "Running without RPM signing"
+    log "rpmbuild now starting"
     rpmbuild ${RPMBUILD_EXTRA_OPTIONS} -bb "$SPEC" || { [ "bashonfail" == "${BASH_ON_FAIL}" ] && { log "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || exit 1 ; }
+    log "rpmbuild succeeded"
 fi
 
 EXIT_STATUS="SUCCESS"

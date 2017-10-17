@@ -21,10 +21,12 @@ function set_variables_from_environment {
 }
 
 function setup_rpm_builddeps {
-    log "Starting download of dependencies"
+    log "Starting download of build dependencies"
     SPECS_DIR="$(rpm --eval %\{_specdir\})"
     SPEC="$(ls "${SPECS_DIR}"/*.spec | head -n 1)"
+    yum makecache
     yum-builddep -y --nogpgcheck "${SPEC}"
+    log "Download of build dependencies succeeded"
 }
 
 
