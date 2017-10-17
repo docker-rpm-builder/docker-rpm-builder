@@ -1,7 +1,7 @@
 # this is meant to be sourced, not executed.
 
 function log {
-    echo -e "[$(date --rfc-3339=seconds)]: $*"
+    echo -e "[$(date --rfc-3339=seconds)] [${CURRENT_SCRIPT}]: $*"
 }
 
 function verify_environment_prereq {
@@ -40,4 +40,44 @@ function map_uid_gid_to_existing_users {
         useradd -u "$uid" "user$uid" >/dev/null 2>&1 || /bin/true
     done
 
+}
+
+function setup_user_macros {
+    if [ -r "/rpmmacros" ]
+    then
+        cp /rpmmacros "${HOME}/.rpmmacros"
+        echo -e "\n" >> "${HOME}/.rpmmacros"
+    fi
+}
+
+function setup_rpm_signing_system {
+    log "Running with RPM signing"
+    GPGBIN="$(command -v gpg || command -v gpg2)"
+    ${GPGBIN} --import /private.key
+    [[ $(${GPGBIN} --list-secret-keys) =~ uid(.*) ]]
+    KEYNAME="${BASH_REMATCH[1]}"
+    [ -n "${KEYNAME}" ] || { log "could not find key for signing purpose"; exit 1; }
+    echo -e "%_gpg_name ${KEYNAME}\n%_signature gpg" >> "${HOME}/.rpmmacros"
+    ${GPGBIN} --armor --export "${KEYNAME}" > /tmp/public.gpg
+    rpm --import /tmp/public.gpg
+}
+
+function sign_rpmbuild_output_files {
+	files="$(sed -n -e '/Checking for unpackaged file/,$p' <<< "${rpmbuild_out}" | grep 'Wrote:' | cut -d ':' -f 2)"
+
+	exitcode=0
+    echo -e "\n" | setsid rpmsign --addsign ${files} ||  /bin/true
+    rpm -K ${files} | grep -e "pgp" -e "OK" || { log "Signing failed." ; exitcode=1 ; }
+    if [ "${exitcode}" -ne 0 ]; then
+			if [ "bashonfail" == "${BASH_ON_FAIL}" ]; then
+				# if the build is interactive, we can see what's printed in the current log, no need to reprint.
+				log "Signing failed, spawning a shell. The build will terminate after such shell is closed."
+				/bin/bash
+			else
+				log "rpmsign command failed:output is: -->\n${rpmbuild_out}\nrpmsign command output end\n\n."
+			fi
+		# don't accidentally retain unsigned files
+		rm -f "${files}"
+		exit "${exitcode}"
+	fi
 }
