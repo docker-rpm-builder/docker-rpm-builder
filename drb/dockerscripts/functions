@@ -26,3 +26,18 @@ function setup_rpm_builddeps {
     SPEC="$(ls "${SPECS_DIR}"/*.spec | head -n 1)"
     yum-builddep -y --nogpgcheck "${SPEC}"
 }
+
+
+
+function map_uid_gid_to_existing_users {
+    #rpmbuild complains if it can't find a proper user for uid/gid of the source files;
+    #we should add all uid/gids for source files.
+    for gid in $(find ${TOMAP_DIR} | xargs stat -c '%g' | sort | uniq); do
+        groupadd -g "$gid" "group$gid" >/dev/null 2>&1 || /bin/true
+    done
+
+    for uid in $(find ${TOMAP_DIR} | xargs stat -c '%u' | sort | uniq); do
+        useradd -u "$uid" "user$uid" >/dev/null 2>&1 || /bin/true
+    done
+
+}

@@ -19,15 +19,8 @@ trap finish EXIT
 
 setup_rpm_builddeps
 
-#rpmbuild complains if it can't find a proper user for uid/gid of the source files;
-#we should add all uid/gids for source files.
-for gid in $(stat -c '%g' "${SOURCE_DIR}"/* | sort | uniq); do
-    groupadd -g "$gid" "group$gid" >/dev/null 2>&1 || /bin/true
-done
-
-for uid in $(stat -c '%u' "${SOURCE_DIR}"/* | sort | uniq); do
-    useradd -u "$uid" "user$uid" >/dev/null 2>&1 || /bin/true
-done
+TOMAP_DIR="${SOURCE_DIR}"
+map_uid_gid_to_existing_users
 
 if [ -r "/rpmmacros" ]
 then
