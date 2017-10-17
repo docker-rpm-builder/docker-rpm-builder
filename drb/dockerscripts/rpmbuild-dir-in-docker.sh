@@ -1,34 +1,23 @@
 #!/bin/bash
-set -ex
+set -e
 
 EXIT_STATUS="FAIL"
 
-function log {
-    echo -e "[$(date --rfc-3339=seconds)]: $*"
-}
+. /dockerscripts/functions
+
+log "$(pwd)/${0}: starting"
+
+verify_environment_prereq
+set_variables_from_environment
 
 function finish {
   chown -R "${CALLING_UID}":"${CALLING_GID}" "${RPMS_DIR}" /tmp || /bin/true
   umount -f "${SOURCE_DIR}" || /bin/true
-  log "${0}: exiting. Outcome: ${EXIT_STATUS}"
+  log "$(pwd)/${0}: exiting. Outcome: ${EXIT_STATUS}"
 }
 trap finish EXIT
 
-log "${0}: starting"
-
-[ -z "${CALLING_UID}" ] && { log "Missing CALLING_UID"; /bin/false; }
-[ -z "${CALLING_GID}" ] && { log "Missing CALLING_GID"; /bin/false; }
-[ -z "${BASH_ON_FAIL}" ] && { log "Missing BASH_ON_FAIL. Won't drop into interactive shell if errors are found"; }
-[ -n "${ENABLE_SOURCE_OVERLAY}" ] && { log "Source overlay is unsupported"; /bin/false; }
-
-RPMS_DIR="$(rpm --eval %\{_rpmdir\})"
-SRPMS_DIR="$(rpm --eval %\{_srcrpmdir\})"
-SOURCE_DIR="$(rpm --eval %\{_sourcedir\})"
-SPECS_DIR="$(rpm --eval %\{_specdir\})"
-ARCH="$(rpm --eval %\{_arch\})"
-
-SPEC="$(ls "${SPECS_DIR}"/*.spec | head -n 1)"
-/dockerscripts/rpm-setup-deps.sh
+setup_rpm_builddeps
 
 #rpmbuild complains if it can't find a proper user for uid/gid of the source files;
 #we should add all uid/gids for source files.
@@ -45,6 +34,8 @@ then
     cp /rpmmacros "${HOME}/.rpmmacros"
     echo -e "\n" >> "${HOME}/.rpmmacros"
 fi
+
+SPEC="$(ls "${SPECS_DIR}"/*.spec | head -n 1)"
 
 if [ -r "/private.key" ]
 then
