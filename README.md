@@ -404,6 +404,7 @@ In order to use an image for building an RPM:
 - if you want to sign packages, make sure you install **gnupg** 1.4 and that the **rpmsign** executable is available. Also, set a proper **%__gpg_sign_cmd** macro in */etc/rpm* (see existing images).
 - any other build dependencies should be there, but if your package doesn't build because it's missing something else then the proper
 thing to do is probably add an entry to *BuildRequires* in the spec file.
+- make sure the commands ```find``` ```stat``` ```sort``` ```uniq``` ```which``` are available
 
 #### Prebuilt images
 
