@@ -18,6 +18,7 @@ function finish {
   umount -f "${SOURCE_DIR}" || /bin/true
   log "Finished. Outcome: ${EXIT_STATUS}"
   [ "${EXIT_STATUS}" != "SUCCESS" ] && { log "**** FULL OUTPUT START ****" ; cat "${CMD_OUTPUT_FILENAME}" ; log "**** FULL OUTPUT END ****"; }
+  rm -f "${CMD_OUTPUT_FILENAME}"
 }
 trap finish EXIT
 
