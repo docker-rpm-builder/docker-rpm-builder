@@ -165,10 +165,8 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
 
 
         with UserExceptionTransformer(Exception, "docker run error", append_original_message=True, final_message="\n\nBuild error. See the log above"):
-            if bash_on_failure or verbose:
-                docker.do_launch_interactively()
-            else:
-                docker.do_run()
+            docker.do_launch_interactively()
+
         _logger.info("Build completed successfully. Your results are in %s", target_directory)
 
 

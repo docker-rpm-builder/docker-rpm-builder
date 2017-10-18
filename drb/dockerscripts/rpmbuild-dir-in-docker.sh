@@ -31,7 +31,7 @@ setup_user_macros
 
 SPEC="$(find "${SPECS_DIR}" -name '*.spec' | head -n 1)"
 
-log "Starting rpmbuild of ${SPEC}"
+log "Now executing rpmbuild; this could take a while..."
 rpmbuild_out="$(rpmbuild ${RPMBUILD_EXTRA_OPTIONS} -bb "$SPEC" 2>&1)" || { exitcode="$?" ; /bin/true ; }
 if [ "${exitcode}" -ne 0 ]; then
         if [ "bashonfail" == "${BASH_ON_FAIL}" ]; then

@@ -16,7 +16,7 @@ function log {
 function verify_environment_prereq {
     [ -z "${CALLING_UID}" ] && { log "Missing CALLING_UID"; /bin/false; }
     [ -z "${CALLING_GID}" ] && { log "Missing CALLING_GID"; /bin/false; }
-    [ -z "${BASH_ON_FAIL}" ] && { log "Missing BASH_ON_FAIL. Won't drop into interactive shell if errors are found"; }
+    [ -z "${BASH_ON_FAIL}" ] || { log "BASH_ON_FAIL is set; will enter interactive shell if errors occur."; }
     [ -n "${ENABLE_SOURCE_OVERLAY}" ] && { log "Source overlay is unsupported"; /bin/false; }
     return 0
 }
@@ -30,7 +30,7 @@ function set_variables_from_environment {
 }
 
 function setup_rpm_builddeps {
-    log "Starting download of build dependencies"
+    log "Now downloading build dependencies, could take a while..."
     SPECS_DIR="$(rpm --eval %\{_specdir\})"
     SPEC="$(ls "${SPECS_DIR}"/*.spec | head -n 1)"
     yum makecache fast
@@ -56,6 +56,7 @@ function map_uid_gid_to_existing_users {
 function setup_user_macros {
     if [ -r "/rpmmacros" ]
     then
+        log "Adding user macros to current build"
         cp /rpmmacros "${HOME}/.rpmmacros"
         echo -e "\n" >> "${HOME}/.rpmmacros"
     fi
