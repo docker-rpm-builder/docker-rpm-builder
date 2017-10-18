@@ -6,6 +6,8 @@ CURRENT_SCRIPT="$(pwd)/$(basename $0)"
 
 . /dockerscripts/functions.sh
 
+setup_cmd_log
+
 log "Starting"
 
 verify_environment_prereq

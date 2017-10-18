@@ -1,8 +1,16 @@
 #@IgnoreInspection BashAddShebang
 [[ $_ != $0 ]] || { echo "functions.sh is meant to be sourced, not executed"; exit 1; }
 
+function setup_cmd_log {
+    CMD_OUTPUT_FILENAME="$(mktemp)"
+    exec 3>&1 2> ${CMD_OUTPUT_FILENAME} 1> ${CMD_OUTPUT_FILENAME}
+    DATECMD="$(command -v gdate || command -v date)"
+}
+
 function log {
-    echo -e "[$(date --rfc-3339=seconds)] [${CURRENT_SCRIPT}]: $*"
+    msg="[$("${DATECMD}" --rfc-3339=seconds)] INFO ["${CURRENT_SCRIPT}"]: $*"
+    echo "$msg" >&3
+    echo "$msg"
 }
 
 function verify_environment_prereq {
@@ -36,11 +44,11 @@ function map_uid_gid_to_existing_users {
     #rpmbuild complains if it can't find a proper user for uid/gid of the source files;
     #we should add all uid/gids for source files.
     for gid in $(find ${TOMAP_DIR} | xargs stat -c '%g' | sort | uniq); do
-        groupadd -g "$gid" "group$gid" >/dev/null 2>&1 || /bin/true
+        groupadd -g "$gid" "group$gid" || /bin/true
     done
 
     for uid in $(find ${TOMAP_DIR} | xargs stat -c '%u' | sort | uniq); do
-        useradd -u "$uid" "user$uid" >/dev/null 2>&1 || /bin/true
+        useradd -u "$uid" "user$uid"|| /bin/true
     done
 
 }
