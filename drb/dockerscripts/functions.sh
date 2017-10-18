@@ -9,8 +9,8 @@ function setup_cmd_log {
 
 function log {
     msg="[$("${DATECMD}" --rfc-3339=seconds)] INFO ["${CURRENT_SCRIPT}"]: $*"
-    echo "$msg" >&3
-    echo "$msg"
+    echo -e "$msg" >&3
+    echo -e "$msg"
 }
 
 function verify_environment_prereq {
