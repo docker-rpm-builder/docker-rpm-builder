@@ -1,4 +1,5 @@
-# this is meant to be sourced, not executed.
+#@IgnoreInspection BashAddShebang
+[[ $_ != $0 ]] || { echo "functions.sh is meant to be sourced, not executed"; exit 1; }
 
 function log {
     echo -e "[$(date --rfc-3339=seconds)] [${CURRENT_SCRIPT}]: $*"

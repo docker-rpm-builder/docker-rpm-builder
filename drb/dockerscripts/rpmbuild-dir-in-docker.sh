@@ -4,7 +4,7 @@ set -e
 EXIT_STATUS="FAIL"
 CURRENT_SCRIPT="$(pwd)/$(basename $0)"
 
-. /dockerscripts/functions
+. /dockerscripts/functions.sh
 
 log "Starting"
 
