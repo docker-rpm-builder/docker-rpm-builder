@@ -15,10 +15,3 @@ class TestBasicIntegration(TestCase):
         result = Docker().rm().bindmount_dir(testpath, "/testpath").image(image) \
                 .cmd_and_args("/bin/bash", "-c", "cat /testpath/everythinglooksgood.txt").do_run()
         self.assertEquals("everything looks good", result.strip())
-
-    def test_docker_scripts_permissions(self):
-        for fn in [fn for fn in os.listdir(getpath("drb/dockerscripts")) if fn.endswith(".sh")]:
-            self.assertTrue(os.access(os.path.join(getpath("drb/dockerscripts"), fn), os.X_OK), "File {0} is not executable, probably an install error has happened. Make sure you're using a recent python+virtualenv".format(fn))
-
-
-
