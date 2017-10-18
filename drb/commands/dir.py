@@ -120,7 +120,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         _logger.warning("Overlayfs support was disabled because it was found to be unreliable. Running without it.")
 
     if always_pull:
-        _logger.info("Now pulling remote image; this may take a long time.")
+        _logger.info("Now pulling remote image; this could take a while.")
         docker.do_pull(ignore_errors=True)
 
     spec_host_dir = spec_directory_override if (spec_directory_override is not None) else source_directory
@@ -140,7 +140,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
             downloadsources(source_directory, specfile, image)
 
     if not always_pull:
-        _logger.info("Will now perform some operations on target image; we may need to pull it, this will take a long time")
+        _logger.info("Will now perform some operations on target image; we may need to pull it and it could take a while")
 
     rpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_rpmdir}").do_run()
     sources_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_sourcedir}").do_run()
