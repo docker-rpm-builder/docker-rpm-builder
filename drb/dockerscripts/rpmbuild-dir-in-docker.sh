@@ -17,7 +17,7 @@ function finish {
   chown -R "${CALLING_UID}":"${CALLING_GID}" "${RPMS_DIR}" /tmp || /bin/true
   umount -f "${SOURCE_DIR}" || /bin/true
   log "Finished. Outcome: ${EXIT_STATUS}"
-  [ "${EXIT_STATUS}" != "SUCCESS" ] && { log "**** FULL OUTPUT START ****" ; cat "${CMD_OUTPUT_FILENAME}" ; log "**** FULL OUTPUT END ****"; }
+  [ "${EXIT_STATUS}" != "SUCCESS" ] && { log "**** FULL OUTPUT START ****" ; cat "${CMD_OUTPUT_FILENAME}" ; log "\n**** FULL OUTPUT END ****"; }
   rm -f "${CMD_OUTPUT_FILENAME}"
 }
 trap finish EXIT
