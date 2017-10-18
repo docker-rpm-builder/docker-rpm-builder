@@ -17,7 +17,7 @@ class TestBasicIntegration(TestCase):
         self.assertEquals("everything looks good", result.strip())
 
     def test_docker_scripts_permissions(self):
-        for fn in os.listdir(getpath("drb/dockerscripts")):
+        for fn in [fn for fn in os.listdir(getpath("drb/dockerscripts")) if fn.endswith(".sh")]:
             self.assertTrue(os.access(os.path.join(getpath("drb/dockerscripts"), fn), os.X_OK), "File {0} is not executable, probably an install error has happened. Make sure you're using a recent python+virtualenv".format(fn))
 
 
