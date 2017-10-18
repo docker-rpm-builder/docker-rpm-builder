@@ -54,7 +54,6 @@ function setup_user_macros {
 }
 
 function setup_rpm_signing_system {
-    log "Running with RPM signing"
     GPGBIN="$(command -v gpg || command -v gpg2)"
     ${GPGBIN} --import /private.key
     [[ $(${GPGBIN} --list-secret-keys) =~ uid(.*) ]]
@@ -65,6 +64,7 @@ function setup_rpm_signing_system {
     rpm --import /tmp/public.gpg
 }
 
+# requires rpmbuild_out input variable
 function sign_rpmbuild_output_files {
 	files="$(sed -n -e '/Checking for unpackaged file/,$p' <<< "${rpmbuild_out}" | grep 'Wrote:' | cut -d ':' -f 2)"
 
