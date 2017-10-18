@@ -2,7 +2,7 @@
 set -e
 
 EXIT_STATUS="FAIL"
-CURRENT_SCRIPT="$(pwd)/$(basename $0)"
+CURRENT_SCRIPT="$(basename $0)"
 
 . /dockerscripts/functions.sh
 
