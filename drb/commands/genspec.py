@@ -22,7 +22,7 @@ _HELP = """Generates a spec file from a spectemplate. If the target specfile
     already exists and is identical, the target is untouched.
 
     docker-rpm-builder genspec SPECTEMPLATE TARGETSPEC
-	
+    
     SPECTEMPLATE should be a readable spectemplate path 
 
     TARGETSPEC should be a non-existing or writeable path

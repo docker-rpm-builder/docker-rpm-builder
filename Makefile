@@ -2,6 +2,8 @@
 
 VIRTUALENV ?= virtualenv-2.7
 SHELL := /bin/bash
+SRC_ROOT = drb
+FIND := $(shell which gfind || which find)
 
 devenv: setup.py Makefile
 	test -r devenv || $(VIRTUALENV) devenv
@@ -10,6 +12,7 @@ devenv: setup.py Makefile
 
 test: devenv
 	devenv/bin/python -m unittest discover -v
+	$(FIND) $(SRC_ROOT) -type f -name '*.py' | { ! xargs grep -H $$'\t' ; } || { echo 'found tabs in some py file' ; exit 1 ; }
 
 integrationtest: devenv test
 	devenv/bin/python -m unittest discover -p 'integration_test_*' -v
