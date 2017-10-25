@@ -1,0 +1,25 @@
+#!/bin/bash -ex
+apt-get update 
+apt-get -y install apt-transport-https curl ca-certificates gnupg2 software-properties-common
+
+rm -f /tmp/test.exit
+EXIT_CODE=1
+trap 'echo ${EXIT_CODE} > /tmp/test.exit' EXIT
+
+curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/debian \
+   $(lsb_release -cs) \
+   stable"
+
+apt-get update
+apt-get -y install docker-ce
+
+dpkg -i /home/vagrant/sync/out/*.deb || /bin/true
+apt-get -y -f install
+
+service docker start || /bin/true
+
+docker-rpm-builder selftest --full
+EXIT_CODE=$?
+exit ${EXIT_CODE}
