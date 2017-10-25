@@ -112,7 +112,7 @@ def dir(image, source_directory, target_directory, additional_docker_options, do
         enable_source_overlay, spec_directory_override):
     configure_root_logger(verbose)
 
-    docker = Docker().image(image)
+    docker = Docker().image(image).init()
     if not preserve_container:
         docker.rm()
 

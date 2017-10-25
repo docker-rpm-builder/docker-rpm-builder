@@ -113,7 +113,7 @@ def chainbuild(ctx, image, source_directory, target_directory, additional_docker
         bash_on_failure, sign_with, always_pull, target_ownership, verbose, preserve_container, spec_directory_override):
     configure_root_logger(verbose)
 
-    docker = Docker().image(image)
+    docker = Docker().image(image).init()
     if not preserve_container:
         docker.rm()
 

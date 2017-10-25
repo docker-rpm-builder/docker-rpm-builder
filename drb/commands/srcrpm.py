@@ -93,7 +93,7 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
            sign_with, always_pull, target_ownership, verbose, preserve_container):
     configure_root_logger(verbose)
 
-    docker = Docker().image(image)
+    docker = Docker().image(image).init()
     if not preserve_container:
         docker.rm()
 
