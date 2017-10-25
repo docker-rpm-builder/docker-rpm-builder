@@ -2,7 +2,6 @@ distro:
     - centos-7
     - ubuntu-trusty
     - ubuntu-xenial
-    - ubuntu-yakkety
     - ubuntu-zesty
     - debian-jessie
     - fedora-25
