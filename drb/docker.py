@@ -159,3 +159,4 @@ class Docker(object):
 
     def init(self):
         self._options.append("--init")
+        return self
