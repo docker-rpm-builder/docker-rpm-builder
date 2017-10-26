@@ -183,7 +183,7 @@ And you're done; if you haven't already done so, check the [docker configuration
 
 #### Support plan
 
-I plan to support the latest two Fedora releases,unless something bad happens (i.e. the official docker-package is not released anymore for the older fedora), so currently fc24 and fc25 are supported.
+I plan to support the latest two Fedora releases,unless something bad happens (i.e. the official docker-package is not released anymore for the older fedora), so currently fc25 and fc26 are supported.
 
 
 ### Debian Jessie + Stretch
