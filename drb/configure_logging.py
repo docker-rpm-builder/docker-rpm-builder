@@ -27,7 +27,7 @@ class Formatter(logging.Formatter):
 def configure_root_logger(debug=False):
     logger = logging.getLogger()
     handler = logging.StreamHandler(sys.stdout)
-    handler.setFormatter(Formatter("%(asctime)s %(levelname)s [%(name)s] %(message)s", "%Y-%m-%dT%H:%M:%S%z"))
+    handler.setFormatter(Formatter("[%(asctime)s] %(levelname)s [%(name)s] %(message)s", "%Y-%m-%dT%H:%M:%S%z"))
     if not logger.handlers:
         # make things idempotent; don't re-add an handler if it was already configured somewhere else.
         # useful when calling commands from other commands.
