@@ -1,0 +1,13 @@
+#!/bin/bash -ex
+trap 'chown -R --reference /build-inside/build-package /out/' EXIT
+
+wget https://bootstrap.pypa.io/get-pip.py -O - | python
+
+pip install "virtualenv==${REQUIRED_VIRTUALENV_VERSION}"
+virtualenv ${INSTALL_DIR} 
+${INSTALL_DIR}/bin/pip install /source
+cd /usr/bin
+ln -s ${INSTALL_DIR}/bin/docker-rpm-builder docker-rpm-builder
+
+cd /out
+fpm -t deb -s dir -n docker-rpm-builder --version ${VERSION} --iteration "build${BUILD_NUMBER}-artful" --description "docker-rpm-builder ${GIT_COMMIT}" --depends python --depends wget -C / /opt/docker-rpm-builder /usr/bin/docker-rpm-builder

@@ -1,0 +1,28 @@
+#!/bin/bash -ex
+rm -f /tmp/test.exit
+EXIT_CODE=1
+trap 'echo ${EXIT_CODE} > /tmp/test.exit' EXIT
+
+apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common
+
+curl https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+
+add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+
+apt-get update && apt-get -y install docker-ce
+
+dpkg -i /home/vagrant/sync/out/*.deb || /bin/true
+apt-get -f -y install
+
+service docker start || /bin/true
+
+docker-rpm-builder selftest --full
+EXIT_CODE=$?
+exit ${EXIT_CODE}
