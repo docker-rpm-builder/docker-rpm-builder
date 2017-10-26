@@ -184,7 +184,7 @@ And you're done; if you haven't already done so, check the [docker configuration
 I plan to support the latest two Fedora releases,unless something bad happens (i.e. the official docker-package is not released anymore for the older fedora), so currently fc24 and fc25 are supported.
 
 
-### Debian Jessie
+### Debian Jessie + Stretch
 
 First, you should make sure that Bintray's package signing key properly installed and configured for apt:
 
@@ -199,6 +199,13 @@ Then, pick the repo for your distribution - see below - and save it as **/etc/ap
 ```
 deb https://dl.bintray.com/alanfranz/drb-v1-debian-jessie jessie main
 ```
+
+or
+
+```
+deb https://dl.bintray.com/alanfranz/drb-v1-debian-stretch jessie main
+```
+
 
 Now you're ready to
 
@@ -240,10 +247,10 @@ deb https://dl.bintray.com/alanfranz/drb-v1-ubuntu-trusty trusty main
 deb https://dl.bintray.com/alanfranz/drb-v1-ubuntu-xenial xenial main
 ```
 
-**Yakkety**
+**Zesty**
 
 ```
-deb https://dl.bintray.com/alanfranz/drb-v1-ubuntu-yakkety yakkety main
+deb https://dl.bintray.com/alanfranz/drb-v1-ubuntu-zesty yakkety main
 ```
 
 Now you're ready to

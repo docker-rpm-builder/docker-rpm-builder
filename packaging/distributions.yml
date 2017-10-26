@@ -3,7 +3,6 @@ distro:
     - ubuntu-trusty
     - ubuntu-xenial
     - ubuntu-zesty
-    - ubuntu-artful
     - debian-stretch
     - debian-jessie
     - fedora-25
