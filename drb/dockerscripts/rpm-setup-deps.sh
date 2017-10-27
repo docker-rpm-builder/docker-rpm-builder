@@ -2,7 +2,7 @@
 set -ex
 
 function log {
-    echo "[$(date --rfc-3339=seconds)]: $*"
+    echo "[$(date --rfc-3339=seconds)] $*"
 }
 
 EXIT_STATUS="FAIL"
