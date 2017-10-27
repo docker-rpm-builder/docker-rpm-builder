@@ -31,6 +31,7 @@ log "Download of build dependencies succeeded"
 setup_user_macros
 
 log "Now executing rpmbuild; this could take a while..."
+exitcode=0
 rpmbuild_out="$(rpmbuild --rebuild ${RPMBUILD_EXTRA_OPTIONS} ${RPMBUILD_OPTIONS} "${SRPMS_DIR}/${SRCRPM}" 2>&1)" || { exitcode="$?" ; /bin/true ; }
 if [ "${exitcode}" -ne 0 ]; then
         if [ "bashonfail" == "${BASH_ON_FAIL}" ]; then
