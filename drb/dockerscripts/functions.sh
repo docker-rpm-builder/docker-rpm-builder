@@ -8,7 +8,7 @@ function setup_cmd_log {
 }
 
 function log {
-    msg="[$("${DATECMD}" '+%Y-%m-%dT%H:%M:%S%z')] INFO ["${CURRENT_SCRIPT}"]: $*"
+    msg="[$("${DATECMD}" '+%Y-%m-%dT%H:%M:%S%z')] INFO ["${CURRENT_SCRIPT}"] $*"
     echo -e "$msg" >&3
     echo -e "$msg"
 }
