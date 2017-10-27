@@ -252,7 +252,7 @@ deb https://dl.bintray.com/alanfranz/drb-v1-ubuntu-xenial xenial main
 **Zesty**
 
 ```
-deb https://dl.bintray.com/alanfranz/drb-v1-ubuntu-zesty yakkety main
+deb https://dl.bintray.com/alanfranz/drb-v1-ubuntu-zesty zesty main
 ```
 
 Now you're ready to
