@@ -13,13 +13,7 @@ log "Starting"
 verify_environment_prereq
 set_variables_from_environment
 
-function finish {
-  chown -R "${CALLING_UID}":"${CALLING_GID}" "${RPMS_DIR}" /tmp || /bin/true
-  umount -f "${SOURCE_DIR}" || /bin/true
-  log "Finished. Outcome: ${EXIT_STATUS}"
-  [ "${EXIT_STATUS}" != "SUCCESS" ] && { log "**** FULL OUTPUT START ****" ; cat "${CMD_OUTPUT_FILENAME}" ; log "\n**** FULL OUTPUT END ****"; }
-  rm -f "${CMD_OUTPUT_FILENAME}"
-}
+
 trap finish EXIT
 
 setup_rpm_builddeps
