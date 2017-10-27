@@ -128,5 +128,5 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
 
         _logger.info("Now building %(srcrpm)s on image %(image)s", locals())
         with UserExceptionTransformer(Exception, "docker run error", append_original_message=True):
-                docker.do_launch_interactively()
+            docker.do_launch_interactively()
             _logger.info("Build completed successfully. Your results are in %s", target_directory)
