@@ -72,12 +72,32 @@ function setup_rpm_signing_system {
     rpm --import /tmp/public.gpg
 }
 
+function sign_rpmbuild_srcrpm_files {
+	files="$(grep 'Wrote:' <<< "${rpmbuild_out}" | cut -d ':' -f 2)"
+
+	exitcode=0
+    echo -e "\n" | setsid rpmsign --addsign ${files} || /bin/true
+    rpm -K ${files} | grep -e "pgp" -e "OK" || { log "Signing failed." ; exitcode=1 ; }
+    if [ "${exitcode}" -ne 0 ]; then
+			if [ "bashonfail" == "${BASH_ON_FAIL}" ]; then
+				# if the build is interactive, we can see what's printed in the current log, no need to reprint.
+				log "Signing failed, spawning a shell. The build will terminate after such shell is closed."
+				/bin/bash
+			else
+				log "rpmsign command failed:output is: -->\n${rpmbuild_out}\nrpmsign command output end\n\n."
+			fi
+		# don't accidentally retain unsigned files
+		rm -f "${files}"
+		exit "${exitcode}"
+	fi
+}
+
 # requires rpmbuild_out input variable
 function sign_rpmbuild_output_files {
 	files="$(sed -n -e '/Checking for unpackaged file/,$p' <<< "${rpmbuild_out}" | grep 'Wrote:' | cut -d ':' -f 2)"
 
 	exitcode=0
-    echo -e "\n" | setsid rpmsign --addsign ${files} ||  /bin/true
+    echo -e "\n" | setsid rpmsign --addsign ${files} || /bin/true
     rpm -K ${files} | grep -e "pgp" -e "OK" || { log "Signing failed." ; exitcode=1 ; }
     if [ "${exitcode}" -ne 0 ]; then
 			if [ "bashonfail" == "${BASH_ON_FAIL}" ]; then
@@ -97,6 +117,6 @@ function finish {
   chown -R "${CALLING_UID}":"${CALLING_GID}" "${RPMS_DIR}" /tmp || /bin/true
   umount -f "${SOURCE_DIR}" || /bin/true
   log "Finished. Outcome: ${EXIT_STATUS}"
-  [ "${EXIT_STATUS}" != "SUCCESS" ] && { log "**** FULL OUTPUT START ****" ; cat "${CMD_OUTPUT_FILENAME}" ; log "\n**** FULL OUTPUT END ****"; }
+  [ "${EXIT_STATUS}" != "SUCCESS" ] && { echo -e "\n**** FULL OUTPUT START ****" >&3 ; cat ${CMD_OUTPUT_FILENAME} >&3 ; echo -e "\n**** FULL OUTPUT END ****" >&3 ; }
   rm -f "${CMD_OUTPUT_FILENAME}"
 }
