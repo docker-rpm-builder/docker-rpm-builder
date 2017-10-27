@@ -13,7 +13,6 @@ log "Starting"
 verify_environment_prereq
 set_variables_from_environment
 
-
 trap finish EXIT
 
 setup_rpm_builddeps

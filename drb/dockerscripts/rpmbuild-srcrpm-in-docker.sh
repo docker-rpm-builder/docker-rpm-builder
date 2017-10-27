@@ -1,88 +1,57 @@
 #!/bin/bash
-set -ex
+set -e
+
+EXIT_STATUS="FAIL"
+CURRENT_SCRIPT="$(basename $0)"
+
+. /dockerscripts/functions.sh
+
+setup_cmd_log
+
+log "Starting"
 
 [ -z "${SRCRPM}" ] && { echo "Missing SRCRPM"; /bin/false; }
-[ -z "${CALLING_UID}" ] && { echo "Missing CALLING_UID"; /bin/false; }
-[ -z "${CALLING_GID}" ] && { echo "Missing CALLING_GID"; /bin/false; }
 [ -z "${RPMBUILD_OPTIONS}" ] && { echo "No rpmbuild options were set"; }
-[ -z "${BASH_ON_FAIL}" ] && { echo "BASH_ON_FAIL is not set"; }
 
+verify_environment_prereq
+set_variables_from_environment
 
-RPMS_DIR=$(rpm --eval %{_rpmdir})
-SRPMS_DIR=$(rpm --eval %{_srcrpmdir})
-
-function finish {
-  chown -R ${CALLING_UID}:${CALLING_GID} ${RPMS_DIR} || /bin/true
-}
 trap finish EXIT
-echo "starting $0"
 
-#rpmbuild complains if it can't find a proper user for uid/gid of the source files;
-#we should add all uid/gids for source files.
-for gid in $(stat -c '%g' ${SRPMS_DIR}/*); do
-    groupadd -g $gid "group$gid" >/dev/null 2>&1 || /bin/true
-done
+TOMAP_DIR="${SRPMS_DIR}"
+map_uid_gid_to_existing_users
 
-for uid in $(stat -c '%u' ${SRPMS_DIR}/*); do
-    useradd -u $uid "user$uid" >/dev/null 2>&1 || /bin/true
-done
-
+log "Now downloading build dependencies, could take a while..."
+yum makecache fast
 # we don't check the gpg signature at this time, we don't really care;
 # if the signature check fails it will fail later.
 yum-builddep -y --nogpgcheck "${SRPMS_DIR}/${SRCRPM}"
+log "Download of build dependencies succeeded"
 
-if [ -r "/rpmmacros" ]
-then
-    cp /rpmmacros ${HOME}/.rpmmacros
-    echo -e "\n" >> ${HOME}/.rpmmacros
+setup_user_macros
+
+log "Now executing rpmbuild; this could take a while..."
+rpmbuild_out="$(rpmbuild --rebuild ${RPMBUILD_EXTRA_OPTIONS} ${RPMBUILD_OPTIONS} "${SRPMS_DIR}/${SRCRPM}" 2>&1)" || { exitcode="$?" ; /bin/true ; }
+if [ "${exitcode}" -ne 0 ]; then
+        if [ "bashonfail" == "${BASH_ON_FAIL}" ]; then
+            # if the build is interactive, we can see what's printed in the current log, no need to reprint.
+            log "Build failed, spawning a shell. The build will terminate after such shell is closed."
+            /bin/bash
+        else
+            log "rpmbuild command failed:output is: -->\n${rpmbuild_out}\nrpmbuild command output end\n\n."
+        fi
+    exit ${exitcode}
 fi
+log "rpmbuild succeeded"
 
 if [ -r "/private.key" ]
 then
-    GPGBIN="$(command -v gpg || command -v gpg2)"
-    echo "Running with RPM signing"
-    ${GPGBIN} --import /private.key
-    [[ $(${GPGBIN} --list-secret-keys) =~ uid(.*) ]]
-    KEYNAME="${BASH_REMATCH[1]}"
-    [ -n "${KEYNAME}" ] || { echo "could not find key for signing purpose"; exit 1; }
-    echo -e "%_gpg_name ${KEYNAME}\n%_signature gpg" >> ${HOME}/.rpmmacros
-    ${GPGBIN} --armor --export ${KEYNAME} > /tmp/public.gpg
-    rpm --import /tmp/public.gpg
-
-	exitcode=0
-    rpmbuild_out="$(rpmbuild --rebuild ${RPMBUILD_EXTRA_OPTIONS} ${RPMBUILD_OPTIONS} "${SRPMS_DIR}/${SRCRPM}" 2>&1)" || { exitcode="$?" ; /bin/true ; }
-    if [ "${exitcode}" -ne 0 ]; then
-			if [ "bashonfail" == "${BASH_ON_FAIL}" ]; then
-				# if the build is interactive, we can see what's printed in the current log, no need to reprint.
-				echo "Build failed, spawning a shell. The build will terminate after such shell is closed."
-				/bin/bash
-			else 
-				echo -e "${rpmbuild_out}\n\nrpmbuild command failed."
-			fi
-		exit ${exitcode}
-	fi
-    
-	files="$(sed -n -e '/Checking for unpackaged file/,$p' <<< "${rpmbuild_out}" | grep 'Wrote:' | cut -d ':' -f 2)"
-	
-	exitcode=0
-    echo -e "\n" | setsid rpmsign --addsign ${files} || /bin/true
-    rpm -K ${files} || { echo "Signing failed." ; exitcode=1; }
-    if [ "${exitcode}" -ne 0 ]; then
-			if [ "bashonfail" == "${BASH_ON_FAIL}" ]; then
-				# if the build is interactive, we can see what's printed in the current log, no need to reprint.
-				echo "Signing failed, spawning a shell. The build will terminate after such shell is closed."
-				/bin/bash
-			else
-				echo -e "${rpmbuild_out}\n\nrpmsign command failed."
-			fi
-		# don't accidentally retain unsigned files
-		rm -f ${files}
-		exit ${exitcode}
-	fi
+    log "RPM signature enabled"
+    setup_rpm_signing_system
+	sign_rpmbuild_output_files
+	log "RPM signature succeeded"
 else
-    rpmbuild --rebuild ${RPMBUILD_EXTRA_OPTIONS} ${RPMBUILD_OPTIONS} "${SRPMS_DIR}/${SRCRPM}" || { [ "bashonfail" == "$BASH_ON_FAIL" ] && { echo "Build failed, spawning a shell" ; /bin/bash ; exit 1; } || exit 1 ; }
+    log "RPM signature was not requested, output RPMs won't be signed"
 fi
 
-echo "Done"
-
-
+EXIT_STATUS="SUCCESS"
