@@ -1,4 +1,4 @@
-.PHONY: test integrationtest testexample clean distclean cleanexample install increase_minor_version
+.PHONY: test integrationtest testexample clean distclean cleanexample install increase_minor_version upgrade freeze
 
 PYTHON ?= $(shell which python)
 VIRTUALENV ?= $(shell which virtualenv) -p $(PYTHON)
@@ -15,6 +15,9 @@ devenv: setup.py requirements.txt
 # WARNING: this will freeze the CURRENT DEVELOPMENT ENVIRONMENT. Think twice if you've tinkered with it.
 freeze: devenv
 	source devenv/bin/activate && python devenv/bin/pip freeze | grep -v "docker-rpm-builder" > requirements.txt
+
+upgrade: devenv
+	source devenv/bin/activate && python devenv/bin/pip install --editable . --upgrade
 
 test: devenv
 	devenv/bin/python -m unittest discover -v
