@@ -1,14 +1,20 @@
 .PHONY: test integrationtest testexample clean distclean cleanexample install increase_minor_version
 
-VIRTUALENV ?= virtualenv-2.7
+PYTHON ?= $(shell which python)
+VIRTUALENV ?= $(shell which virtualenv) -p $(PYTHON)
 SHELL := /bin/bash
 SRC_ROOT = drb
 FIND := $(shell which gfind || which find)
 
-devenv: setup.py Makefile
-	test -r devenv || $(VIRTUALENV) devenv
-	source devenv/bin/activate ; python devenv/bin/pip install --editable . --upgrade ; python devenv/bin/pip install wheel ; python devenv/bin/pip install bpython
+devenv: setup.py requirements.txt
+	test -r devenv/bin/activate || $(VIRTUALENV) devenv || rm -rf devenv
+	touch -t 197001011200 devenv
+	source devenv/bin/activate && python devenv/bin/pip install -r requirements.txt && python devenv/bin/pip install --editable . --no-deps && python devenv/bin/pip check
 	touch devenv
+
+# WARNING: this will freeze the CURRENT DEVELOPMENT ENVIRONMENT. Think twice if you've tinkered with it.
+freeze: devenv
+	source devenv/bin/activate && python devenv/bin/pip freeze | grep -v "docker-rpm-builder" > requirements.txt
 
 test: devenv
 	devenv/bin/python -m unittest discover -v
@@ -26,7 +32,7 @@ cleanexample:
 
 clean: cleanexample
 	rm -rf tmp build dist 
-	find \( -name '*.pyc' -o -name '*.pyo' \) -delete
+	$(FIND) \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 distclean: clean
 	rm -rf devenv *.egg-info

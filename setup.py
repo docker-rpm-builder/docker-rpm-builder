@@ -8,10 +8,10 @@ from os import environ
 VERSION=environ.get("VERSION") or "0.99.dev0"
 
 install_requires = [
-    'Click==6.2',
-    'setuptools == 12.0.5',
-    'tzlocal == 1.2',
-    'pytz == 2015.7'
+    'Click',
+    'setuptools',
+    'tzlocal',
+    'pytz'
 ]
 
 if sys.version_info[1] == 6:
