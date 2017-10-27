@@ -4,11 +4,10 @@
 function setup_cmd_log {
     CMD_OUTPUT_FILENAME="$(mktemp)"
     exec 3>&1 2> ${CMD_OUTPUT_FILENAME} 1> ${CMD_OUTPUT_FILENAME}
-    DATECMD="$(command -v gdate || command -v date)"
 }
 
 function log {
-    msg="[$("${DATECMD}" '+%Y-%m-%dT%H:%M:%S%z')] INFO ["${CURRENT_SCRIPT}"] $*"
+    msg="[$(date '+%Y-%m-%dT%H:%M:%S%z')] INFO ["${CURRENT_SCRIPT}"] $*"
     echo -e "$msg" >&3
     echo -e "$msg"
 }
