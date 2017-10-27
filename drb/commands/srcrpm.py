@@ -98,9 +98,11 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
         docker.rm()
 
     if always_pull:
-        _logger.info("Now pulling remote image")
+        _logger.info("Now pulling remote image; this could take a while.")
         docker.do_pull(ignore_errors=True)
 
+    if not always_pull:
+        _logger.info("Will now perform some operations on target image; we may need to pull it and it could take a while")
     srpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_srcrpmdir}").do_run()
     rpms_inner_dir = docker.cmd_and_args("rpm", "--eval", "%{_rpmdir}").do_run()
     uid, gid = parse_ownership(target_ownership)
@@ -123,8 +125,8 @@ def srcrpm(image, srcrpm, target_directory, additional_docker_options, verify_si
             .env("CALLING_UID", str(uid)).env("CALLING_GID", str(gid)).env("BASH_ON_FAIL", bashonfail) \
             .env("RPMBUILD_OPTIONS", rpmbuild_options).env("SRCRPM", srcrpm_basename) \
             .cmd_and_args("./rpmbuild-srcrpm-in-docker.sh")
-        _logger.info("Now building %(srcrpm)s on image %(image)s", locals())
 
+        _logger.info("Now building %(srcrpm)s on image %(image)s", locals())
         with UserExceptionTransformer(Exception, "docker run error", append_original_message=True):
                 docker.do_launch_interactively()
             _logger.info("Build completed successfully. Your results are in %s", target_directory)
