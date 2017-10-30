@@ -17,6 +17,8 @@ _logger = logging.getLogger("drb.downloadsources")
 from subprocess import Popen, PIPE, STDOUT, call
 import logging
 
+_MY_EOF_MARKER = "DOCKER_RPM_BUILDER_PRIVATE_EOF"
+
 class SpawnedProcessError(Exception):
     def __init__(self, returncode, cmd, output="", error=""):
         self.returncode = returncode
@@ -51,16 +53,18 @@ def get_spec_with_resolved_macros(specfilename, target_image):
     lines_upto_prep = list(takewhile(lambda line: not line.startswith("%prep"),
                                     codecs.open(specfilename, encoding="utf-8")))
 
-
+    for line in lines_upto_prep:
+        if _MY_EOF_MARKER in line:
+            raise ValueError("Private EOF marker mustn't exist already inside specfile.")
 
     with TempDir.platformwise() as tmpdir:
         tempspec_path = os.path.join(tmpdir.path, os.path.basename(specfilename))
         tempspec = codecs.getwriter("utf-8")(open(tempspec_path, "wb"))
         tempspec.writelines(lines_upto_prep)
         tempspec.write("%prep\n")
-        tempspec.write("cat<<__EOF__\n")
+        tempspec.write("cat<<__{}__\n".format(_MY_EOF_MARKER))
         tempspec.writelines(lines_upto_prep)
-        tempspec.write("__EOF__\n")
+        tempspec.write("__{}__\n".format(_MY_EOF_MARKER))
         tempspec.close()
 
         docker = Docker().rm().image(target_image)

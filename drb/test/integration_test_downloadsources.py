@@ -5,7 +5,7 @@ from drb.path import getpath
 from drb.tempdir import TempDir
 from unittest import TestCase
 from drb.downloadsources import get_spec_with_resolved_macros, get_source_and_patches_urls, download_files, \
-    downloadsources
+    downloadsources, _MY_EOF_MARKER
 from tempfile import NamedTemporaryFile, mkdtemp
 import os
 
@@ -90,6 +90,18 @@ class TestMacroResolving(TestCase):
         with TempDir.platformwise() as tmpdir:
             downloadsources(tmpdir.path, getpath("drb/test/spectooltest.spec"), REFERENCE_IMAGE)
             self.assertTrue(os.path.exists(os.path.join(tmpdir.path, "README.md")))
+
+    def test_resolve_macros_file_if_private_marker_inside(self):
+        tmp = NamedTemporaryFile()
+        tmp.write(_MY_EOF_MARKER)
+        tmp.write(TMUX_SPEC)
+        tmp.flush()
+
+        try:
+            get_spec_with_resolved_macros(tmp.name, "alanfranz/drb-epel-7-x86-64:latest")
+            self.fail("should have failed, private marker inside")
+        except ValueError as e:
+            pass
 
 
 
