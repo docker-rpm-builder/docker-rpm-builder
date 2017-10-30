@@ -31,6 +31,12 @@ windows) to be accessed and controlled from a single terminal.  tmux is
 intended to be a simple, modern, BSD-licensed alternative to programs such
 as GNU Screen.
 
+%package somethingelse
+Summary: what somethingelse
+
+%description somethingelse
+this is a description
+
 %prep
 touch /tmp/sarcazzo_123
 %setup -q

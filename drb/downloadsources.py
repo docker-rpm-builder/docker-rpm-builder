@@ -19,6 +19,9 @@ import logging
 
 _MY_EOF_MARKER = "DOCKER_RPM_BUILDER_PRIVATE_EOF"
 
+class Box(object):
+    value = None
+
 class SpawnedProcessError(Exception):
     def __init__(self, returncode, cmd, output="", error=""):
         self.returncode = returncode
@@ -60,7 +63,28 @@ def get_spec_with_resolved_macros(specfilename, target_image):
     with TempDir.platformwise() as tmpdir:
         tempspec_path = os.path.join(tmpdir.path, os.path.basename(specfilename))
         tempspec = codecs.getwriter("utf-8")(open(tempspec_path, "wb"))
-        tempspec.writelines(lines_upto_prep)
+        # it looks like there can be a lot of things until %prep that make little sense to us...
+        # we just drop %package/%description XXXX parts right now, since they seem to interfere with our
+        # macro resolution system...
+        # RETHINK: maybe we want to write everything in the spec file (all macros, especially) BUT what is
+        # in ANY section (the %prep was a kind of stop marker - although I suspect %global and %define could
+        # just exist wherever)
+        # TODO: this is sketchy, it's a quick hack. improve - while hopefully we shouldn't need to implement
+        # a full spec parser in python :-/
+        drop = Box()
+        drop.value = False
+        for line in lines_upto_prep:
+            if line.startswith("%package") or line.startswith("%description"):
+                # starts a package or description block for a subpackage; we want to ignore that
+                drop.value = True
+            else:
+                if line.startswith("%") and drop.value is True:
+                    # always write that line... we suppose it's an if/endif or a define/global?
+                    tempspec.write(line)
+                # TODO: any condition that should make us 'undrop' the document?
+            if not drop.value:
+                tempspec.write(line)
+
         tempspec.write("%prep\n")
         tempspec.write("cat<<__{}__\n".format(_MY_EOF_MARKER))
         tempspec.writelines(lines_upto_prep)
@@ -70,9 +94,9 @@ def get_spec_with_resolved_macros(specfilename, target_image):
         docker = Docker().rm().image(target_image)
         rpmbuild = docker.cmd_and_args("which", "rpmbuild").do_run()
         with_macros = docker.bindmount_dir(tmpdir.path, tmpdir.path).cmd_and_args(rpmbuild, "--nodeps", "-bp",
-                                                                                  tempspec_path).do_run()
+                                                                                 tempspec_path).do_run()
 
-    return with_macros.split("\n")
+    return with_macros.split(b"\n")
 
 SOURCE_PATCH_PATTERN = re.compile("^(?:Source|Patch)\d*:\s*((?:http://|https://|ftp://)\S+?)\s*$")
 
