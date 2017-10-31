@@ -29,11 +29,13 @@ function set_variables_from_environment {
 }
 
 function setup_rpm_builddeps {
+    sudo yum -y install rpmdevtools
+    rpmdev-setuptree
     log "Now downloading build dependencies, could take a while..."
     SPECS_DIR="$(rpm --eval %\{_specdir\})"
     SPEC="$(ls "${SPECS_DIR}"/*.spec | head -n 1)"
-    yum makecache fast
-    yum-builddep -y --nogpgcheck "${SPEC}"
+    sudo yum makecache fast
+    sudo yum-builddep -y --nogpgcheck "${SPEC}"
     log "Download of build dependencies succeeded"
 }
 
@@ -43,11 +45,11 @@ function map_uid_gid_to_existing_users {
     #rpmbuild complains if it can't find a proper user for uid/gid of the source files;
     #we should add all uid/gids for source files.
     for gid in $(find ${TOMAP_DIR} | xargs stat -c '%g' | sort | uniq); do
-        groupadd -g "$gid" "group$gid" || /bin/true
+        sudo groupadd -g "$gid" "group$gid" || /bin/true
     done
 
     for uid in $(find ${TOMAP_DIR} | xargs stat -c '%u' | sort | uniq); do
-        useradd -u "$uid" "user$uid"|| /bin/true
+        sudo useradd -u "$uid" "user$uid"|| /bin/true
     done
 
 }
@@ -56,7 +58,10 @@ function setup_user_macros {
     if [ -r "/rpmmacros" ]
     then
         log "Adding user macros to current build"
-        cp /rpmmacros "${HOME}/.rpmmacros"
+        sudo cp /rpmmacros "${HOME}/.rpmmacros"
+        MYUID=$(id -u)
+        MYGRP=$(id -g)
+        sudo chown ${MYUID}:${MYGRP} "${HOME}/.rpmmacros"
         echo -e "\n" >> "${HOME}/.rpmmacros"
     fi
 }

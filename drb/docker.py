@@ -160,3 +160,7 @@ class Docker(object):
     def init(self):
         self._options.append("--init")
         return self
+
+    def user(self, user):
+        self._options.append("--user={0}".format(pipes.quote(user)))
+        return self
