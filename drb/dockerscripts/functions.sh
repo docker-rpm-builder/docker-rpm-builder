@@ -64,8 +64,7 @@ function setup_user_macros {
 function setup_rpm_signing_system {
     GPGBIN="$(command -v gpg || command -v gpg2)"
     ${GPGBIN} --import /private.key
-    [[ $(${GPGBIN} --list-secret-keys) =~ uid(.*) ]]
-    KEYNAME="${BASH_REMATCH[1]}"
+    KEYNAME=$(${GPGBIN} --list-secret-keys --with-colons  | grep uid | cut -d ":" -f 10)
     [ -n "${KEYNAME}" ] || { log "could not find key for signing purpose"; exit 1; }
     echo -e "%_gpg_name ${KEYNAME}\n%_signature gpg" >> "${HOME}/.rpmmacros"
     ${GPGBIN} --armor --export "${KEYNAME}" > /tmp/public.gpg
