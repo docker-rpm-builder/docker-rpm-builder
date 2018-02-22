@@ -106,6 +106,8 @@ def get_source_and_patches_urls(speclines):
     return [result.group(1) for result in only_matches]
 
 def download_files(urls, download_dir):
+    if not urls:
+        return
     wget = pipes.quote(which("wget"))
     download_dir = pipes.quote(download_dir)
     #TODO: think about whether it's better to use URLLib or something like that

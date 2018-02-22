@@ -97,6 +97,10 @@ class TestMacroResolving(TestCase):
             downloadsources(tmpdir.path, getpath("drb/test/spectooltest.spec"), REFERENCE_IMAGE)
             self.assertTrue(os.path.exists(os.path.join(tmpdir.path, "README.md")))
 
+    def test_downloadsources_without_remote_files(self):
+        with TempDir.platformwise() as tmpdir:
+            downloadsources(tmpdir.path, getpath("drb/test/spectooltest-localsource.spec"), REFERENCE_IMAGE)
+
     def test_resolve_macros_file_if_private_marker_inside(self):
         tmp = NamedTemporaryFile()
         tmp.write(_MY_EOF_MARKER)
