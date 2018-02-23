@@ -111,7 +111,7 @@ Group:          Applications/System
 # 3 clause BSD licensed.
 License:        ISC and BSD
 URL:            http://sourceforge.net/projects/tmux
-Source0:        http://pkgs.fedoraproject.org/repo/pkgs/tmux/tmux-1.6.tar.gz/3e37db24aa596bf108a0442a81c845b3/tmux-1.6.tar.gz
+Source0:        https://www.franzoni.eu/static/tmux-1.6.tar.gz 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  ncurses-devel
@@ -172,7 +172,7 @@ Group:          Applications/System
 # 3 clause BSD licensed.
 License:        ISC and BSD
 URL:            http://sourceforge.net/projects/tmux
-Source0:        http://pkgs.fedoraproject.org/repo/pkgs/tmux/tmux-1.6.tar.gz/3e37db24aa596bf108a0442a81c845b3/tmux-1.6.tar.gz
+Source0:        https://www.franzoni.eu/static/tmux-1.6.tar.gz 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  ncurses-devel
@@ -233,7 +233,7 @@ Group:          Applications/System
 # 3 clause BSD licensed.
 License:        ISC and BSD
 URL:            http://sourceforge.net/projects/tmux
-Source0:        http://pkgs.fedoraproject.org/repo/pkgs/tmux/tmux-1.6.tar.gz/3e37db24aa596bf108a0442a81c845b3/tmux-1.6.tar.gz
+Source0:        https://www.franzoni.eu/static/tmux-1.6.tar.gz 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  ncurses-devel
