@@ -2,6 +2,7 @@ distro:
     - centos-7
     - ubuntu-trusty
     - ubuntu-xenial
+    - ubuntu-artful
     - debian-stretch
     - debian-jessie
     - fedora-26
