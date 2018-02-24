@@ -1,0 +1,19 @@
+#!/bin/bash -ex
+trap 'chown -R --reference /build-inside/build-package /out/' EXIT
+
+wget https://bootstrap.pypa.io/get-pip.py -O - | python
+
+pip install "virtualenv==${REQUIRED_VIRTUALENV_VERSION}"
+virtualenv ${INSTALL_DIR} 
+${INSTALL_DIR}/bin/pip install /source
+cd /usr/bin
+ln -s ${INSTALL_DIR}/bin/docker-rpm-builder docker-rpm-builder
+
+gpg --import /tmp/private.key
+[[ $(gpg --list-secret-keys) =~ uid(.*) ]]
+KEYNAME="${BASH_REMATCH[1]}"
+[ -n "${KEYNAME}" ] || { echo "could not find key for signing purpose"; exit 1; }
+echo -e "%_gpg_name ${KEYNAME}\n%_signature gpg\n" > ${HOME}/.rpmmacros
+
+cd /out
+fpm -t rpm -s dir -n docker-rpm-builder --rpm-sign --version ${VERSION} --iteration "build${BUILD_NUMBER}.fc27" --description "docker-rpm-builder ${GIT_COMMIT}" --depends python --depends wget -C / /opt/docker-rpm-builder /usr/bin/docker-rpm-builder

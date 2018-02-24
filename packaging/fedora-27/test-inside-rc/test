@@ -1,0 +1,21 @@
+#!/bin/bash -ex
+rm -f /tmp/test.exit
+EXIT_CODE=1
+trap 'echo ${EXIT_CODE} > /tmp/test.exit' EXIT
+
+dnf -y install dnf-plugins-core
+
+dnf config-manager \
+    --add-repo \
+    https://download.docker.com/linux/fedora/docker-ce.repo
+
+dnf config-manager --set-enabled docker-ce-test
+
+rpm --import /home/vagrant/sync/public.asc
+yum -y install docker-ce /home/vagrant/sync/out/*.rpm
+
+service docker start || /bin/true
+
+docker-rpm-builder selftest --full
+EXIT_CODE="$?"
+exit ${EXIT_CODE}

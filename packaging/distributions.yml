@@ -6,3 +6,5 @@ distro:
     - debian-stretch
     - debian-jessie
     - fedora-26
+    - fedora-27
+

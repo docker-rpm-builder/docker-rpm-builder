@@ -1,0 +1,37 @@
+#!/bin/bash -ex
+# enter the directory where the build script is located
+cd "${0%/*}"
+
+. ../realpath-lib
+
+# override those when needed. readlink -f doesn't work on osx.
+PUBLIC_KEY_FILE=$(get_realpath "${PUBLIC_KEY_FILE:-../public.asc}")
+PRIVATE_KEY_FILE=$(get_realpath "${PRIVATE_KEY_FILE:-../private.key}")
+
+[ -r "${PUBLIC_KEY_FILE}" ]
+[ -r "${PRIVATE_KEY_FILE}" ]
+
+# some useful variables
+SRC_DIR="$(pwd)/../../"
+CURRENT_DISTRO=$(basename $(pwd))
+BUILD_IMAGE="docker-rpm-builder-${CURRENT_DISTRO}-build"
+TEST_IMAGE="docker-rpm-builder-${CURRENT_DISTRO}-test"
+
+docker build --pull -t ${BUILD_IMAGE} build-image
+
+rm -rf out
+mkdir out
+
+docker run --env "BUILD_NUMBER=${BUILD_NUMBER:-0}" --env "GIT_COMMIT=${GIT_COMMIT:-asd}" --env-file ../env.list --rm -v $(pwd)/build-inside:/build-inside:ro -v ${SRC_DIR}:/source:ro -v $(pwd)/out:/out -v "${PRIVATE_KEY_FILE}":/tmp/private.key:ro -w /build-inside ${BUILD_IMAGE} /build-inside/build-package
+
+trap 'vagrant destroy --force ; rm -f public.asc' EXIT
+cp ${PUBLIC_KEY_FILE} ./public.asc
+
+vagrant up
+vagrant ssh -c 'sudo /home/vagrant/sync/test-inside/test'
+vagrant destroy --force
+echo "Test phase succeeded (stable)."
+
+vagrant up
+vagrant ssh -c 'sudo /home/vagrant/sync/test-inside-rc/test'
+echo "Test phase succeeded (rc)."
