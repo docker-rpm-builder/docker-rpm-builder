@@ -12,6 +12,6 @@ DEST_SUFFIX=$(cut -d ":" -f 2 <<<$DEST_COLON)
 ${FIND} -type f -exec ${SED} -e "s/${SRC_COLON}/${DEST_COLON}/g" -i {} \;
 ${FIND} -type f -exec ${SED} -e "s/-${SRC_SUFFIX}/-${DEST_SUFFIX}/g" -i {} \;
 ${FIND} -type f -exec ${SED} -e "s/${SRC_SUFFIX}64/-${DEST_SUFFIX}64/g" -i {} \;
-grep -ri ${SRC_SUFFIX} || { exit 0; }
+grep -ri ${SRC_SUFFIX} . || { exit 0; }
 echo "still found old suffix"
 exit 1
