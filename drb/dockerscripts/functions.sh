@@ -42,11 +42,11 @@ function setup_rpm_builddeps {
 function map_uid_gid_to_existing_users {
     #rpmbuild complains if it can't find a proper user for uid/gid of the source files;
     #we should add all uid/gids for source files.
-    for gid in $(find ${TOMAP_DIR} | xargs stat -c '%g' | sort | uniq); do
+    for gid in $(find ${TOMAP_DIR} -print0 | xargs -0 stat -c '%g' | sort | uniq); do
         groupadd -g "$gid" "group$gid" || /bin/true
     done
 
-    for uid in $(find ${TOMAP_DIR} | xargs stat -c '%u' | sort | uniq); do
+    for uid in $(find ${TOMAP_DIR} -print0 | xargs -0 stat -c '%u' | sort | uniq); do
         useradd -u "$uid" "user$uid"|| /bin/true
     done
 
