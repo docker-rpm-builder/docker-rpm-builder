@@ -1,3 +1,10 @@
+## 26 Feb 2018: docker-rpm-builder v1.41
+- Official support for Fedora 26, 27 and Ubuntu Artful
+- Huge internal refactoring: remove duplicated code
+- Fix issues where multiple intermingled %package and %description sections would crash the build
+- Fix: empty download-sources
+- Remove EOLed distros
+
 ## 30 Jun 2017: docker-rpm-builder v1.40
 - Official support for Ubuntu Zesty and Docker 17.06
 
