@@ -1,3 +1,6 @@
+## 27 Feb 2018: docker-rpm-builder v1.42
+- Fix issues with filenames and uids containing spaces.
+
 ## 26 Feb 2018: docker-rpm-builder v1.41
 - Official support for Fedora 26, 27 and Ubuntu Artful
 - Huge internal refactoring: remove duplicated code
