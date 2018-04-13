@@ -207,7 +207,7 @@ deb https://dl.bintray.com/alanfranz/drb-v1-debian-jessie jessie main
 or
 
 ```
-deb https://dl.bintray.com/alanfranz/drb-v1-debian-stretch jessie main
+deb https://dl.bintray.com/alanfranz/drb-v1-debian-stretch stretch main
 ```
 
 
