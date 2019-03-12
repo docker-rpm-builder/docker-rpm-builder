@@ -1,6 +1,8 @@
 ## News
 
-**CALL FOR DEVELOPERS:** docker-rpm-builder once was quite relevant to my daily job, so I took the time to write and support it. But it is less and less relevant to me, and it requires constant maintenance (new distros come, old distros go, features are requested, et cetera). **I would appreciate some help**. Write a response to https://github.com/alanfranz/docker-rpm-builder/issues/51 and become a developer!
+**CALL FOR DEVELOPERS version 2.0:** I made a configuration mistake on mail filters and I wouldn't read many github notification for the past year, so I might not have read help offers. Now my filters are properly configured.
+
+docker-rpm-builder once was quite relevant to my daily job, so I took the time to write and support it. But it is less and less relevant to me, and it requires constant maintenance (new distros come, old distros go, features are requested, et cetera). **I would appreciate some help**. Write a response to https://github.com/alanfranz/docker-rpm-builder/issues/51 and become a developer!
 
 **IMPORTANT:** Docker has changed the distribution repos (both APT and YUM) for its packages. See the updated instructions and repos at docs.docker.com. The new free package is called **docker-ce**.
 
